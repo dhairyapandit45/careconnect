@@ -1,0 +1,29 @@
+{
+  "name": "careconnect-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CareConnect – Home Services Booking & Operations Platform",
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue.bold,magenta.bold\" \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "build:client": "npm --prefix client run build",
+    "test": "npm --prefix server test && npm --prefix client test",
+    "test:server": "npm --prefix server test",
+    "test:client": "npm --prefix client test",
+    "lint": "npm --prefix server run lint && npm --prefix client run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "keywords": [
+    "careconnect",
+    "mern",
+    "marketplace",
+    "home-services",
+    "operations-platform"
+  ],
+  "author": "CareConnect Team",
+  "license": "ISC"
+}
