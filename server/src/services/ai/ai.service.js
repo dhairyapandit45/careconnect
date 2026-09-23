@@ -20,7 +20,7 @@ class AIService {
    * @param {string} [options.systemMessage]
    * @returns {Promise<string>}
    */
-  async generateCompletion({ prompt, systemMessage }) {
+  async generateCompletion({ prompt, _systemMessage }) {
     if (!this.isConfigured) {
       logger.debug('AI service called without configured API key. Operating in mock/fallback mode.');
       return null;

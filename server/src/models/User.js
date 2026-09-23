@@ -70,6 +70,17 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+// Compound and single indexes for query performance
+userSchema.index({ role: 1, status: 1 });
+
+// Defensive email normalization pre-validate hook
+userSchema.pre('validate', function (next) {
+  if (this.email) {
+    this.email = this.email.toLowerCase().trim();
+  }
+  next();
+});
+
 // Hash password before saving if modified
 userSchema.pre('save', async function (next) {
   if (!this.isModified('passwordHash')) {

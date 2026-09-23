@@ -26,6 +26,11 @@ const bookingSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    providerProfile: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ProviderProfile',
+      index: true,
+    },
     quote: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Quote',
@@ -33,6 +38,7 @@ const bookingSchema = new mongoose.Schema(
     scheduledStart: {
       type: Date,
       required: true,
+      index: true,
     },
     scheduledEnd: {
       type: Date,
@@ -63,6 +69,11 @@ const bookingSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Performance compound indexes
+bookingSchema.index({ customer: 1, status: 1 });
+bookingSchema.index({ provider: 1, status: 1 });
+bookingSchema.index({ scheduledStart: 1, status: 1 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
 

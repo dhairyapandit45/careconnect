@@ -1,5 +1,6 @@
 /**
  * Authentication and RBAC Authorization Middleware
+ * Validates JWT signatures and enforces role-based access boundaries.
  */
 
 const jwt = require('jsonwebtoken');
@@ -20,19 +21,33 @@ const authenticate = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    if (!token) {
+    if (!token || token.trim() === '') {
       return next(ApiError.unauthorized('Authentication token missing'));
     }
 
     const decoded = jwt.verify(token, env.JWT_SECRET);
+    const userId = decoded.id || decoded.userId;
 
-    const user = await User.findById(decoded.id);
+    if (!userId) {
+      return next(ApiError.unauthorized('Invalid token payload'));
+    }
+
+    const user = await User.findById(userId);
     if (!user) {
       return next(ApiError.unauthorized('User associated with this token no longer exists'));
     }
 
+    // Reject non-active accounts
     if (user.status === USER_STATUS.SUSPENDED) {
       return next(ApiError.forbidden('Your account has been suspended. Please contact support.'));
+    }
+
+    if (user.status === USER_STATUS.INACTIVE) {
+      return next(ApiError.forbidden('Your account is inactive. Please contact support.'));
+    }
+
+    if (user.status === USER_STATUS.PENDING) {
+      return next(ApiError.forbidden('Your account is pending verification.'));
     }
 
     req.user = user;
@@ -65,7 +80,7 @@ const authorize = (...allowedRoles) => {
 };
 
 /**
- * Checks if user has a specific permission
+ * Checks if user has a specific granular permission
  * @param {string} permission
  */
 const requirePermission = (permission) => {

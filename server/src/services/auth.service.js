@@ -1,5 +1,6 @@
 /**
  * Authentication Business Logic Service
+ * Enforces security validations, credential hashing, and token issuance.
  */
 
 const jwt = require('jsonwebtoken');
@@ -11,15 +12,15 @@ const { ROLES } = require('../constants/roles');
 const { USER_STATUS } = require('../constants/status');
 
 /**
- * Generates a signed JWT for the user
+ * Generates a signed JWT with minimal principal metadata
+ * Excludes sensitive personal information (email, phone, name)
  * @param {Object} user
  * @returns {string}
  */
 const generateToken = (user) => {
   return jwt.sign(
     {
-      id: user._id,
-      email: user.email,
+      id: user._id.toString(),
       role: user.role,
     },
     env.JWT_SECRET,
@@ -33,17 +34,18 @@ const generateToken = (user) => {
  */
 const registerUser = async (userData) => {
   const { name, email, password, phone, role } = userData;
+  const normalizedEmail = email.toLowerCase().trim();
 
-  const existingUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email: normalizedEmail });
   if (existingUser) {
     throw ApiError.duplicate('An account with this email address already exists');
   }
 
   const user = await User.create({
-    name,
-    email,
+    name: name.trim(),
+    email: normalizedEmail,
     passwordHash: password,
-    phone,
+    phone: phone ? phone.trim() : '',
     role: role || ROLES.CUSTOMER,
     status: USER_STATUS.ACTIVE,
   });
@@ -59,18 +61,21 @@ const registerUser = async (userData) => {
   const token = generateToken(user);
 
   return {
-    user,
+    user: user.toJSON(),
     token,
   };
 };
 
 /**
  * Authenticates user credentials and issues token
+ * Rejects inactive, suspended, or pending verification accounts
  * @param {string} email
  * @param {string} password
  */
 const loginUser = async (email, password) => {
-  const user = await User.findOne({ email }).select('+passwordHash');
+  const normalizedEmail = email.toLowerCase().trim();
+  const user = await User.findOne({ email: normalizedEmail }).select('+passwordHash');
+
   if (!user) {
     throw ApiError.unauthorized('Invalid email or password');
   }
@@ -80,13 +85,20 @@ const loginUser = async (email, password) => {
     throw ApiError.unauthorized('Invalid email or password');
   }
 
+  // Account status security boundary
   if (user.status === USER_STATUS.SUSPENDED) {
     throw ApiError.forbidden('Your account has been suspended. Please contact support.');
   }
 
-  const token = generateToken(user);
+  if (user.status === USER_STATUS.INACTIVE) {
+    throw ApiError.forbidden('Your account is currently inactive. Please contact support.');
+  }
 
-  // Exclude passwordHash from returned object
+  if (user.status === USER_STATUS.PENDING) {
+    throw ApiError.forbidden('Your account is pending verification. Please check your verification status.');
+  }
+
+  const token = generateToken(user);
   const userObject = user.toJSON();
 
   return {
@@ -104,7 +116,7 @@ const getUserById = async (userId) => {
   if (!user) {
     throw ApiError.notFound('User not found');
   }
-  return user;
+  return user.toJSON();
 };
 
 module.exports = {

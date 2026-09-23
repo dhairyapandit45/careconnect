@@ -13,6 +13,11 @@ const availabilitySchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    providerProfile: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ProviderProfile',
+      index: true,
+    },
     dayOfWeek: {
       type: Number, // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
       min: 0,
@@ -38,6 +43,9 @@ const availabilitySchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+availabilitySchema.index({ provider: 1, dayOfWeek: 1 });
+availabilitySchema.index({ providerProfile: 1, dayOfWeek: 1 });
 
 const Availability = mongoose.model('Availability', availabilitySchema);
 

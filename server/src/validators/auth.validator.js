@@ -1,5 +1,6 @@
 /**
  * Authentication Input Validation Schemas
+ * Enforces production-style data validation before reaching controllers.
  */
 
 const { z } = require('zod');
@@ -18,7 +19,7 @@ const registerSchema = z.object({
     .email('Please provide a valid email address'),
   password: z
     .string({ required_error: 'Password is required' })
-    .min(6, 'Password must be at least 6 characters long'),
+    .min(8, 'Password must be at least 8 characters long'),
   phone: z.string().trim().optional().default(''),
   role: z
     .enum(ALL_ROLES, {

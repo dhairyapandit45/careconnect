@@ -30,7 +30,7 @@ const jobSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: Object.values(JOB_STATUS),
-      default: JOB_STATUS.SCHEDULED,
+      default: JOB_STATUS.ASSIGNED,
       index: true,
     },
     startedAt: Date,
@@ -48,6 +48,10 @@ const jobSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Performance compound indexes
+jobSchema.index({ provider: 1, status: 1 });
+jobSchema.index({ customer: 1, status: 1 });
 
 const Job = mongoose.model('Job', jobSchema);
 

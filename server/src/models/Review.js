@@ -26,6 +26,11 @@ const reviewSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    providerProfile: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ProviderProfile',
+      index: true,
+    },
     rating: {
       type: Number,
       required: true,
@@ -42,6 +47,9 @@ const reviewSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+reviewSchema.index({ provider: 1, rating: -1 });
+reviewSchema.index({ providerProfile: 1, rating: -1 });
 
 const Review = mongoose.model('Review', reviewSchema);
 

@@ -73,6 +73,10 @@ const serviceRequestSchema = new mongoose.Schema(
   }
 );
 
+// Performance compound indices
+serviceRequestSchema.index({ customer: 1, status: 1 });
+serviceRequestSchema.index({ category: 1, status: 1 });
+
 const ServiceRequest = mongoose.model('ServiceRequest', serviceRequestSchema);
 
 module.exports = ServiceRequest;

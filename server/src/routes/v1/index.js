@@ -6,6 +6,7 @@
 const express = require('express');
 const healthRoutes = require('./health.routes');
 const authRoutes = require('./auth.routes');
+const adminRoutes = require('./admin.routes');
 const { sendSuccess } = require('../../utils/apiResponse');
 
 const router = express.Router();
@@ -13,6 +14,7 @@ const router = express.Router();
 // Mount active route modules
 router.use('/health', healthRoutes);
 router.use('/auth', authRoutes);
+router.use('/admin', adminRoutes);
 
 // Helper for planned route group placeholders
 const createPlaceholderRouter = (resourceName) => {
@@ -44,6 +46,5 @@ router.use('/invoices', createPlaceholderRouter('invoices'));
 router.use('/reviews', createPlaceholderRouter('reviews'));
 router.use('/disputes', createPlaceholderRouter('disputes'));
 router.use('/notifications', createPlaceholderRouter('notifications'));
-router.use('/admin', createPlaceholderRouter('admin'));
 
 module.exports = router;

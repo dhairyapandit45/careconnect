@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Wrench, LogOut, User, Menu } from 'lucide-react';
+import { Wrench, LogOut, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ROLE_LABELS } from '../../constants/roles';
 import Badge from '../ui/Badge';

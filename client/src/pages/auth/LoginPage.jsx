@@ -7,7 +7,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Wrench, Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Button, Input, Card, CardContent } from '../../components/ui';
-import { ROLES, ROLE_DASHBOARD_ROUTES } from '../../constants/roles';
+import { ROLE_DASHBOARD_ROUTES } from '../../constants/roles';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
