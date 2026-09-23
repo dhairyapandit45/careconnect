@@ -7,6 +7,8 @@ const express = require('express');
 const healthRoutes = require('./health.routes');
 const authRoutes = require('./auth.routes');
 const adminRoutes = require('./admin.routes');
+const categoryRoutes = require('./category.routes');
+const serviceRequestRoutes = require('./serviceRequest.routes');
 const { sendSuccess } = require('../../utils/apiResponse');
 
 const router = express.Router();
@@ -15,6 +17,8 @@ const router = express.Router();
 router.use('/health', healthRoutes);
 router.use('/auth', authRoutes);
 router.use('/admin', adminRoutes);
+router.use('/categories', categoryRoutes);
+router.use('/service-requests', serviceRequestRoutes);
 
 // Helper for planned route group placeholders
 const createPlaceholderRouter = (resourceName) => {
@@ -36,8 +40,6 @@ const createPlaceholderRouter = (resourceName) => {
 // Planned route groups
 router.use('/users', createPlaceholderRouter('users'));
 router.use('/providers', createPlaceholderRouter('providers'));
-router.use('/categories', createPlaceholderRouter('categories'));
-router.use('/service-requests', createPlaceholderRouter('service-requests'));
 router.use('/quotes', createPlaceholderRouter('quotes'));
 router.use('/bookings', createPlaceholderRouter('bookings'));
 router.use('/availability', createPlaceholderRouter('availability'));

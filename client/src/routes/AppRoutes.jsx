@@ -18,6 +18,8 @@ import { RegisterPage } from '../pages/auth/RegisterPage';
 // Customer Pages
 import { CustomerDashboard } from '../pages/customer/CustomerDashboard';
 import { CustomerRequests } from '../pages/customer/CustomerRequests';
+import { CreateRequestPage } from '../pages/customer/CreateRequestPage';
+import { RequestDetailPage } from '../pages/customer/RequestDetailPage';
 import { CustomerBookings } from '../pages/customer/CustomerBookings';
 import { CustomerQuotes } from '../pages/customer/CustomerQuotes';
 import { CustomerInvoices } from '../pages/customer/CustomerInvoices';
@@ -35,6 +37,7 @@ import { ProviderProfile } from '../pages/provider/ProviderProfile';
 import { SupportDashboard } from '../pages/support/SupportDashboard';
 import { OperationsDashboard } from '../pages/operations/OperationsDashboard';
 import { AdminDashboard } from '../pages/admin/AdminDashboard';
+import { AdminCategoriesPage } from '../pages/admin/AdminCategoriesPage';
 
 // 404 Page
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -74,6 +77,8 @@ export const AppRoutes = () => {
           <Route element={<ProtectedRoute allowedRoles={[ROLES.CUSTOMER]} />}>
             <Route path="/customer/dashboard" element={<CustomerDashboard />} />
             <Route path="/customer/requests" element={<CustomerRequests />} />
+            <Route path="/customer/requests/new" element={<CreateRequestPage />} />
+            <Route path="/customer/requests/:id" element={<RequestDetailPage />} />
             <Route path="/customer/bookings" element={<CustomerBookings />} />
             <Route path="/customer/quotes" element={<CustomerQuotes />} />
             <Route path="/customer/invoices" element={<CustomerInvoices />} />
@@ -103,6 +108,7 @@ export const AppRoutes = () => {
           {/* Platform Admin Routes */}
           <Route element={<ProtectedRoute allowedRoles={[ROLES.PLATFORM_ADMIN]} />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/categories" element={<AdminCategoriesPage />} />
           </Route>
         </Route>
       </Route>

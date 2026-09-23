@@ -11,29 +11,50 @@ const serviceRequestSchema = new mongoose.Schema(
     customer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: [true, 'Customer is required'],
       index: true,
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'ServiceCategory',
-      required: true,
+      required: [true, 'Service category is required'],
       index: true,
     },
     title: {
       type: String,
-      required: true,
+      required: [true, 'Request title is required'],
       trim: true,
+      minlength: [5, 'Title must be at least 5 characters long'],
+      maxlength: [120, 'Title cannot exceed 120 characters'],
     },
     description: {
       type: String,
-      required: true,
+      required: [true, 'Problem description is required'],
+      trim: true,
+      minlength: [15, 'Description must be at least 15 characters long'],
+      maxlength: [2000, 'Description cannot exceed 2000 characters'],
     },
     location: {
-      address: { type: String, default: '' },
-      city: { type: String, default: '' },
-      state: { type: String, default: '' },
-      postalCode: { type: String, default: '' },
+      address: {
+        type: String,
+        required: [true, 'Street address is required'],
+        trim: true,
+      },
+      city: {
+        type: String,
+        required: [true, 'City is required'],
+        trim: true,
+      },
+      postalCode: {
+        type: String,
+        required: [true, 'Postal code is required'],
+        trim: true,
+      },
+      state: {
+        type: String,
+        default: '',
+        trim: true,
+      },
       coordinates: {
         type: [Number], // [longitude, latitude]
         index: '2dsphere',
@@ -41,13 +62,20 @@ const serviceRequestSchema = new mongoose.Schema(
     },
     preferredDate: {
       type: Date,
+      required: [true, 'Preferred date is required'],
+    },
+    preferredTime: {
+      start: { type: String, default: '09:00' },
+      end: { type: String, default: '12:00' },
     },
     preferredTimeSlot: {
-      type: String, // e.g. "MORNING", "AFTERNOON", "EVENING"
+      type: String, // Backwards compatibility alias
+      default: 'MORNING',
     },
     requiredSkills: [
       {
         type: String,
+        trim: true,
       },
     ],
     status: {
@@ -70,12 +98,20 @@ const serviceRequestSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        delete ret.__v;
+        return ret;
+      },
+    },
   }
 );
 
-// Performance compound indices
+// Performance compound indices for high-frequency filters
 serviceRequestSchema.index({ customer: 1, status: 1 });
 serviceRequestSchema.index({ category: 1, status: 1 });
+serviceRequestSchema.index({ preferredDate: 1, status: 1 });
 
 const ServiceRequest = mongoose.model('ServiceRequest', serviceRequestSchema);
 

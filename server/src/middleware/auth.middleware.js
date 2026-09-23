@@ -102,8 +102,40 @@ const requirePermission = (permission) => {
   };
 };
 
+/**
+ * Optional authentication middleware: attaches user if valid JWT is present,
+ * but does not reject request if token is missing.
+ */
+const optionalAuthenticate = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return next();
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token || token.trim() === '') {
+      return next();
+    }
+
+    const decoded = jwt.verify(token, env.JWT_SECRET);
+    const userId = decoded.id || decoded.userId;
+
+    if (userId) {
+      const user = await User.findById(userId);
+      if (user && user.status === USER_STATUS.ACTIVE) {
+        req.user = user;
+      }
+    }
+    next();
+  } catch (error) {
+    next();
+  }
+};
+
 module.exports = {
   authenticate,
+  optionalAuthenticate,
   authorize,
   requirePermission,
 };

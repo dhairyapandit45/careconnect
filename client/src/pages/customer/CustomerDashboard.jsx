@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Plus, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Card, CardHeader, CardContent, Button, Badge } from '../../components/ui';
 import { useAuth } from '../../context/AuthContext';
@@ -19,7 +20,9 @@ export const CustomerDashboard = () => {
             Welcome back, {user?.name || 'Customer'}. Manage your home service requests and bookings.
           </p>
         </div>
-        <Button icon={Plus}>Create New Request</Button>
+        <Link to="/customer/requests/new">
+          <Button icon={Plus}>Create New Request</Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -12,7 +12,8 @@
     "test": "npm --prefix server test && npm --prefix client test",
     "test:server": "npm --prefix server test",
     "test:client": "npm --prefix client test",
-    "lint": "npm --prefix server run lint && npm --prefix client run lint"
+    "lint": "npm --prefix server run lint && npm --prefix client run lint",
+    "seed": "npm --prefix server run seed"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

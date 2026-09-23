@@ -55,10 +55,12 @@ Every error response returns HTTP 4xx or 5xx and adheres to this schema:
 | :--- | :--- | :--- |
 | `VALIDATION_ERROR` | 422 | Request payload failed schema validation (Zod / Mongoose). |
 | `BAD_REQUEST` | 400 | Malformed syntax or invalid parameter format. |
+| `CATEGORY_IN_USE` | 400 | Cannot delete category because existing service requests reference it. |
+| `CATEGORY_INACTIVE` | 400 | Cannot submit service request against an inactive or archived category. |
 | `UNAUTHORIZED` | 401 | Missing, invalid, or expired JWT bearer token. |
 | `FORBIDDEN` | 403 | Principal authenticated, but lacks necessary role or account is inactive/suspended. |
 | `NOT_FOUND` | 404 | Resource with specified identifier does not exist. |
-| `DUPLICATE_RESOURCE` | 409 | Unique constraint violated (e.g. email already registered). |
+| `DUPLICATE_RESOURCE` | 409 | Unique constraint violated (e.g. email or category slug already registered). |
 | `RATE_LIMIT_EXCEEDED`| 429 | Request rate exceeded allowed window quota. |
 | `INTERNAL_SERVER_ERROR` | 500 | Unhandled operational or database exception. |
 
@@ -236,3 +238,145 @@ Tokens are signed using HMAC-SHA256 with `JWT_SECRET`. To protect user privacy, 
 - **Error Responses**:
   - `401 UNAUTHORIZED`: If not authenticated.
   - `403 FORBIDDEN`: If authenticated user role is not `PLATFORM_ADMIN` (e.g. `CUSTOMER` or `SERVICE_PROVIDER`).
+
+---
+
+### Service Categories Catalog: `GET /api/v1/categories`
+- **Purpose**: Lists service categories. By default, returns active categories only. Platform Admins can request `?includeInactive=true` to view all categories.
+- **Authentication**: Optional (Public for active categories; JWT required for `includeInactive=true`).
+- **Query Parameters**:
+  - `includeInactive` (boolean, optional): Set to `true` (Admins only) to include archived/inactive categories.
+- **Successful Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Categories retrieved successfully",
+  "data": {
+    "categories": [
+      {
+        "_id": "6732a101b0f1e2938475a101",
+        "name": "Appliance Repair",
+        "slug": "appliance-repair",
+        "description": "Professional diagnostics and repairs for major home appliances",
+        "icon": "Wrench",
+        "startingPrice": 65,
+        "pricingUnit": "HOURLY",
+        "requiredSkills": ["electrical", "refrigeration", "diagnostics"],
+        "isActive": true
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Create Service Category: `POST /api/v1/categories`
+- **Purpose**: Allows Platform Admins to create new trade categories with auto-slug generation and pricing units.
+- **Authentication**: Required (`Bearer <token>`).
+- **Authorization**: `PLATFORM_ADMIN` only.
+- **Request Body**:
+```json
+{
+  "name": "Electrical Work",
+  "slug": "electrical-work",
+  "description": "Wiring, breaker panel replacements, and light fixture installations",
+  "icon": "Zap",
+  "startingPrice": 80,
+  "pricingUnit": "HOURLY",
+  "requiredSkills": ["wiring", "breaker maintenance"],
+  "isActive": true
+}
+```
+- **Successful Response (201 Created)**: Returns created category object.
+- **Error Responses**:
+  - `401 UNAUTHORIZED`: If not authenticated.
+  - `403 FORBIDDEN`: If user is not `PLATFORM_ADMIN`.
+  - `409 DUPLICATE_RESOURCE`: If category name or slug already exists.
+  - `422 VALIDATION_ERROR`: If required fields are missing or invalid.
+
+---
+
+### Update Service Category: `PATCH /api/v1/categories/:id`
+- **Purpose**: Allows Platform Admins to modify category attributes, pricing, or toggle active status.
+- **Authentication**: Required (`Bearer <token>`).
+- **Authorization**: `PLATFORM_ADMIN` only.
+
+---
+
+### Delete Service Category: `DELETE /api/v1/categories/:id`
+- **Purpose**: Deletes category if unreferenced.
+- **Authentication**: Required (`Bearer <token>`).
+- **Authorization**: `PLATFORM_ADMIN` only.
+- **Referential Protection**: Returns `400 BAD_REQUEST` with `code: CATEGORY_IN_USE` if any historical service requests reference this category. Admins must deactivate (`isActive: false`) instead.
+
+---
+
+### Submit Service Request: `POST /api/v1/service-requests`
+- **Purpose**: Customer creates a new home service request.
+- **Authentication**: Required (`Bearer <token>`).
+- **Authorization**: `CUSTOMER` only.
+- **Security Invariants**:
+  - Customer ownership is strictly bound to `req.user._id` from token (payload attempts to spoof customer are ignored).
+  - Initial status is strictly forced to `SUBMITTED`.
+  - Preferred date must be in the future.
+- **Request Body**:
+```json
+{
+  "categoryId": "6732a101b0f1e2938475a101",
+  "title": "Kitchen Sink Drain Leaking Continuously",
+  "description": "The P-trap pipe underneath the kitchen sink is cracked and dripping water when tap runs.",
+  "address": "742 Evergreen Terrace",
+  "city": "Springfield",
+  "postalCode": "62704",
+  "state": "IL",
+  "preferredDate": "2026-09-25",
+  "preferredTime": {
+    "start": "09:00",
+    "end": "12:00"
+  },
+  "requiredSkills": ["pipe repair"]
+}
+```
+- **Successful Response (201 Created)**: Returns created request with populated category and customer details.
+
+---
+
+### List Service Requests: `GET /api/v1/service-requests`
+- **Purpose**: Lists service requests.
+- **Authentication**: Required (`Bearer <token>`).
+- **Access Boundaries**:
+  - `CUSTOMER`: Strictly limited to requests where `customer === req.user._id`.
+  - `PLATFORM_ADMIN`, `OPERATIONS_MANAGER`, `SUPPORT_AGENT`: Operational staff can query across all customer requests.
+  - `SERVICE_PROVIDER`: Quarantined with `403 FORBIDDEN` until provider matching milestone.
+- **Query Parameters**:
+  - `page` (integer, default: 1)
+  - `limit` (integer, default: 10, ceiling: 50)
+  - `status` (string, optional: e.g. `SUBMITTED`, `BOOKED`)
+  - `category` (ObjectId, optional)
+- **Successful Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Service requests retrieved successfully",
+  "data": {
+    "items": [],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 1,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+---
+
+### Get Service Request Details: `GET /api/v1/service-requests/:id`
+- **Purpose**: Retrieves full service request details by ID.
+- **Authentication**: Required (`Bearer <token>`).
+- **Access Boundaries**:
+  - Customer can only access their own request; requests belonging to another customer return `403 FORBIDDEN`.
+  - Operational staff can view any request.
+

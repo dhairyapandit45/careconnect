@@ -56,6 +56,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
       case ROLES.PLATFORM_ADMIN:
         return [
           { to: '/admin/dashboard', label: 'Admin Control Center', icon: Shield },
+          { to: '/admin/categories', label: 'Service Categories', icon: Sliders },
         ];
       default:
         return [];

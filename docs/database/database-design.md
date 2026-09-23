@@ -67,27 +67,43 @@ Extended operational and business data for `SERVICE_PROVIDER` accounts.
 
 ### 3. `servicecategories`
 Configurable home service classifications.
-- `name`: String (Unique)
-- `slug`: String (Unique, indexed, e.g. `plumbing`, `appliance-repair`)
-- `description`: String
-- `icon`: String
-- `isActive`: Boolean (Indexed)
-- `basePriceEstimate`: Number
-- **Indexes**: `{ slug: 1 }` (unique), `{ isActive: 1 }`
+- `name`: String (Required, unique, trimmed, e.g. `Appliance Repair`)
+- `slug`: String (Required, unique, indexed, e.g. `appliance-repair`, auto-generated if omitted)
+- `description`: String (Required, trimmed)
+- `icon`: String (Default: `Wrench`, e.g. `Wrench`, `Sparkles`, `Zap`, `Droplets`, `Hammer`)
+- `startingPrice`: Number (Required, min: 0, default: 0)
+- `pricingUnit`: Enum [`FIXED`, `HOURLY`, `STARTING_FROM`, `QUOTE_REQUIRED`] (Default: `STARTING_FROM`)
+- `requiredSkills`: Array of String (Normalized skill tags)
+- `isActive`: Boolean (Indexed, default: `true`)
+- `createdAt`, `updatedAt`: Timestamps
+- **Indexes**: `{ slug: 1 }` (unique), `{ name: 1 }` (unique), `{ isActive: 1 }`
+- **Integrity Rule**: Cannot be deleted if historical `servicerequests` reference this category (`CATEGORY_IN_USE`). Must be deactivated instead.
 
 ### 4. `servicerequests`
 Home service requests posted by Customers.
-- `customer`: ObjectId (Ref: `User`, indexed)
-- `category`: ObjectId (Ref: `ServiceCategory`, indexed)
-- `title`: String
-- `description`: String
-- `location`: `{ address, city, state, postalCode, coordinates: [lng, lat] }` (2dsphere index)
-- `preferredDate`: Date
-- `preferredTimeSlot`: String (`MORNING`, `AFTERNOON`, `EVENING`)
-- `requiredSkills`: Array of String
-- `status`: Enum [`DRAFT`, `SUBMITTED`, `MATCHING`, `QUOTING`, `PROVIDER_SELECTED`, `BOOKED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`, `DISPUTED`]
+- `customer`: ObjectId (Ref: `User`, required, indexed, immutable from token identity)
+- `category`: ObjectId (Ref: `ServiceCategory`, required, indexed)
+- `title`: String (Required, minlength: 5, maxlength: 120, trimmed)
+- `description`: String (Required, minlength: 15, maxlength: 2000, trimmed)
+- `location`: Structured object:
+  - `address`: String (Required, street address)
+  - `city`: String (Required, city name)
+  - `postalCode`: String (Required, postal / PIN code)
+  - `state`: String (Optional, state / province)
+  - `coordinates`: [Number] (Optional GeoJSON `[longitude, latitude]`, 2dsphere index)
+- `preferredDate`: Date (Required, validated non-past date)
+- `preferredTime`: Object `{ start: String (e.g. "09:00"), end: String (e.g. "12:00") }`
+- `preferredTimeSlot`: String (`MORNING`, `AFTERNOON`, `EVENING` - legacy alias)
+- `requiredSkills`: Array of String (Capabilities required to fulfill this job)
+- `status`: Enum [`DRAFT`, `SUBMITTED`, `MATCHING`, `QUOTING`, `PROVIDER_SELECTED`, `BOOKED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`, `DISPUTED`] (Initial status strictly defaults to `SUBMITTED`)
 - `aiClassification`: `{ predictedCategory, confidenceScore, extractedUrgency, tags, processedAt }`
-- **Indexes**: `{ customer: 1, status: 1 }`, `{ category: 1, status: 1 }`, `{ coordinates: '2dsphere' }`
+- `createdAt`, `updatedAt`: Timestamps
+- **Indexes**:
+  - `{ customer: 1, status: 1 }` (Compound index for customer dashboard / request queries)
+  - `{ category: 1, status: 1 }` (Compound index for category filtering and provider matching)
+  - `{ preferredDate: 1, status: 1 }` (Compound index for schedule queries)
+  - `{ 'location.coordinates': '2dsphere' }` (Geospatial index for location queries)
+- **Security Boundary**: Strict server-side ownership isolation. Customers can only read and mutate their own requests. Service providers are quarantined with 403 until Milestone 4 matching.
 
 ### 5. `quotes`
 Bids and formal price quotes submitted by Providers for Service Requests.
