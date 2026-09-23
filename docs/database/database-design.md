@@ -52,18 +52,31 @@ Represents all system actors across the 5 system roles.
 ### 2. `providerprofiles`
 Extended operational and business data for `SERVICE_PROVIDER` accounts.
 - `user`: ObjectId (Ref: `User`, unique index)
-- `businessName`: String
-- `description`: String
-- `skills`: Array of String
-- `serviceAreas`: Array of String (Postal codes / city names)
-- `experienceYears`: Number (min: 0)
-- `hourlyRate`: Number (min: 0)
-- `verificationStatus`: Enum [`UNVERIFIED`, `PENDING`, `VERIFIED`, `REJECTED`]
-- `documents`: Array of `{ documentType, fileUrl, verifiedAt }`
-- `rating`: Number (0.0 to 5.0, default: 0)
-- `reviewCount`: Number (default: 0)
-- `isAvailable`: Boolean (Indexed)
-- **Indexes**: `{ user: 1 }` (unique), `{ isAvailable: 1 }`, `{ verificationStatus: 1 }`
+- `businessName`: String (Trimmed, minlength: 2, maxlength: 120)
+- `description`: String (Company bio & credentials, minlength: 10, maxlength: 2000)
+- `serviceCategories`: Array of ObjectId (Ref: `ServiceCategory`, indexed)
+- `skills`: Array of String (Normalized trade capabilities)
+- `serviceAreas`: Array of `{ city: String, areas: [String] }`
+- `experienceYears`: Number (Integer, 0 to 60)
+- `pricing`: Object:
+  - `model`: Enum [`FIXED`, `HOURLY`, `STARTING_FROM`, `QUOTE_REQUIRED`] (Default: `HOURLY`)
+  - `minimumCharge`: Number (Min: 0, default: 0)
+  - `hourlyRate`: Number (Min: 0, default: 0)
+- `hourlyRate`: Number (Legacy synchronized alias)
+- `verificationStatus`: Enum [`PENDING`, `UNDER_REVIEW`, `APPROVED`, `REJECTED`, `SUSPENDED`] (Initial state: `PENDING`)
+- `verificationNotes`: String (Administrative audit notes and reason log)
+- `documents`: Array of `{ type: Enum['IDENTITY', 'ADDRESS_PROOF', 'CERTIFICATION', 'BUSINESS_LICENSE', 'OTHER'], name: String, url: String }`
+- `rating`: Number (0.0 to 5.0, default: 0, protected from client mutation)
+- `reviewCount`: Number (default: 0, protected from client mutation)
+- `isAvailable`: Boolean (Default: `true`, indexed)
+- `createdAt`, `updatedAt`: Timestamps
+- **Indexes**:
+  - `{ user: 1 }` (unique)
+  - `{ verificationStatus: 1 }`
+  - `{ serviceCategories: 1, verificationStatus: 1 }`
+  - `{ 'serviceAreas.city': 1, verificationStatus: 1 }`
+  - `{ rating: -1, verificationStatus: 1 }`
+- **Security Invariant**: `verificationStatus`, `rating`, and `reviewCount` are strictly non-writable by providers. Public profiles accessed by guests or customers strip sensitive document URLs and administrative notes.
 
 ### 3. `servicecategories`
 Configurable home service classifications.
@@ -138,6 +151,7 @@ Weekly schedules, recurring shift windows, and blackout dates for Providers.
 - `dayOfWeek`: Number (0 = Sunday to 6 = Saturday)
 - `startTime`: String (`09:00`)
 - `endTime`: String (`17:00`)
+- `isAvailable`: Boolean (default: true)
 - `isBlocked`: Boolean (default: false)
 - `blockedDate`: Date
 - **Indexes**: `{ provider: 1, dayOfWeek: 1 }`, `{ providerProfile: 1, dayOfWeek: 1 }`

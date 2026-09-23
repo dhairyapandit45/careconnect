@@ -124,3 +124,40 @@ Recommended Provider List
 - **HTTP Hardening**: Helmet sets Content Security Policy (CSP), X-Frame-Options, X-Content-Type-Options, and Strict-Transport-Security (HSTS).
 - **Rate Limiting**: Tiered rate limiters protect public API routes (100 req / 15 min) and authentication endpoints (20 attempts / 15 min).
 - **Environment Validation**: Zod schema in `env.js` validates environment variables on application bootstrap, preventing runtime crashes due to missing configuration.
+
+---
+
+## 6. Provider Onboarding & Verification State Machine
+
+Service provider marketplace trust and safety is enforced through a strict finite state machine governed solely by `PLATFORM_ADMIN` users:
+
+```
+                  ┌───────────────┐
+                  │    PENDING    │
+                  └──┬───┬────────┘
+                     │   │
+     Under Review    │   │ Approved
+         ┌───────────┘   └───────────┐
+         ▼                           ▼
+┌─────────────────┐         ┌─────────────────┐
+│  UNDER_REVIEW   │◄───────►│    APPROVED     │
+└────────┬────────┘         └────────┬────────┘
+         │                           │
+         │ Rejected                  │ Suspended
+         ▼                           ▼
+┌─────────────────┐         ┌─────────────────┐
+│    REJECTED     │         │    SUSPENDED    │
+└─────────────────┘         └─────────────────┘
+```
+
+### Transition Invariants
+1. **No Self-Approval**: Provider self-onboarding strictly initializes `verificationStatus` to `PENDING`. Providers cannot modify their own verification status, rating, or review count.
+2. **Valid State Transitions**:
+   - `PENDING` $\rightarrow$ `UNDER_REVIEW`, `APPROVED`, `REJECTED`
+   - `UNDER_REVIEW` $\rightarrow$ `APPROVED`, `REJECTED`, `PENDING`
+   - `APPROVED` $\rightarrow$ `SUSPENDED`, `UNDER_REVIEW`
+   - `REJECTED` $\rightarrow$ `UNDER_REVIEW`, `PENDING`
+   - `SUSPENDED` $\rightarrow$ `APPROVED`, `UNDER_REVIEW`
+3. **Audited Actions**: Status modifications record the administrative transition action and mandatory rationale in `verificationNotes`.
+4. **Data Isolation & Sanitization**: Public provider profile endpoints (`GET /api/v1/providers/:id`) strip sensitive document metadata, verification notes, and private owner contacts when queried by guests or customer accounts.
+

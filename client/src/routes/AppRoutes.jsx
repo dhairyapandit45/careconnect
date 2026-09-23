@@ -27,6 +27,7 @@ import { CustomerReviews } from '../pages/customer/CustomerReviews';
 
 // Provider Pages
 import { ProviderDashboard } from '../pages/provider/ProviderDashboard';
+import { ProviderOnboardingWizard } from '../pages/provider/ProviderOnboardingWizard';
 import { ProviderRequests } from '../pages/provider/ProviderRequests';
 import { ProviderQuotes } from '../pages/provider/ProviderQuotes';
 import { ProviderBookings } from '../pages/provider/ProviderBookings';
@@ -38,6 +39,7 @@ import { SupportDashboard } from '../pages/support/SupportDashboard';
 import { OperationsDashboard } from '../pages/operations/OperationsDashboard';
 import { AdminDashboard } from '../pages/admin/AdminDashboard';
 import { AdminCategoriesPage } from '../pages/admin/AdminCategoriesPage';
+import { AdminProvidersPage } from '../pages/admin/AdminProvidersPage';
 
 // 404 Page
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -88,6 +90,7 @@ export const AppRoutes = () => {
           {/* Provider Routes */}
           <Route element={<ProtectedRoute allowedRoles={[ROLES.SERVICE_PROVIDER]} />}>
             <Route path="/provider/dashboard" element={<ProviderDashboard />} />
+            <Route path="/provider/onboarding" element={<ProviderOnboardingWizard />} />
             <Route path="/provider/requests" element={<ProviderRequests />} />
             <Route path="/provider/quotes" element={<ProviderQuotes />} />
             <Route path="/provider/bookings" element={<ProviderBookings />} />
@@ -108,6 +111,7 @@ export const AppRoutes = () => {
           {/* Platform Admin Routes */}
           <Route element={<ProtectedRoute allowedRoles={[ROLES.PLATFORM_ADMIN]} />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/providers" element={<AdminProvidersPage />} />
             <Route path="/admin/categories" element={<AdminCategoriesPage />} />
           </Route>
         </Route>

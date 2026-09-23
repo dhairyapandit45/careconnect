@@ -35,6 +35,10 @@ const availabilitySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isAvailable: {
+      type: Boolean,
+      default: true,
+    },
     blockedDate: {
       type: Date, // For specific override dates
     },

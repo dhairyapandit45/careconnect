@@ -10,6 +10,14 @@ const { sendSuccess } = require('../../utils/apiResponse');
 const User = require('../../models/User');
 const ProviderProfile = require('../../models/ProviderProfile');
 
+const {
+  listProvidersAdmin,
+  getProviderById,
+  verifyProviderAdmin,
+} = require('../../controllers/provider.controller');
+const { validate } = require('../../middleware/validate.middleware');
+const { verifyProviderSchema } = require('../../validators/provider.validator');
+
 const router = express.Router();
 
 // Enforce authentication & PLATFORM_ADMIN authorization on all routes in this module
@@ -58,5 +66,12 @@ router.get('/users', async (req, res, next) => {
     next(error);
   }
 });
+
+/**
+ * Provider Verification & Review Console Endpoints
+ */
+router.get('/providers', listProvidersAdmin);
+router.get('/providers/:id', getProviderById);
+router.patch('/providers/:id/verification', validate(verifyProviderSchema), verifyProviderAdmin);
 
 module.exports = router;

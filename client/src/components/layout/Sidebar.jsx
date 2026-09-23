@@ -13,6 +13,7 @@ import {
   Star,
   Clock,
   UserCheck,
+  FileCheck,
   Shield,
   Headphones,
   Sliders,
@@ -39,6 +40,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
       case ROLES.SERVICE_PROVIDER:
         return [
           { to: '/provider/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+          { to: '/provider/onboarding', label: 'Onboarding Wizard', icon: FileCheck },
           { to: '/provider/requests', label: 'Available Jobs', icon: ClipboardList },
           { to: '/provider/quotes', label: 'My Quotes', icon: FileText },
           { to: '/provider/bookings', label: 'Active Bookings', icon: Calendar },
@@ -56,6 +58,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
       case ROLES.PLATFORM_ADMIN:
         return [
           { to: '/admin/dashboard', label: 'Admin Control Center', icon: Shield },
+          { to: '/admin/providers', label: 'Provider Verification', icon: UserCheck },
           { to: '/admin/categories', label: 'Service Categories', icon: Sliders },
         ];
       default:

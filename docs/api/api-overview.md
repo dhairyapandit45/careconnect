@@ -380,3 +380,119 @@ Tokens are signed using HMAC-SHA256 with `JWT_SECRET`. To protect user privacy, 
   - Customer can only access their own request; requests belonging to another customer return `403 FORBIDDEN`.
   - Operational staff can view any request.
 
+---
+
+## 6. Service Provider Profile & Verification Endpoints
+
+### Get Aggregated Skills Catalog: `GET /api/v1/providers/skills`
+- **Purpose**: Retrieves aggregated unique required skills across all active service categories.
+- **Authentication**: Optional.
+- **Response (200 OK)**:
+```json
+{
+  "success": true,
+  "message": "Skills catalog retrieved successfully",
+  "data": {
+    "skills": ["Pipe Fitting", "Drain Cleaning", "Leak Inspection", "Wiring"]
+  }
+}
+```
+
+---
+
+### Get Authenticated Provider Profile: `GET /api/v1/providers/me`
+- **Purpose**: Retrieves the authenticated provider's own business profile, documents, and verification audit notes.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Response (200 OK)**: Full provider profile object with `verificationStatus`, `documents`, and `verificationNotes`.
+
+---
+
+### Create Provider Profile (Onboarding): `POST /api/v1/providers/profile`
+- **Purpose**: Completes provider onboarding. Forces `verificationStatus: "PENDING"`, `rating: 0`, and `reviewCount: 0`.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Request Body**:
+```json
+{
+  "businessName": "Mario Master Plumbing LLC",
+  "description": "Licensed residential and commercial plumbing specialist.",
+  "skills": ["Pipe Fitting", "Leak Inspection"],
+  "serviceCategories": ["607f1f77bcf86cd799439011"],
+  "serviceAreas": [
+    { "city": "Hyderabad", "areas": ["Hitec City", "Madhapur"] }
+  ],
+  "experienceYears": 12,
+  "pricing": {
+    "model": "HOURLY",
+    "minimumCharge": 300,
+    "hourlyRate": 750
+  },
+  "documents": [
+    {
+      "type": "CERTIFICATION",
+      "name": "Master Plumber License",
+      "url": "https://docs.careconnect.local/lic_982.pdf"
+    }
+  ]
+}
+```
+- **Response (201 Created)**: Returns created profile with `verificationStatus: "PENDING"`.
+
+---
+
+### Update Provider Profile: `PATCH /api/v1/providers/profile` (or `PUT`)
+- **Purpose**: Updates business information, pricing, skills, and coverage areas. Ignores client-sent `verificationStatus`, `rating`, and `reviewCount`.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Response (200 OK)**: Returns updated provider profile.
+
+---
+
+### Get Provider by ID: `GET /api/v1/providers/:id`
+- **Purpose**: Retrieves provider profile. Returns a safe public summary (stripping documents, verification notes, and private contact details) for customers/guests, or full details for profile owners and platform staff.
+- **Authentication**: Optional.
+- **Response (200 OK)**: Sanitized public summary or full profile.
+
+---
+
+### Platform Admin: List Providers: `GET /api/v1/admin/providers`
+- **Purpose**: Lists providers with verification filters, search query, and pagination.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `PLATFORM_ADMIN`.
+- **Query Parameters**:
+  - `page` (default: 1)
+  - `limit` (default: 10, max: 50)
+  - `status` (`PENDING`, `UNDER_REVIEW`, `APPROVED`, `REJECTED`, `SUSPENDED`)
+  - `search` (matches business name or owner name/email)
+  - `category` (Filter by service category ObjectId)
+
+---
+
+### Platform Admin: Get Provider Details: `GET /api/v1/admin/providers/:id`
+- **Purpose**: Retrieves full provider dossier including attached verification documents, licenses, and previous notes.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `PLATFORM_ADMIN`.
+
+---
+
+### Platform Admin: Transition Verification Status: `PATCH /api/v1/admin/providers/:id/verification`
+- **Purpose**: Executes state-machine governed verification status transitions with audit notes.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `PLATFORM_ADMIN`.
+- **Request Body**:
+```json
+{
+  "action": "APPROVE",
+  "notes": "All trade credentials and liability insurance verified against official registry."
+}
+```
+*Valid Actions / Transitions*:
+- `PENDING` $\rightarrow$ `UNDER_REVIEW`, `APPROVED`, `REJECTED`
+- `UNDER_REVIEW` $\rightarrow$ `APPROVED`, `REJECTED`, `PENDING`
+- `APPROVED` $\rightarrow$ `SUSPENDED`, `UNDER_REVIEW`
+- `REJECTED` $\rightarrow$ `UNDER_REVIEW`, `PENDING`
+- `SUSPENDED` $\rightarrow$ `APPROVED`, `UNDER_REVIEW`
+- **Response (200 OK)**: Returns updated profile with new status and updated verification notes.
+
+
