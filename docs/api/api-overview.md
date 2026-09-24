@@ -495,4 +495,162 @@ Tokens are signed using HMAC-SHA256 with `JWT_SECRET`. To protect user privacy, 
 - `SUSPENDED` $\rightarrow$ `APPROVED`, `UNDER_REVIEW`
 - **Response (200 OK)**: Returns updated profile with new status and updated verification notes.
 
+---
+
+### Get Provider Availability: `GET /api/v1/providers/availability`
+- **Purpose**: Lists all weekly recurring shifts and availability slots for the authenticated provider.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Response (200 OK)**:
+```json
+{
+  "success": true,
+  "data": {
+    "shifts": [
+      {
+        "_id": "60d0fe4f5311236168a109ca",
+        "dayOfWeek": "MONDAY",
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "isAvailable": true
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Create Availability Slot: `POST /api/v1/providers/availability`
+- **Purpose**: Adds a new recurring weekly working shift. Validates 24-hr `HH:mm` format, strictly checks `startTime < endTime`, and rejects overlapping shifts on the same day for the provider.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Request Body**:
+```json
+{
+  "dayOfWeek": "MONDAY",
+  "startTime": "09:00",
+  "endTime": "17:00",
+  "isAvailable": true
+}
+```
+- **Response (201 Created)**: Returns created availability shift.
+
+---
+
+### Update Availability Slot: `PATCH /api/v1/providers/availability/:id`
+- **Purpose**: Modifies times or availability status for a specific shift owned by the authenticated provider.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Response (200 OK)**: Returns updated shift.
+
+---
+
+### Delete Availability Slot: `DELETE /api/v1/providers/availability/:id`
+- **Purpose**: Removes an availability shift slot owned by the authenticated provider.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Response (200 OK)**: Confirmation message.
+
+---
+
+### Discover Eligible Service Requests: `GET /api/v1/provider-requests`
+- **Purpose**: Deterministically returns open service requests matching the provider's verified categories and operating cities.
+- **Privacy Guarantees**: Customer street addresses, phone numbers, and emails are strictly omitted.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Query Parameters**: `page`, `limit`, `category`, `city`, `search`.
+- **Response (200 OK)**:
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "_id": "673f1a2b...",
+        "title": "Leaking kitchen pipe",
+        "description": "Pipe leaking under sink",
+        "category": { "_id": "...", "name": "Plumbing" },
+        "location": { "city": "San Francisco", "state": "CA", "postalCode": "94105" },
+        "preferredDate": "2026-10-15T00:00:00.000Z",
+        "preferredTime": { "start": "09:00", "end": "12:00" },
+        "quoteCount": 2,
+        "status": "SUBMITTED"
+      }
+    ],
+    "pagination": { "page": 1, "limit": 10, "total": 1, "totalPages": 1 }
+  }
+}
+```
+
+---
+
+### Get Eligible Service Request by ID: `GET /api/v1/provider-requests/:id`
+- **Purpose**: Retrieves sanitized details for a specific eligible request. Rejects providers outside territory or unverified providers with 403 Forbidden.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Response (200 OK)**: Sanitized request object.
+
+---
+
+### Submit Quote on Service Request: `POST /api/v1/service-requests/:id/quotes`
+- **Purpose**: Submits a competitive quote estimate for an eligible service request.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Request Body**:
+```json
+{
+  "amount": 2500,
+  "currency": "INR",
+  "estimatedDuration": 3.5,
+  "description": "Includes replacement pipe fixtures and 1-year leakage warranty.",
+  "validUntil": "2026-10-30T18:00:00.000Z"
+}
+```
+- **Rules & Transitions**:
+  - Rejects if provider already has an active quote on this request (`409 Conflict`).
+  - Rejects if amount or duration $\le 0$ (`422 Unprocessable Entity`).
+  - Sets `quote.status = "SUBMITTED"`.
+  - Automatically transitions `serviceRequest.status` from `SUBMITTED` $\rightarrow$ `QUOTING`.
+- **Response (201 Created)**: Returns created quote.
+
+---
+
+### Customer: View Received Quotes: `GET /api/v1/service-requests/:id/quotes`
+- **Purpose**: Lists all quotes received for a specific service request owned by the customer.
+- **Audit/State Change**: Automatically transitions quotes in `SUBMITTED` status to `VIEWED`.
+- **Privacy Guarantees**: Strips provider internal verification docs and private contacts; includes safe public provider profile summary.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `CUSTOMER` (request owner) or platform staff.
+- **Response (200 OK)**: List of quotes with safe provider profile summaries.
+
+---
+
+### Provider: List Submitted Quotes: `GET /api/v1/providers/quotes`
+- **Purpose**: Retrieves quotes submitted by the authenticated provider with status filters and pagination.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Response (200 OK)**: List of submitted quotes with request titles and statuses.
+
+---
+
+### Provider: Withdraw Quote: `PATCH /api/v1/providers/quotes/:id/withdraw`
+- **Purpose**: Withdraws an active quote before acceptance. Only permitted when quote is in `SUBMITTED` or `VIEWED` status.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Response (200 OK)**: Returns updated quote with `status: "WITHDRAWN"`.
+
+---
+
+### Customer: Accept Quote: `PATCH /api/v1/service-requests/:requestId/quotes/:quoteId/accept`
+- **Purpose**: Accepts a specific provider quote.
+- **State Machine Effects**:
+  - Selected quote $\rightarrow$ `ACCEPTED`.
+  - All other active quotes on the request $\rightarrow$ `REJECTED`.
+  - `serviceRequest.status` $\rightarrow$ `PROVIDER_SELECTED`.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `CUSTOMER` (owner of the request).
+- **Response (200 OK)**: Returns updated accepted quote and updated request.
+
+
 

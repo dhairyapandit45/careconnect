@@ -12,7 +12,6 @@ import {
   MapPin,
   Tag,
   CheckCircle2,
-  AlertCircle,
   Wrench,
   Sparkles,
   Zap,
@@ -149,8 +148,13 @@ export const RequestDetailPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            <Link to={`/customer/requests/${request._id}/quotes`}>
+              <Button size="sm" variant={request.quoteCount > 0 ? 'primary' : 'outline'}>
+                View Quotes ({request.quoteCount || 0})
+              </Button>
+            </Link>
             <Link to="/customer/requests/new">
-              <Button size="sm">Create Another Request</Button>
+              <Button size="sm" variant="outline">Create Another Request</Button>
             </Link>
           </div>
         </div>
@@ -311,10 +315,10 @@ export const RequestDetailPage = () => {
                 </li>
               </ol>
 
-              <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg text-[11px] text-blue-800 flex items-start">
-                <AlertCircle className="h-4 w-4 mr-1.5 text-blue-600 shrink-0 mt-0.5" />
+              <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-lg text-[11px] text-emerald-800 flex items-start">
+                <CheckCircle2 className="h-4 w-4 mr-1.5 text-emerald-600 shrink-0 mt-0.5" />
                 <span>
-                  Provider matching and quote bidding will be enabled in upcoming milestones. You will receive notification as soon as matching begins.
+                  Provider quotes are active! Compare proposals, evaluate estimated pricing and duration, and select your preferred provider.
                 </span>
               </div>
             </CardContent>

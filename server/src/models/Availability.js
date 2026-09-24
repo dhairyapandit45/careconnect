@@ -1,9 +1,20 @@
 /**
  * Availability Model
- * Provider working shifts, blocked days, and recurrence schedules.
+ * Provider working shifts, weekly recurrence schedules, and blocked days.
  */
 
 const mongoose = require('mongoose');
+const { DAYS_OF_WEEK } = require('../constants/status');
+
+const DAY_MAP_FROM_NUM = {
+  0: 'SUNDAY',
+  1: 'MONDAY',
+  2: 'TUESDAY',
+  3: 'WEDNESDAY',
+  4: 'THURSDAY',
+  5: 'FRIDAY',
+  6: 'SATURDAY',
+};
 
 const availabilitySchema = new mongoose.Schema(
   {
@@ -16,31 +27,41 @@ const availabilitySchema = new mongoose.Schema(
     providerProfile: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'ProviderProfile',
+      required: true,
       index: true,
     },
     dayOfWeek: {
-      type: Number, // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-      min: 0,
-      max: 6,
+      type: String,
+      enum: Object.values(DAYS_OF_WEEK),
+      required: true,
+      uppercase: true,
+      set: (val) => {
+        if (typeof val === 'number' && DAY_MAP_FROM_NUM[val]) {
+          return DAY_MAP_FROM_NUM[val];
+        }
+        return typeof val === 'string' ? val.toUpperCase() : val;
+      },
     },
     startTime: {
-      type: String, // "09:00"
+      type: String, // 24-hr "09:00"
       required: true,
+      trim: true,
     },
     endTime: {
-      type: String, // "17:00"
+      type: String, // 24-hr "17:00"
       required: true,
-    },
-    isBlocked: {
-      type: Boolean,
-      default: false,
+      trim: true,
     },
     isAvailable: {
       type: Boolean,
       default: true,
     },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
     blockedDate: {
-      type: Date, // For specific override dates
+      type: Date, // For specific calendar override dates
     },
   },
   {
@@ -48,8 +69,9 @@ const availabilitySchema = new mongoose.Schema(
   }
 );
 
-availabilitySchema.index({ provider: 1, dayOfWeek: 1 });
+// Strategic compound indexes for weekly schedule queries
 availabilitySchema.index({ providerProfile: 1, dayOfWeek: 1 });
+availabilitySchema.index({ provider: 1, dayOfWeek: 1 });
 
 const Availability = mongoose.model('Availability', availabilitySchema);
 

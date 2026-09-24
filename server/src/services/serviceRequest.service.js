@@ -5,6 +5,7 @@
 
 const ServiceRequest = require('../models/ServiceRequest');
 const ServiceCategory = require('../models/ServiceCategory');
+const Quote = require('../models/Quote');
 const { ApiError } = require('../utils/apiError');
 const { ROLES } = require('../constants/roles');
 const { SERVICE_REQUEST_STATUS } = require('../constants/status');
@@ -112,8 +113,27 @@ const listServiceRequests = async (user, queryParams = {}) => {
     .skip(skip)
     .limit(limit);
 
+  // Aggregated quote counts for listed requests without N+1 queries
+  const requestIds = items.map((it) => it._id);
+  const quoteCounts = await Quote.aggregate([
+    { $match: { serviceRequest: { $in: requestIds } } },
+    { $group: { _id: '$serviceRequest', count: { $sum: 1 } } },
+  ]);
+  const quoteCountMap = {};
+  quoteCounts.forEach((qc) => {
+    quoteCountMap[qc._id.toString()] = qc.count;
+  });
+
+  const enrichedItems = items.map((it) => {
+    const obj = it.toObject ? it.toObject() : it;
+    return {
+      ...obj,
+      quoteCount: quoteCountMap[it._id.toString()] || 0,
+    };
+  });
+
   return {
-    items,
+    items: enrichedItems,
     pagination: {
       page,
       limit,
@@ -146,7 +166,13 @@ const getServiceRequestById = async (user, requestId) => {
     throw ApiError.forbidden('Access denied: Service providers cannot access this request directly');
   }
 
-  return request;
+  const quoteCount = await Quote.countDocuments({ serviceRequest: requestId });
+  const reqObj = request.toObject ? request.toObject() : request;
+
+  return {
+    ...reqObj,
+    quoteCount,
+  };
 };
 
 module.exports = {

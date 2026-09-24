@@ -112,6 +112,7 @@ const serviceRequestSchema = new mongoose.Schema(
 serviceRequestSchema.index({ customer: 1, status: 1 });
 serviceRequestSchema.index({ category: 1, status: 1 });
 serviceRequestSchema.index({ preferredDate: 1, status: 1 });
+serviceRequestSchema.index({ 'location.city': 1, status: 1 });
 
 const ServiceRequest = mongoose.model('ServiceRequest', serviceRequestSchema);
 

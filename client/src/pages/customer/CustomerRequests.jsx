@@ -174,9 +174,18 @@ export const CustomerRequests = () => {
                     </TableCell>
 
                     <TableCell>
-                      <Badge variant={statusBadgeVariants[req.status] || 'default'}>
-                        {req.status}
-                      </Badge>
+                      <div className="flex flex-col gap-1 items-start">
+                        <Badge variant={statusBadgeVariants[req.status] || 'default'}>
+                          {req.status}
+                        </Badge>
+                        {req.quoteCount > 0 && (
+                          <Link to={`/customer/requests/${req._id}/quotes`}>
+                            <Badge variant="success" size="sm" className="hover:opacity-80 transition-opacity cursor-pointer">
+                              {req.quoteCount} {req.quoteCount === 1 ? 'Quote' : 'Quotes'}
+                            </Badge>
+                          </Link>
+                        )}
+                      </div>
                     </TableCell>
 
                     <TableCell>
@@ -205,11 +214,20 @@ export const CustomerRequests = () => {
                     </TableCell>
 
                     <TableCell className="text-right">
-                      <Link to={`/customer/requests/${req._id}`}>
-                        <Button variant="outline" size="sm" icon={Eye}>
-                          View
-                        </Button>
-                      </Link>
+                      <div className="flex items-center justify-end gap-1.5">
+                        {req.quoteCount > 0 && (
+                          <Link to={`/customer/requests/${req._id}/quotes`}>
+                            <Button size="sm" variant="outline" className="border-emerald-300 text-emerald-700 hover:bg-emerald-50">
+                              Quotes ({req.quoteCount})
+                            </Button>
+                          </Link>
+                        )}
+                        <Link to={`/customer/requests/${req._id}`}>
+                          <Button variant="outline" size="sm" icon={Eye}>
+                            View
+                          </Button>
+                        </Link>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

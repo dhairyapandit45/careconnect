@@ -115,20 +115,36 @@ Home service requests posted by Customers.
   - `{ customer: 1, status: 1 }` (Compound index for customer dashboard / request queries)
   - `{ category: 1, status: 1 }` (Compound index for category filtering and provider matching)
   - `{ preferredDate: 1, status: 1 }` (Compound index for schedule queries)
+  - `{ 'location.city': 1, status: 1 }` (Compound index for geographic provider eligibility discovery)
   - `{ 'location.coordinates': '2dsphere' }` (Geospatial index for location queries)
-- **Security Boundary**: Strict server-side ownership isolation. Customers can only read and mutate their own requests. Service providers are quarantined with 403 until Milestone 4 matching.
+- **Security Boundary**: Strict server-side ownership isolation. Customers can only read and mutate their own requests. Eligible approved providers can discover sanitized requests without private customer contact/address details.
 
 ### 5. `quotes`
 Bids and formal price quotes submitted by Providers for Service Requests.
-- `serviceRequest`: ObjectId (Ref: `ServiceRequest`, indexed)
-- `provider`: ObjectId (Ref: `User`, indexed)
+- `serviceRequest`: ObjectId (Ref: `ServiceRequest`, required, indexed)
+- `provider`: ObjectId (Ref: `User`, required, indexed)
 - `providerProfile`: ObjectId (Ref: `ProviderProfile`, indexed)
-- `estimatedPrice`: Number (Required, min: 0)
-- `estimatedDurationHours`: Number (default: 1, min: 0.5)
-- `message`: String
-- `status`: Enum [`SUBMITTED`, `VIEWED`, `ACCEPTED`, `REJECTED`, `EXPIRED`, `WITHDRAWN`]
-- `expiresAt`: Date
-- **Indexes**: `{ serviceRequest: 1, provider: 1 }`, `{ provider: 1, status: 1 }`
+- `amount`: Number (Required, canonical price in INR, min: 0.01)
+- `currency`: String (Strictly `'INR'`)
+- `estimatedDuration`: Number (Estimated hours to fulfill job, min: 0.1)
+- `description`: String (Detailed proposal scope, materials, guarantees, minlength: 10)
+- `validUntil`: Date (Required, future validity expiration timestamp)
+- `status`: Enum [`SUBMITTED`, `VIEWED`, `ACCEPTED`, `REJECTED`, `WITHDRAWN`, `EXPIRED`] (Default: `SUBMITTED`)
+- `pricing`: `{ totalAmount, laborCost, materialCost, currency }` (Synchronized legacy pricing block)
+- `estimatedHours`: Number (Synchronized legacy alias)
+- `notes`: String (Synchronized legacy alias)
+- `expiresAt`: Date (Synchronized legacy alias)
+- `createdAt`, `updatedAt`: Timestamps
+- **Indexes**:
+  - `{ serviceRequest: 1, provider: 1 }` (Compound index)
+  - `{ serviceRequest: 1, status: 1 }` (Compound index for quote comparison queries)
+  - `{ provider: 1, status: 1 }` (Compound index for provider submitted quotes)
+  - `{ serviceRequest: 1, provider: 1, status: 1 }` (Enforces active quote uniqueness)
+- **State Machine Transitions**:
+  - `SUBMITTED` $\rightarrow$ `VIEWED`, `WITHDRAWN`, `ACCEPTED`, `REJECTED`, `EXPIRED`
+  - `VIEWED` $\rightarrow$ `WITHDRAWN`, `ACCEPTED`, `REJECTED`, `EXPIRED`
+  - `ACCEPTED` $\rightarrow$ Terminal state (triggers transition of other request quotes to `REJECTED` and `serviceRequest.status` to `PROVIDER_SELECTED`)
+  - `REJECTED`, `WITHDRAWN`, `EXPIRED` $\rightarrow$ Terminal states
 
 ### 6. `bookings`
 Legally binding service contracts resulting from accepted quotes.
@@ -146,15 +162,19 @@ Legally binding service contracts resulting from accepted quotes.
 
 ### 7. `availabilities`
 Weekly schedules, recurring shift windows, and blackout dates for Providers.
-- `provider`: ObjectId (Ref: `User`, indexed)
-- `providerProfile`: ObjectId (Ref: `ProviderProfile`, indexed)
-- `dayOfWeek`: Number (0 = Sunday to 6 = Saturday)
-- `startTime`: String (`09:00`)
-- `endTime`: String (`17:00`)
-- `isAvailable`: Boolean (default: true)
-- `isBlocked`: Boolean (default: false)
-- `blockedDate`: Date
-- **Indexes**: `{ provider: 1, dayOfWeek: 1 }`, `{ providerProfile: 1, dayOfWeek: 1 }`
+- `provider`: ObjectId (Ref: `User`, required, indexed)
+- `providerProfile`: ObjectId (Ref: `ProviderProfile`, required, indexed)
+- `dayOfWeek`: Enum [`MONDAY`, `TUESDAY`, `WEDNESDAY`, `THURSDAY`, `FRIDAY`, `SATURDAY`, `SUNDAY`] (Required)
+- `startTime`: String (Required, 24-hr `HH:mm` format, e.g. `"09:00"`)
+- `endTime`: String (Required, 24-hr `HH:mm` format, e.g. `"17:00"`, strictly `> startTime`)
+- `isAvailable`: Boolean (Default: `true`)
+- `isBlocked`: Boolean (Default: `false`)
+- `blockedDate`: Date (Optional)
+- `createdAt`, `updatedAt`: Timestamps
+- **Indexes**:
+  - `{ provider: 1, dayOfWeek: 1 }` (Compound index)
+  - `{ providerProfile: 1, dayOfWeek: 1 }` (Compound index)
+- **Overlap Validation**: Service layer strictly enforces non-overlapping shift intervals for any given provider on the same day.
 
 ### 8. `jobs`
 Real-time fulfillment tracking, check-ins, service evidence, and job notes.

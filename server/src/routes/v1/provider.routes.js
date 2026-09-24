@@ -11,6 +11,12 @@ const {
   getSkills,
 } = require('../../controllers/provider.controller');
 const {
+  listProviderQuotes,
+  getProviderQuoteById,
+  withdrawQuote,
+} = require('../../controllers/quote.controller');
+const availabilityRoutes = require('./availability.routes');
+const {
   authenticate,
   optionalAuthenticate,
   authorize,
@@ -57,6 +63,31 @@ router.put(
   authorize(ROLES.SERVICE_PROVIDER),
   validate(updateProviderProfileSchema),
   updateProfile
+);
+
+// Provider Availability Schedule Sub-Router
+router.use('/availability', availabilityRoutes);
+
+// Provider Quotes Management
+router.get(
+  '/quotes',
+  authenticate,
+  authorize(ROLES.SERVICE_PROVIDER),
+  listProviderQuotes
+);
+
+router.get(
+  '/quotes/:id',
+  authenticate,
+  authorize(ROLES.SERVICE_PROVIDER),
+  getProviderQuoteById
+);
+
+router.patch(
+  '/quotes/:id/withdraw',
+  authenticate,
+  authorize(ROLES.SERVICE_PROVIDER),
+  withdrawQuote
 );
 
 // Provider detail inspection (Safe public summary for customers/guests; full for owner/staff)

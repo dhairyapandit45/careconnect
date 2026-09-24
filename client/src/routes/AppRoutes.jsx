@@ -20,6 +20,7 @@ import { CustomerDashboard } from '../pages/customer/CustomerDashboard';
 import { CustomerRequests } from '../pages/customer/CustomerRequests';
 import { CreateRequestPage } from '../pages/customer/CreateRequestPage';
 import { RequestDetailPage } from '../pages/customer/RequestDetailPage';
+import { CustomerRequestQuotesPage } from '../pages/customer/CustomerRequestQuotesPage';
 import { CustomerBookings } from '../pages/customer/CustomerBookings';
 import { CustomerQuotes } from '../pages/customer/CustomerQuotes';
 import { CustomerInvoices } from '../pages/customer/CustomerInvoices';
@@ -29,6 +30,7 @@ import { CustomerReviews } from '../pages/customer/CustomerReviews';
 import { ProviderDashboard } from '../pages/provider/ProviderDashboard';
 import { ProviderOnboardingWizard } from '../pages/provider/ProviderOnboardingWizard';
 import { ProviderRequests } from '../pages/provider/ProviderRequests';
+import { ProviderSubmitQuotePage } from '../pages/provider/ProviderSubmitQuotePage';
 import { ProviderQuotes } from '../pages/provider/ProviderQuotes';
 import { ProviderBookings } from '../pages/provider/ProviderBookings';
 import { ProviderAvailability } from '../pages/provider/ProviderAvailability';
@@ -81,6 +83,7 @@ export const AppRoutes = () => {
             <Route path="/customer/requests" element={<CustomerRequests />} />
             <Route path="/customer/requests/new" element={<CreateRequestPage />} />
             <Route path="/customer/requests/:id" element={<RequestDetailPage />} />
+            <Route path="/customer/requests/:id/quotes" element={<CustomerRequestQuotesPage />} />
             <Route path="/customer/bookings" element={<CustomerBookings />} />
             <Route path="/customer/quotes" element={<CustomerQuotes />} />
             <Route path="/customer/invoices" element={<CustomerInvoices />} />
@@ -92,6 +95,7 @@ export const AppRoutes = () => {
             <Route path="/provider/dashboard" element={<ProviderDashboard />} />
             <Route path="/provider/onboarding" element={<ProviderOnboardingWizard />} />
             <Route path="/provider/requests" element={<ProviderRequests />} />
+            <Route path="/provider/requests/:id/quote" element={<ProviderSubmitQuotePage />} />
             <Route path="/provider/quotes" element={<ProviderQuotes />} />
             <Route path="/provider/bookings" element={<ProviderBookings />} />
             <Route path="/provider/availability" element={<ProviderAvailability />} />

@@ -161,3 +161,64 @@ Service provider marketplace trust and safety is enforced through a strict finit
 3. **Audited Actions**: Status modifications record the administrative transition action and mandatory rationale in `verificationNotes`.
 4. **Data Isolation & Sanitization**: Public provider profile endpoints (`GET /api/v1/providers/:id`) strip sensitive document metadata, verification notes, and private owner contacts when queried by guests or customer accounts.
 
+---
+
+## 7. Deterministic Provider Discovery & Availability Architecture
+
+Marketplace provider discovery in Milestone 5 is strictly deterministic and rule-based. It avoids AI black-boxes, popularity ranking bias, or opaque bidding algorithms.
+
+```
+Customer Creates Request (City: San Francisco, Category: Plumbing)
+                               │
+                               ▼
+        Rule-Based Provider Eligibility Filter
+        1. Provider Profile verificationStatus == 'APPROVED'
+        2. User Account status == 'ACTIVE'
+        3. Provider serviceCategories includes Request.category
+        4. Provider serviceAreas includes Request.location.city
+                               │
+                               ▼
+           Sanitized Opportunity Board Exposed to Provider
+        - Strips customer street address, phone, email
+        - Shows title, category, city, timing, skills, quoteCount
+```
+
+### Weekly Recurring Availability
+1. Providers configure shifts per day of week (Monday through Sunday) using 24-hr `HH:mm` format.
+2. The service layer strictly validates that `startTime < endTime`.
+3. Overlapping shift intervals for the same provider on the same day are deterministically detected and rejected (`400 Bad Request`).
+
+---
+
+## 8. Quoting Lifecycle & Acceptance Finite State Machine
+
+Bids and estimates operate through a formalized finite state machine:
+
+```
+               ┌───────────────┐
+               │   SUBMITTED   │
+               └──┬───┬─────┬──┘
+                  │   │     │
+         Customer │   │     │ Provider
+           Views  │   │     │ Withdraws
+                  ▼   │     ▼
+         ┌────────────┴┐   ┌───────────────┐
+         │   VIEWED    │   │   WITHDRAWN   │ (Terminal)
+         └──┬───┬──────┘   └───────────────┘
+            │   │
+   Customer │   │ Customer
+    Accepts │   │ Rejects / Expiry
+            ▼   ▼
+  ┌───────────────┐   ┌───────────────┐
+  │   ACCEPTED    │   │   REJECTED    │ (Terminal)
+  └───────────────┘   └───────────────┘
+     (Terminal)
+```
+
+### Acceptance Guarantees
+1. **Single Accepted Quote**: Accepting a quote marks the chosen quote as `ACCEPTED`.
+2. **Cascade Rejection**: All other active (`SUBMITTED`, `VIEWED`) quotes for that request are immediately transitioned to `REJECTED`.
+3. **Request Progression**: The associated `ServiceRequest` status transitions from `QUOTING` $\rightarrow$ `PROVIDER_SELECTED`.
+4. **Milestone Boundary**: Formal booking confirmation, schedule reservation lock, and payment authorization remain strictly deferred to Milestone 6.
+
+
