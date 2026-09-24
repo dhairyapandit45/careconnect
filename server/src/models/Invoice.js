@@ -32,6 +32,13 @@ const invoiceSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    job: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Job',
+      required: true,
+      unique: true,
+      index: true,
+    },
     subtotal: {
       type: Number,
       required: true,

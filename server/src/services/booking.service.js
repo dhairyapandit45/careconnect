@@ -269,7 +269,18 @@ const createBookingFromQuote = async (
     serviceRequest.assignedProvider = quote.provider;
     await serviceRequest.save(sessionOpt);
 
-    return { booking, quote, serviceRequest };
+    // After booking persisted, create associated Job (idempotent)
+    const { createJobForBooking } = require('../services/job.service');
+    await createJobForBooking(booking);
+    // Populate booking with related references
+    const populatedBooking = await Booking.findById(booking._id)
+      .populate('serviceRequest')
+      .populate('provider')
+      .populate('providerProfile')
+      .populate('quote');
+    // Return object expected by controller/tests
+    return { booking: populatedBooking, quote, serviceRequest };
+
   };
 
   const isReplicaSet = () => {

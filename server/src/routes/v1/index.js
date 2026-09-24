@@ -49,10 +49,8 @@ const createPlaceholderRouter = (resourceName) => {
 
 // Planned route groups
 router.use('/users', createPlaceholderRouter('users'));
-router.use('/jobs', createPlaceholderRouter('jobs'));
-router.use('/invoices', createPlaceholderRouter('invoices'));
-router.use('/reviews', createPlaceholderRouter('reviews'));
-router.use('/disputes', createPlaceholderRouter('disputes'));
-router.use('/notifications', createPlaceholderRouter('notifications'));
+router.use('/jobs', require('./jobs.routes'));
+
+router.use('/invoices', require('./invoice.routes'));
 
 module.exports = router;

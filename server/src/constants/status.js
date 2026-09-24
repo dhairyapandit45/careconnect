@@ -55,10 +55,20 @@ const JOB_STATUS = Object.freeze({
 });
 
 const INVOICE_STATUS = Object.freeze({
+  DRAFT: 'DRAFT',
   ISSUED: 'ISSUED',
   PAID: 'PAID',
   REFUNDED: 'REFUNDED',
   VOID: 'VOID',
+});
+
+// Valid invoice state transitions
+const VALID_INVOICE_TRANSITIONS = Object.freeze({
+  [INVOICE_STATUS.DRAFT]: [INVOICE_STATUS.ISSUED],
+  [INVOICE_STATUS.ISSUED]: [INVOICE_STATUS.PAID, INVOICE_STATUS.VOID],
+  [INVOICE_STATUS.PAID]: [],
+  [INVOICE_STATUS.VOID]: [],
+  [INVOICE_STATUS.REFUNDED]: [],
 });
 
 const DISPUTE_STATUS = Object.freeze({
