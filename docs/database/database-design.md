@@ -108,6 +108,7 @@ Home service requests posted by Customers.
 - `preferredTime`: Object `{ start: String (e.g. "09:00"), end: String (e.g. "12:00") }`
 - `preferredTimeSlot`: String (`MORNING`, `AFTERNOON`, `EVENING` - legacy alias)
 - `requiredSkills`: Array of String (Capabilities required to fulfill this job)
+- `assignedProvider`: ObjectId (Ref: `User`, assigned upon quote acceptance / booking confirmation)
 - `status`: Enum [`DRAFT`, `SUBMITTED`, `MATCHING`, `QUOTING`, `PROVIDER_SELECTED`, `BOOKED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`, `DISPUTED`] (Initial status strictly defaults to `SUBMITTED`)
 - `aiClassification`: `{ predictedCategory, confidenceScore, extractedUrgency, tags, processedAt }`
 - `createdAt`, `updatedAt`: Timestamps
@@ -147,18 +148,32 @@ Bids and formal price quotes submitted by Providers for Service Requests.
   - `REJECTED`, `WITHDRAWN`, `EXPIRED` $\rightarrow$ Terminal states
 
 ### 6. `bookings`
-Legally binding service contracts resulting from accepted quotes.
-- `serviceRequest`: ObjectId (Ref: `ServiceRequest`, indexed)
-- `customer`: ObjectId (Ref: `User`, indexed)
-- `provider`: ObjectId (Ref: `User`, indexed)
+Legally binding service contracts resulting from accepted quotes and confirmed scheduling.
+- `serviceRequest`: ObjectId (Ref: `ServiceRequest`, required, indexed)
+- `customer`: ObjectId (Ref: `User`, required, indexed)
+- `provider`: ObjectId (Ref: `User`, required, indexed)
 - `providerProfile`: ObjectId (Ref: `ProviderProfile`, indexed)
-- `quote`: ObjectId (Ref: `Quote`)
-- `scheduledStart`: Date (Required, indexed)
-- `scheduledEnd`: Date (Required)
-- `price`: Number (Required, min: 0)
-- `status`: Enum [`PENDING`, `CONFIRMED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`, `DISPUTED`]
-- `cancellation`: `{ cancelledBy, cancelledAt, reason, refundAmount }`
-- **Indexes**: `{ customer: 1, status: 1 }`, `{ provider: 1, status: 1 }`, `{ scheduledStart: 1, status: 1 }`
+- `quote`: ObjectId (Ref: `Quote`, required)
+- `scheduledStart`: Date (Required, ISO 8601 UTC timestamp, indexed)
+- `scheduledEnd`: Date (Required, ISO 8601 UTC timestamp, strictly `> scheduledStart`)
+- `price`: Number (Required, agreed amount, min: 0)
+- `currency`: String (Required, strictly `'INR'`)
+- `status`: Enum [`PENDING`, `CONFIRMED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`, `DISPUTED`] (Default: `CONFIRMED`)
+- `cancellationReason`: String (Top-level reason for cancellation)
+- `cancelledBy`: Enum [`CUSTOMER`, `SERVICE_PROVIDER`, `OPERATIONS_MANAGER`, `PLATFORM_ADMIN`]
+- `cancelledAt`: Date (Cancellation timestamp)
+- `cancellation`: `{ cancelledBy, cancelledAt, cancellationReason, reason, refundAmount }` (Synchronized sub-document)
+- `createdAt`, `updatedAt`: Timestamps
+- **Indexes**:
+  - `{ customer: 1, status: 1 }` (Compound index for customer booking history)
+  - `{ provider: 1, status: 1 }` (Compound index for provider job lists)
+  - `{ scheduledStart: 1, status: 1 }` (Index for calendar queries)
+  - `{ provider: 1, scheduledStart: 1, scheduledEnd: 1 }` (Compound index for high-performance double-booking conflict detection)
+- **Double-Booking Conflict Query Specification**:
+  An active booking collision exists if:
+  `provider = quote.provider`, `status in ['CONFIRMED', 'IN_PROGRESS', 'PENDING']`,
+  `scheduledStart < requestedEnd` AND `scheduledEnd > requestedStart`.
+  Adjacent back-to-back bookings (`existingEnd == requestedStart` or `requestedEnd == existingStart`) and cancelled/completed bookings do not conflict.
 
 ### 7. `availabilities`
 Weekly schedules, recurring shift windows, and blackout dates for Providers.

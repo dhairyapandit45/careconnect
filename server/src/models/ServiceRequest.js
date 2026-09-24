@@ -95,6 +95,11 @@ const serviceRequestSchema = new mongoose.Schema(
       tags: [String],
       processedAt: Date,
     },
+    assignedProvider: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true,
+    },
   },
   {
     timestamps: true,

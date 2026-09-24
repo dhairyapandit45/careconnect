@@ -15,6 +15,12 @@ const {
   getProviderQuoteById,
   withdrawQuote,
 } = require('../../controllers/quote.controller');
+const {
+  listProviderBookings,
+  getProviderBookingById,
+  cancelProviderBooking,
+} = require('../../controllers/booking.controller');
+const { cancelBookingSchema } = require('../../validators/booking.validator');
 const availabilityRoutes = require('./availability.routes');
 const {
   authenticate,
@@ -88,6 +94,29 @@ router.patch(
   authenticate,
   authorize(ROLES.SERVICE_PROVIDER),
   withdrawQuote
+);
+
+// Provider Bookings Management
+router.get(
+  '/bookings',
+  authenticate,
+  authorize(ROLES.SERVICE_PROVIDER),
+  listProviderBookings
+);
+
+router.get(
+  '/bookings/:id',
+  authenticate,
+  authorize(ROLES.SERVICE_PROVIDER),
+  getProviderBookingById
+);
+
+router.post(
+  '/bookings/:id/cancel',
+  authenticate,
+  authorize(ROLES.SERVICE_PROVIDER),
+  validate(cancelBookingSchema),
+  cancelProviderBooking
 );
 
 // Provider detail inspection (Safe public summary for customers/guests; full for owner/staff)

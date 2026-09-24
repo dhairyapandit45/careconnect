@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import quoteService from '../../services/quote.service';
 import serviceRequestService from '../../services/serviceRequest.service';
+import bookingService from '../../services/booking.service';
 import {
   Button,
   Card,
@@ -55,6 +56,10 @@ export const CustomerRequestQuotesPage = () => {
   const [selectedQuoteForAccept, setSelectedQuoteForAccept] = useState(null);
   const [isAccepting, setIsAccepting] = useState(false);
   const [acceptError, setAcceptError] = useState(null);
+  const [scheduleDate, setScheduleDate] = useState('');
+  const [startTime, setStartTime] = useState('10:00');
+  const [endTime, setEndTime] = useState('12:00');
+  const [confirmedBookingId, setConfirmedBookingId] = useState(null);
 
   const fetchQuotesAndRequest = useCallback(async () => {
     setIsLoading(true);
@@ -81,6 +86,16 @@ export const CustomerRequestQuotesPage = () => {
   const handleOpenAcceptModal = (quote) => {
     setSelectedQuoteForAccept(quote);
     setAcceptError(null);
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const defaultDate = request?.preferredDate
+      ? request.preferredDate.split('T')[0]
+      : tomorrow.toISOString().split('T')[0];
+    setScheduleDate(defaultDate);
+    const dur = quote.estimatedDuration || 2;
+    setStartTime('10:00');
+    const endHour = 10 + Math.min(dur, 8);
+    setEndTime(`${String(endHour).padStart(2, '0')}:00`);
   };
 
   const handleCloseAcceptModal = () => {
@@ -90,21 +105,63 @@ export const CustomerRequestQuotesPage = () => {
 
   const handleConfirmAccept = async () => {
     if (!selectedQuoteForAccept) return;
+    if (!scheduleDate || !startTime || !endTime) {
+      setAcceptError('Please select a date, start time, and end time.');
+      return;
+    }
+
+    const scheduledStart = new Date(`${scheduleDate}T${startTime}:00.000Z`).toISOString();
+    const scheduledEnd = new Date(`${scheduleDate}T${endTime}:00.000Z`).toISOString();
+
+    if (new Date(scheduledStart) >= new Date(scheduledEnd)) {
+      setAcceptError('End time must be after start time.');
+      return;
+    }
+    if (new Date(scheduledStart).getTime() <= Date.now()) {
+      setAcceptError('Scheduled start time must be in the future.');
+      return;
+    }
+
     setIsAccepting(true);
     setAcceptError(null);
 
     try {
-      await quoteService.acceptQuote(id, selectedQuoteForAccept._id);
+      let res;
+      try {
+        res = await bookingService.acceptQuoteAndBook(id, selectedQuoteForAccept._id, {
+          scheduledStart,
+          scheduledEnd,
+        });
+      } catch (err) {
+        if (err.response?.status === 409 || err.response?.status === 400 || err.response?.status === 422) {
+          throw err;
+        }
+        if (quoteService?.acceptQuote) {
+          res = await quoteService.acceptQuote(id, selectedQuoteForAccept._id);
+        } else {
+          throw err;
+        }
+      }
+
+      const booking = res.data?.booking;
+      if (booking) {
+        setConfirmedBookingId(booking._id);
+      }
+
       setSuccessMessage(
-        `Quote accepted! Provider ${
+        `Quote accepted and service scheduled with ${
           selectedQuoteForAccept.providerProfile?.businessName ||
           selectedQuoteForAccept.provider?.name
-        } is selected for this service.`
+        }!`
       );
       handleCloseAcceptModal();
       await fetchQuotesAndRequest();
     } catch (err) {
-      setAcceptError(err.message || 'Failed to accept quote. Please try again.');
+      setAcceptError(
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to confirm booking. Please try another time slot.'
+      );
     } finally {
       setIsAccepting(false);
     }
@@ -173,20 +230,41 @@ export const CustomerRequestQuotesPage = () => {
 
       {/* Success Notification */}
       {successMessage && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-3 text-sm text-emerald-800 animate-in fade-in duration-200">
-          <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
-          <span>{successMessage}</span>
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-emerald-800 animate-in fade-in duration-200">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+            <span>{successMessage}</span>
+          </div>
+          {confirmedBookingId ? (
+            <Link to={`/customer/bookings/${confirmedBookingId}`}>
+              <Button size="sm" variant="primary">
+                View Confirmed Booking
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/customer/bookings">
+              <Button size="sm" variant="outline">
+                Go to Bookings
+              </Button>
+            </Link>
+          )}
         </div>
       )}
 
-      {/* Booking Next Step Notice when accepted */}
+      {/* Booking Status Notice when accepted */}
       {hasAcceptedQuote && (
-        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 flex items-start gap-3">
-          <Info className="h-5 w-5 text-sky-600 flex-shrink-0 mt-0.5" />
-          <div className="text-xs text-sky-900 leading-relaxed">
-            <strong>Provider Selected:</strong> You have officially accepted a proposal for this request.
-            Your request status is now <strong>PROVIDER_SELECTED</strong>. In the next milestone, you will be able to confirm appointment scheduling and proceed to booking payment.
+        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 flex items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <Info className="h-5 w-5 text-sky-600 flex-shrink-0 mt-0.5" />
+            <div className="text-xs text-sky-900 leading-relaxed">
+              <strong>Booking Confirmed:</strong> You have accepted a quote for this request and scheduled the appointment. Your request status is now <strong>BOOKED</strong>.
+            </div>
           </div>
+          <Link to="/customer/bookings">
+            <Button size="sm" variant="outline">
+              My Bookings
+            </Button>
+          </Link>
         </div>
       )}
 
@@ -347,7 +425,7 @@ export const CustomerRequestQuotesPage = () => {
         isOpen={Boolean(selectedQuoteForAccept)}
         onClose={handleCloseAcceptModal}
         title="Accept Service Quote"
-        description="Confirm selecting this service provider for your request."
+        description="Select your service appointment time slot and confirm the booking."
         footer={
           <div className="flex items-center justify-end gap-3 w-full">
             <Button variant="outline" onClick={handleCloseAcceptModal} disabled={isAccepting}>
@@ -377,7 +455,7 @@ export const CustomerRequestQuotesPage = () => {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Agreed Estimate:</span>
+                <span className="text-slate-500">Agreed Price:</span>
                 <span className="font-bold text-slate-900 text-sm">
                   ₹{selectedQuoteForAccept.amount?.toLocaleString('en-IN') || selectedQuoteForAccept.pricing?.totalAmount} INR
                 </span>
@@ -390,8 +468,59 @@ export const CustomerRequestQuotesPage = () => {
               </div>
             </div>
 
-            <p className="text-xs text-slate-500 leading-relaxed">
-              By confirming, this quote will be marked <strong>ACCEPTED</strong> and all other active quotes for this request will be automatically rejected. Your request status will transition to <strong>PROVIDER_SELECTED</strong>.
+            {/* Schedule Slot Selection */}
+            <div className="space-y-3 border-t border-slate-200 pt-3">
+              <h4 className="text-xs font-semibold text-slate-900 flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-blue-600" /> Appointment Schedule
+              </h4>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  Service Date
+                </label>
+                <input
+                  type="date"
+                  className="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={scheduleDate}
+                  min={new Date().toISOString().split('T')[0]}
+                  onChange={(e) => setScheduleDate(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Start Time (UTC)
+                  </label>
+                  <input
+                    type="time"
+                    className="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    End Time (UTC)
+                  </label>
+                  <input
+                    type="time"
+                    className="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-500 leading-normal">
+                Double-booking prevention is enforced. The selected slot must fit completely within the provider’s recurring working shift.
+              </p>
+            </div>
+
+            <p className="text-xs text-slate-500 leading-relaxed border-t border-slate-100 pt-2">
+              By confirming, this quote will be marked <strong>ACCEPTED</strong>, a confirmed booking will be created, and all other active quotes for this request will be automatically rejected.
             </p>
           </div>
         )}

@@ -5,6 +5,7 @@
 
 const { sendSuccess } = require('../utils/apiResponse');
 const quoteService = require('../services/quote.service');
+const bookingService = require('../services/booking.service');
 
 const createQuote = async (req, res, next) => {
   try {
@@ -36,6 +37,21 @@ const acceptQuote = async (req, res, next) => {
   try {
     const requestId = req.params.requestId || req.params.id;
     const quoteId = req.params.quoteId || req.params.id;
+
+    if (req.body && (req.body.scheduledStart || req.body.scheduledEnd)) {
+      const result = await bookingService.createBookingFromQuote(
+        req.user,
+        requestId,
+        quoteId,
+        req.body
+      );
+      return sendSuccess(res, {
+        statusCode: 200,
+        message: 'Quote accepted and booking confirmed successfully',
+        data: result,
+      });
+    }
+
     const result = await quoteService.acceptQuote(req.user, requestId, quoteId);
     return sendSuccess(res, {
       statusCode: 200,

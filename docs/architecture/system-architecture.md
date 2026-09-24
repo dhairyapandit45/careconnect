@@ -218,7 +218,57 @@ Bids and estimates operate through a formalized finite state machine:
 ### Acceptance Guarantees
 1. **Single Accepted Quote**: Accepting a quote marks the chosen quote as `ACCEPTED`.
 2. **Cascade Rejection**: All other active (`SUBMITTED`, `VIEWED`) quotes for that request are immediately transitioned to `REJECTED`.
-3. **Request Progression**: The associated `ServiceRequest` status transitions from `QUOTING` $\rightarrow$ `PROVIDER_SELECTED`.
-4. **Milestone Boundary**: Formal booking confirmation, schedule reservation lock, and payment authorization remain strictly deferred to Milestone 6.
+3. **Request Progression**: The associated `ServiceRequest` status transitions from `QUOTING` $\rightarrow$ `BOOKED` (assigned to selected provider).
+4. **Atomic Booking Creation**: Formal booking confirmation, schedule reservation lock, and double-booking conflict prevention execute in a single atomic transaction.
+
+---
+
+## 9. Booking & Scheduling Engine Architecture (Milestone 6)
+
+### Quote Acceptance & Scheduling Transaction Flow
+```
+CUSTOMER                  SERVER (booking.service.js)              DATABASE (MongoDB)
+   │                                   │                                    │
+   ├─ POST /quotes/:id/accept ────────>│                                    │
+   │  { scheduledStart, scheduledEnd } │                                    │
+   │                                   ├─ 1. Validate schedule format ─────>│
+   │                                   ├─ 2. Verify shift availability ────>│
+   │                                   ├─ 3. Check booking conflict ───────>│
+   │                                   │     (existingStart < reqEnd &&     │
+   │                                   │      existingEnd > reqStart)       │
+   │                                   │                                    │
+   │                                   ├─ 4. [ATOMIC TRANSACTION] ─────────>│
+   │                                   │     - Create Booking (CONFIRMED)   │
+   │                                   │     - Quote -> ACCEPTED            │
+   │                                   │     - Competitor Quotes -> REJECTED│
+   │                                   │     - Request -> BOOKED            │
+   │                                   │                                    │
+   │<─ 201 Created (Booking Data) ─────┼────────────────────────────────────┘
+```
+
+### Double-Booking Prevention Engine
+Scheduling collisions are strictly prevented at the service layer prior to committing any booking record:
+1. **Collision Invariant**: An overlapping conflict occurs if and only if:
+   $$\text{existingStart} < \text{requestedEnd} \quad \land \quad \text{existingEnd} > \text{requestedStart}$$
+2. **Active Status Filter**: Collisions are checked against bookings in statuses:
+   - `CONFIRMED`
+   - `IN_PROGRESS`
+   - `PENDING`
+3. **Non-Blocking Statuses**:
+   - `CANCELLED` bookings release their time slot immediately upon cancellation.
+   - `COMPLETED` bookings do not conflict with new future bookings.
+4. **Adjacent / Back-to-Back Scheduling**:
+   - Immediately adjacent bookings ($\text{existingEnd} = \text{requestedStart}$ or $\text{requestedEnd} = \text{existingStart}$) are explicitly permitted.
+5. **Provider Isolation**: Two different providers can have overlapping bookings at the same time without collision.
+
+### Booking Cancellation & Slot Release
+- **Eligibility**: Both Customers and assigned Service Providers can cancel active bookings (`CONFIRMED` or `IN_PROGRESS`).
+- **Validation**: A non-empty reason of at least 5 characters is mandatory (`422 Unprocessable Entity` if missing).
+- **Audit Trail**: Metadata captures `cancelledBy`, `cancelledAt`, and `cancellationReason`.
+- **Immediate Slot Release**: The cancelled booking status transitions to `CANCELLED`, immediately allowing new bookings to be scheduled in that slot.
+
+### Privacy Unlocking Lifecycle
+- **Discovery / Quoting Phase**: Only request title, category, city, and general timing are visible to eligible providers.
+- **Booking Confirmed Phase**: Once a quote is accepted and a booking is created, the customer's full street address, contact phone, and email are unlocked for the assigned provider for on-site dispatch.
 
 

@@ -17,6 +17,7 @@ const { authenticate, authorize } = require('../../middleware/auth.middleware');
 const { validate } = require('../../middleware/validate.middleware');
 const { createServiceRequestSchema } = require('../../validators/serviceRequest.validator');
 const { createQuoteSchema } = require('../../validators/quote.validator');
+const { acceptQuoteAndBookSchema } = require('../../validators/booking.validator');
 const { ROLES } = require('../../constants/roles');
 
 const router = express.Router();
@@ -47,6 +48,14 @@ router.post(
 );
 
 router.get('/:id/quotes', listQuotesForRequest);
+
+// Customer quote acceptance & schedule booking
+router.post(
+  '/:requestId/quotes/:quoteId/accept',
+  authorize(ROLES.CUSTOMER),
+  validate(acceptQuoteAndBookSchema),
+  acceptQuote
+);
 
 router.patch(
   '/:requestId/quotes/:quoteId/accept',

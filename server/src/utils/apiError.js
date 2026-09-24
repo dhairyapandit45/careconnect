@@ -33,8 +33,16 @@ class ApiError extends Error {
     return new ApiError(409, message, 'DUPLICATE_RESOURCE', details);
   }
 
+  static conflict(message = 'Resource conflict', code = 'CONFLICT', details = []) {
+    return new ApiError(409, message, code, details);
+  }
+
   static validation(message = 'Validation failed', details = []) {
     return new ApiError(422, message, 'VALIDATION_ERROR', details);
+  }
+
+  static unprocessableEntity(message = 'Unprocessable entity', details = []) {
+    return new ApiError(422, message, 'UNPROCESSABLE_ENTITY', details);
   }
 
   static rateLimit(message = 'Too many requests, please try again later') {
@@ -49,3 +57,5 @@ class ApiError extends Error {
 module.exports = {
   ApiError,
 };
+module.exports.ApiError = ApiError;
+module.exports.default = ApiError;

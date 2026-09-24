@@ -61,6 +61,7 @@ Every error response returns HTTP 4xx or 5xx and adheres to this schema:
 | `FORBIDDEN` | 403 | Principal authenticated, but lacks necessary role or account is inactive/suspended. |
 | `NOT_FOUND` | 404 | Resource with specified identifier does not exist. |
 | `DUPLICATE_RESOURCE` | 409 | Unique constraint violated (e.g. email or category slug already registered). |
+| `BOOKING_CONFLICT` | 409 | Scheduling collision detected with an active confirmed booking for the provider. |
 | `RATE_LIMIT_EXCEEDED`| 429 | Request rate exceeded allowed window quota. |
 | `INTERNAL_SERVER_ERROR` | 500 | Unhandled operational or database exception. |
 
@@ -642,15 +643,129 @@ Tokens are signed using HMAC-SHA256 with `JWT_SECRET`. To protect user privacy, 
 
 ---
 
-### Customer: Accept Quote: `PATCH /api/v1/service-requests/:requestId/quotes/:quoteId/accept`
-- **Purpose**: Accepts a specific provider quote.
-- **State Machine Effects**:
-  - Selected quote $\rightarrow$ `ACCEPTED`.
-  - All other active quotes on the request $\rightarrow$ `REJECTED`.
-  - `serviceRequest.status` $\rightarrow$ `PROVIDER_SELECTED`.
+### Customer: Accept Quote & Schedule Booking: `POST /api/v1/service-requests/:requestId/quotes/:quoteId/accept`
+- **Purpose**: Atomically accepts a provider quote, validates the provider's recurring working shift availability, verifies double-booking conflict prevention, and creates a confirmed Booking appointment.
+- **Request Body**:
+```json
+{
+  "scheduledStart": "2026-10-20T10:00:00.000Z",
+  "scheduledEnd": "2026-10-20T12:00:00.000Z"
+}
+```
+- **Validation Rules**:
+  - `scheduledStart` must be valid ISO 8601 date-time in the future.
+  - `scheduledEnd` must be strictly after `scheduledStart` (maximum duration 24 hours).
+  - Provider must be `APPROVED` and account status must be `ACTIVE`.
+  - Quote must be in `SUBMITTED` or `VIEWED` status and not expired (`validUntil > now`).
+  - Provider must have an active recurring shift on that day of week encompassing `[scheduledStart, scheduledEnd]`.
+  - Provider must NOT have an overlapping active booking (`CONFIRMED`, `IN_PROGRESS`, `PENDING`). Rejects with `409 Conflict` (`BOOKING_CONFLICT`).
+- **State Machine Transitions (Atomic / Transactional)**:
+  - Creates `Booking` record with `status: "CONFIRMED"`, `currency: "INR"`.
+  - Selected `Quote.status` $\rightarrow$ `ACCEPTED`.
+  - All other active quotes on the request (`SUBMITTED`, `VIEWED`) $\rightarrow$ `REJECTED`.
+  - `ServiceRequest.status` $\rightarrow$ `BOOKED`, `assignedProvider = quote.provider`.
 - **Authentication**: Required (`Bearer <token>`).
-- **Role Requirement**: `CUSTOMER` (owner of the request).
-- **Response (200 OK)**: Returns updated accepted quote and updated request.
+- **Role Requirement**: `CUSTOMER` (request owner).
+- **Response (201 Created)**:
+```json
+{
+  "success": true,
+  "message": "Quote accepted and booking confirmed successfully",
+  "data": {
+    "booking": {
+      "_id": "60d0fe4f5311236168a109cb",
+      "serviceRequest": "60d0fe4f5311236168a109ca",
+      "customer": "60d0fe4f5311236168a109c1",
+      "provider": "60d0fe4f5311236168a109c2",
+      "scheduledStart": "2026-10-20T10:00:00.000Z",
+      "scheduledEnd": "2026-10-20T12:00:00.000Z",
+      "price": 2500,
+      "currency": "INR",
+      "status": "CONFIRMED"
+    },
+    "quote": { "_id": "...", "status": "ACCEPTED" },
+    "serviceRequest": { "_id": "...", "status": "BOOKED", "assignedProvider": "..." }
+  }
+}
+```
+
+---
+
+### Customer: List Bookings: `GET /api/v1/bookings`
+- **Purpose**: Lists bookings created for the authenticated customer with pagination and optional status filter.
+- **Query Parameters**:
+  - `status` (optional): `CONFIRMED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`.
+  - `page` (optional): Integer (default 1).
+  - `limit` (optional): Integer (default 10, max 50).
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `CUSTOMER`.
+- **Response (200 OK)**: Paginated items array with populated service request and provider profile summaries.
+
+---
+
+### Customer: Get Booking Details: `GET /api/v1/bookings/:id`
+- **Purpose**: Retrieves single booking details for the authenticated customer.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `CUSTOMER` (booking owner). Access by other customers is rejected with `403 Forbidden`.
+- **Response (200 OK)**: Booking record with populated service request, provider credentials, and cancellation details if cancelled.
+
+---
+
+### Customer: Cancel Booking: `POST /api/v1/bookings/:id/cancel`
+- **Purpose**: Cancels an active booking (`CONFIRMED` or `IN_PROGRESS`). Immediately frees the provider's calendar slot for new bookings.
+- **Request Body**:
+```json
+{
+  "reason": "Issue resolved by building maintenance."
+}
+```
+- **Validation**: Reason is mandatory, minimum 5 characters (`422 Unprocessable Entity` if omitted).
+- **Rules**: Cannot cancel already `COMPLETED` or `CANCELLED` bookings (`400 Bad Request`).
+- **State Machine Transitions**:
+  - `Booking.status` $\rightarrow$ `CANCELLED`.
+  - `cancellation.cancelledBy = "CUSTOMER"`, `cancelledAt = now`, `cancellationReason = reason`.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `CUSTOMER` (booking owner).
+- **Response (200 OK)**: Returns updated booking with cancellation timestamp and reason.
+
+---
+
+### Provider: List Assigned Bookings: `GET /api/v1/providers/bookings`
+- **Purpose**: Lists all confirmed and assigned service bookings for the authenticated provider with pagination and optional status filter.
+- **Query Parameters**:
+  - `status` (optional): `CONFIRMED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`.
+  - `page` (optional, default 1), `limit` (optional, default 10).
+- **Privacy Unlocking**: Reveals customer location address on booked jobs for service dispatch.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER`.
+- **Response (200 OK)**: Paginated bookings with customer name, phone, address, and scheduled appointment windows.
+
+---
+
+### Provider: Get Booking Details: `GET /api/v1/providers/bookings/:id`
+- **Purpose**: Retrieves a specific assigned booking for the provider.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER` (assigned provider only). Unauthorized access by other providers is rejected with `403 Forbidden`.
+- **Response (200 OK)**: Full booking details with revealed customer street address and contact info.
+
+---
+
+### Provider: Cancel Booking: `POST /api/v1/providers/bookings/:id/cancel`
+- **Purpose**: Cancels an assigned booking with a mandatory reason. Immediately frees the scheduled slot.
+- **Request Body**:
+```json
+{
+  "reason": "Equipment failure, cannot complete repair today."
+}
+```
+- **Validation**: Reason mandatory, minimum 5 characters.
+- **State Machine Transitions**:
+  - `Booking.status` $\rightarrow$ `CANCELLED`.
+  - `cancellation.cancelledBy = "SERVICE_PROVIDER"`, `cancelledAt = now`, `cancellationReason = reason`.
+- **Authentication**: Required (`Bearer <token>`).
+- **Role Requirement**: `SERVICE_PROVIDER` (assigned provider).
+- **Response (200 OK)**: Returns updated booking with cancellation metadata.
+
 
 
 
