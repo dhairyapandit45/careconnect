@@ -21,8 +21,22 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, postman)
-      if (!origin || origin === env.CLIENT_URL || env.NODE_ENV === 'development') {
+      if (!origin || env.NODE_ENV === 'development') {
         return callback(null, true);
+      }
+      const allowedOrigin = env.CLIENT_URL ? env.CLIENT_URL.replace(/\/+$/, '') : '';
+      const cleanOrigin = origin.replace(/\/+$/, '');
+      try {
+        const originUrl = new URL(origin);
+        if (
+          cleanOrigin === allowedOrigin ||
+          originUrl.hostname === 'localhost' ||
+          originUrl.hostname.endsWith('.vercel.app')
+        ) {
+          return callback(null, true);
+        }
+      } catch {
+        // Fallback for non-standard origins
       }
       return callback(new Error('Blocked by CORS policy'));
     },
@@ -44,8 +58,10 @@ if (env.NODE_ENV !== 'test') {
 // Global API rate limiting
 app.use('/api', apiLimiter);
 
-// Mount API v1 router
+// Mount API v1 router on /api/v1, /api, and root / to ensure all variations route correctly
 app.use('/api/v1', v1Router);
+app.use('/api', v1Router);
+app.use('/', v1Router);
 
 // 404 Not Found Middleware
 app.use(notFoundHandler);
