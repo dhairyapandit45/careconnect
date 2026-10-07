@@ -20,6 +20,11 @@ const invoiceSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    quote: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Quote',
+      index: true,
+    },
     customer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

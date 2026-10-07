@@ -52,5 +52,10 @@ router.use('/users', createPlaceholderRouter('users'));
 router.use('/jobs', require('./jobs.routes'));
 
 router.use('/invoices', require('./invoice.routes'));
+router.use('/reviews', require('./review.routes'));
+router.use('/disputes', require('./dispute.routes'));
+router.use('/support-tickets', require('./supportTicket.routes'));
+router.use('/tickets', require('./supportTicket.routes'));
+router.use('/notifications', require('./notification.routes'));
 
 module.exports = router;

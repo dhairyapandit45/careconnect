@@ -3,7 +3,13 @@ const mongoose = require('mongoose');
 const Job = require('../models/Job');
 const Booking = require('../models/Booking');
 const Invoice = require('../models/Invoice');
-const { JOB_STATUS, VALID_JOB_TRANSITIONS, isValidTransition, INVOICE_STATUS } = require('../constants/status');
+const {
+  JOB_STATUS,
+  VALID_JOB_TRANSITIONS,
+  isValidTransition,
+  INVOICE_STATUS,
+  NOTIFICATION_TYPE,
+} = require('../constants/status');
 const { ApiError } = require('../utils/apiError');
 
 /**
@@ -23,6 +29,21 @@ async function createJobForBooking(booking) {
     status: JOB_STATUS.ASSIGNED,
   });
   await job.save();
+
+  try {
+    const notificationService = require('./notification.service');
+    await notificationService.createNotification({
+      recipient: job.customer,
+      type: NOTIFICATION_TYPE.JOB_ASSIGNED,
+      title: 'Job Assigned',
+      message: 'Your service job has been assigned to a provider.',
+      relatedBooking: job.booking,
+      relatedJob: job._id,
+    });
+  } catch {
+    // Non-blocking notification
+  }
+
   return job;
 }
 
@@ -48,6 +69,45 @@ async function transitionStatus(jobId, newStatus, actorId) {
   if (newStatus === JOB_STATUS.COMPLETED) job.completedAt = new Date();
 
   await job.save();
+
+  // Trigger in-app notifications based on new status
+  try {
+    const notificationService = require('./notification.service');
+    let notifType = null;
+    let notifTitle = null;
+    let notifMessage = null;
+
+    if (newStatus === JOB_STATUS.ON_THE_WAY) {
+      notifType = NOTIFICATION_TYPE.JOB_ON_THE_WAY;
+      notifTitle = 'Provider On The Way';
+      notifMessage = 'Your service provider is on the way to the service location.';
+    } else if (newStatus === JOB_STATUS.CHECKED_IN) {
+      notifType = NOTIFICATION_TYPE.JOB_CHECKED_IN;
+      notifTitle = 'Provider Checked In';
+      notifMessage = 'Your service provider has checked in at the location.';
+    } else if (newStatus === JOB_STATUS.IN_PROGRESS) {
+      notifType = NOTIFICATION_TYPE.JOB_IN_PROGRESS;
+      notifTitle = 'Job In Progress';
+      notifMessage = 'Your service job is currently in progress.';
+    } else if (newStatus === JOB_STATUS.COMPLETED) {
+      notifType = NOTIFICATION_TYPE.JOB_COMPLETED;
+      notifTitle = 'Job Completed';
+      notifMessage = 'Your service job has been marked as completed.';
+    }
+
+    if (notifType) {
+      await notificationService.createNotification({
+        recipient: job.customer,
+        type: notifType,
+        title: notifTitle,
+        message: notifMessage,
+        relatedBooking: job.booking,
+        relatedJob: job._id,
+      });
+    }
+  } catch {
+    // Non-blocking notification
+  }
 
   // If completed, trigger invoice generation
   if (newStatus === JOB_STATUS.COMPLETED) {
@@ -88,6 +148,21 @@ async function customerConfirm(jobId, customerId) {
   if (job.status !== JOB_STATUS.COMPLETED) throw ApiError.badRequest('Job must be completed before confirmation');
   job.customerConfirmation = true;
   await job.save();
+
+  try {
+    const notificationService = require('./notification.service');
+    await notificationService.createNotification({
+      recipient: job.provider,
+      type: NOTIFICATION_TYPE.JOB_CONFIRMED,
+      title: 'Job Confirmed by Customer',
+      message: 'The customer has confirmed completion of the service job.',
+      relatedBooking: job.booking,
+      relatedJob: job._id,
+    });
+  } catch {
+    // Non-blocking notification
+  }
+
   return job;
 }
 

@@ -18,13 +18,17 @@ const getInvoiceById = async (req, res, next) => {
     // Ownership checks based on role
     const userId = req.user._id;
     const role = req.user.role;
-    if (role === 'CUSTOMER' && String(invoice.customer) !== String(userId)) {
-      throw ApiError.forbidden('Customers can only access their own invoices');
+    if (role === 'CUSTOMER') {
+      if (String(invoice.customer) !== String(userId)) {
+        throw ApiError.forbidden('Customers can only access their own invoices');
+      }
+    } else if (role === 'SERVICE_PROVIDER') {
+      if (String(invoice.provider) !== String(userId)) {
+        throw ApiError.forbidden('Providers can only access their own invoices');
+      }
+    } else if (role !== 'PLATFORM_ADMIN') {
+      throw ApiError.forbidden('You do not have permission to access this invoice');
     }
-    if (role === 'SERVICE_PROVIDER' && String(invoice.provider) !== String(userId)) {
-      throw ApiError.forbidden('Providers can only access their own invoices');
-    }
-    // Admin can access any invoice
     return sendSuccess(res, {
       statusCode: 200,
       message: 'Invoice retrieved successfully',

@@ -10,7 +10,12 @@ const Invoice = require('../models/Invoice');
 const Booking = require('../models/Booking');
 const Job = require('../models/Job');
 const Quote = require('../models/Quote');
-const { INVOICE_STATUS, VALID_INVOICE_TRANSITIONS, isValidTransition } = require('../constants/status');
+const {
+  INVOICE_STATUS,
+  VALID_INVOICE_TRANSITIONS,
+  isValidTransition,
+  NOTIFICATION_TYPE,
+} = require('../constants/status');
 const { ApiError } = require('../utils/apiError');
 
 /**
@@ -19,7 +24,7 @@ const { ApiError } = require('../utils/apiError');
  * Uses a MongoDB collection "counters" to store the next sequence value.
  */
 async function generateInvoiceNumber() {
-  const Counter = mongoose.model('Counter', new mongoose.Schema({
+  const Counter = mongoose.models.Counter || mongoose.model('Counter', new mongoose.Schema({
     _id: { type: String, required: true },
     seq: { type: Number, default: 0 },
   }));
@@ -46,13 +51,22 @@ async function generateInvoiceFromJob(job) {
   if (existing) return existing;
 
   // Load related data
-  const booking = await Booking.findById(job.booking).populate('quote');
+  const bookingId = job.booking?._id || job.booking;
+  const booking = await Booking.findById(bookingId).populate('quote');
   if (!booking) throw ApiError.internal('Related booking not found');
   const quote = booking.quote;
-  if (!quote) throw ApiError.internal('Quote missing for invoice calculation');
+  const quoteId = quote ? (quote._id || quote) : null;
 
-  // Amounts are stored in the Quote as a decimal. Convert to cents safely.
-  const subtotalCents = Math.round((quote.amount || 0) * 100);
+  // Amounts are stored as decimal in Quote/Booking. Convert to integer cents safely.
+  const amountToBill = (quote && (quote.amount || quote.estimatedPrice)) !== undefined
+    ? (quote.amount || quote.estimatedPrice)
+    : booking.price;
+
+  if (amountToBill === undefined || amountToBill === null) {
+    throw ApiError.internal('Price missing for invoice calculation');
+  }
+
+  const subtotalCents = Math.round(Number(amountToBill) * 100);
   const taxCents = 0; // placeholder – can be extended with tax rules
   const platformFeeCents = 0; // placeholder – platform fee logic can be added
   const totalCents = subtotalCents + taxCents + platformFeeCents;
@@ -62,6 +76,7 @@ async function generateInvoiceFromJob(job) {
   const invoice = new Invoice({
     invoiceNumber,
     booking: booking._id,
+    quote: quoteId,
     job: job._id,
     customer: booking.customer,
     provider: booking.provider,
@@ -72,8 +87,31 @@ async function generateInvoiceFromJob(job) {
     status: INVOICE_STATUS.ISSUED,
   });
 
-  await invoice.save();
-  return invoice;
+  try {
+    await invoice.save();
+
+    try {
+      const notificationService = require('./notification.service');
+      await notificationService.createNotification({
+        recipient: booking.customer,
+        type: NOTIFICATION_TYPE.INVOICE_GENERATED,
+        title: 'Invoice Issued',
+        message: `An invoice (${invoice.invoiceNumber}) has been generated for your completed job.`,
+        relatedBooking: booking._id,
+        relatedJob: job._id,
+        relatedInvoice: invoice._id,
+      });
+    } catch {
+      // Non-blocking notification
+    }
+
+    return invoice;
+  } catch (err) {
+    if (err.code === 11000 && (err.keyPattern?.job || String(err.message).includes('job'))) {
+      return Invoice.findOne({ job: job._id });
+    }
+    throw err;
+  }
 }
 
 /** Retrieve a single invoice by its ID */
@@ -141,6 +179,24 @@ async function transitionInvoiceStatus(invoiceId, newStatus) {
   invoice.status = newStatus;
   if (newStatus === INVOICE_STATUS.PAID) invoice.paidAt = new Date();
   await invoice.save();
+
+  if (newStatus === INVOICE_STATUS.PAID) {
+    try {
+      const notificationService = require('./notification.service');
+      await notificationService.createNotification({
+        recipient: invoice.customer,
+        type: NOTIFICATION_TYPE.INVOICE_PAID,
+        title: 'Invoice Paid',
+        message: `Your payment for invoice ${invoice.invoiceNumber} has been received.`,
+        relatedBooking: invoice.booking,
+        relatedJob: invoice.job,
+        relatedInvoice: invoice._id,
+      });
+    } catch {
+      // Non-blocking notification
+    }
+  }
+
   return invoice;
 }
 

@@ -14,6 +14,24 @@ const disputeSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    job: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Job',
+      required: true,
+      index: true,
+    },
+    customer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+    provider: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
     raisedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -23,10 +41,17 @@ const disputeSchema = new mongoose.Schema(
     reason: {
       type: String,
       required: true,
+      trim: true,
+    },
+    category: {
+      type: String,
+      trim: true,
+      default: 'GENERAL',
     },
     description: {
       type: String,
       required: true,
+      trim: true,
     },
     status: {
       type: String,
@@ -40,7 +65,10 @@ const disputeSchema = new mongoose.Schema(
         ref: 'User',
       },
       resolvedAt: Date,
-      resolutionNotes: String,
+      resolutionNotes: {
+        type: String,
+        trim: true,
+      },
       refundApproved: {
         type: Boolean,
         default: false,
@@ -55,6 +83,11 @@ const disputeSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+disputeSchema.index({ job: 1, status: 1 });
+disputeSchema.index({ customer: 1, createdAt: -1 });
+disputeSchema.index({ provider: 1, createdAt: -1 });
+disputeSchema.index({ raisedBy: 1, createdAt: -1 });
 
 const Dispute = mongoose.model('Dispute', disputeSchema);
 

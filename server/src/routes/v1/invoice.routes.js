@@ -22,10 +22,15 @@ router.get('/admin', authenticate, authorize(ROLES.PLATFORM_ADMIN), listAdminInv
 router.get('/admin/:id', authenticate, authorize(ROLES.PLATFORM_ADMIN), getInvoiceById);
 router.patch('/:id/status', authenticate, authorize(ROLES.PLATFORM_ADMIN), patchInvoiceStatus);
 
-// Customer routes (default, require CUSTOMER role)
-router.use(authenticate);
-router.use(authorize(ROLES.CUSTOMER));
-router.get('/', listCustomerInvoices);
-router.get('/:id', getInvoiceById);
+// Customer list route (requires CUSTOMER role)
+router.get('/', authenticate, authorize(ROLES.CUSTOMER), listCustomerInvoices);
+
+// Shared detail route (allows CUSTOMER, SERVICE_PROVIDER, and PLATFORM_ADMIN with ownership check in controller)
+router.get(
+  '/:id',
+  authenticate,
+  authorize(ROLES.CUSTOMER, ROLES.SERVICE_PROVIDER, ROLES.PLATFORM_ADMIN),
+  getInvoiceById
+);
 
 module.exports = router;

@@ -13,6 +13,7 @@ const Job = require('./Job');
 const Invoice = require('./Invoice');
 const Review = require('./Review');
 const Dispute = require('./Dispute');
+const SupportTicket = require('./SupportTicket');
 const Notification = require('./Notification');
 const AuditLog = require('./AuditLog');
 
@@ -28,6 +29,7 @@ module.exports = {
   Invoice,
   Review,
   Dispute,
+  SupportTicket,
   Notification,
   AuditLog,
 };

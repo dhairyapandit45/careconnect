@@ -19,6 +19,7 @@ const {
   PROVIDER_VERIFICATION_STATUS,
   VALID_BOOKING_TRANSITIONS,
   DAYS_OF_WEEK,
+  NOTIFICATION_TYPE,
   isValidTransition,
 } = require('../constants/status');
 const { ApiError } = require('../utils/apiError');
@@ -272,6 +273,28 @@ const createBookingFromQuote = async (
     // After booking persisted, create associated Job (idempotent)
     const { createJobForBooking } = require('../services/job.service');
     await createJobForBooking(booking);
+
+    // In-app notifications for customer and provider
+    try {
+      const notificationService = require('./notification.service');
+      await notificationService.createNotification({
+        recipient: customerUser._id,
+        type: NOTIFICATION_TYPE.BOOKING_CONFIRMED,
+        title: 'Booking Confirmed',
+        message: 'Your booking has been successfully confirmed.',
+        relatedBooking: booking._id,
+      });
+      await notificationService.createNotification({
+        recipient: quote.provider,
+        type: NOTIFICATION_TYPE.BOOKING_CREATED,
+        title: 'New Booking Assigned',
+        message: 'You have a new scheduled booking.',
+        relatedBooking: booking._id,
+      });
+    } catch {
+      // Notification errors must not fail the booking transaction
+    }
+
     // Populate booking with related references
     const populatedBooking = await Booking.findById(booking._id)
       .populate('serviceRequest')
@@ -434,6 +457,19 @@ const cancelCustomerBooking = async (customerId, bookingId, reason) => {
     status: SERVICE_REQUEST_STATUS.CANCELLED,
   });
 
+  try {
+    const notificationService = require('./notification.service');
+    await notificationService.createNotification({
+      recipient: booking.provider,
+      type: NOTIFICATION_TYPE.BOOKING_CANCELLED,
+      title: 'Booking Cancelled',
+      message: `Booking has been cancelled by the customer: ${reason || 'No reason provided'}`,
+      relatedBooking: booking._id,
+    });
+  } catch {
+    // Non-blocking notification
+  }
+
   return booking;
 };
 
@@ -547,6 +583,19 @@ const cancelProviderBooking = async (providerId, bookingId, reason) => {
   booking.cancelledAt = new Date();
   booking.cancellationReason = reason;
   await booking.save();
+
+  try {
+    const notificationService = require('./notification.service');
+    await notificationService.createNotification({
+      recipient: booking.customer,
+      type: NOTIFICATION_TYPE.BOOKING_CANCELLED,
+      title: 'Booking Cancelled',
+      message: `Booking has been cancelled by the provider: ${reason || 'No reason provided'}`,
+      relatedBooking: booking._id,
+    });
+  } catch {
+    // Non-blocking notification
+  }
 
   return booking;
 };

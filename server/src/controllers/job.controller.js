@@ -1,11 +1,30 @@
 // Job Controller - handles Job endpoints
 const jobService = require('../services/job.service');
 const { sendSuccess } = require('../utils/apiResponse');
+const { ApiError } = require('../utils/apiError');
 
 // Get a single Job by ID (accessible by both customer and provider)
 const getJobById = async (req, res, next) => {
   try {
     const job = await jobService.getJobById(req.params.id, ['booking', 'provider', 'customer']);
+
+    // Multi-tenant authorization boundary
+    const userId = String(req.user._id);
+    const customerId = String(job.customer?._id || job.customer);
+    const providerId = String(job.provider?._id || job.provider);
+
+    if (req.user.role === 'CUSTOMER') {
+      if (customerId !== userId) {
+        throw ApiError.forbidden('Access denied: You do not own this job');
+      }
+    } else if (req.user.role === 'SERVICE_PROVIDER') {
+      if (providerId !== userId) {
+        throw ApiError.forbidden('Access denied: You are not assigned to this job');
+      }
+    } else if (!['PLATFORM_ADMIN', 'OPERATIONS_MANAGER', 'SUPPORT_AGENT'].includes(req.user.role)) {
+      throw ApiError.forbidden('You do not have permission to access this job');
+    }
+
     return sendSuccess(res, {
       statusCode: 200,
       message: 'Job retrieved successfully',
