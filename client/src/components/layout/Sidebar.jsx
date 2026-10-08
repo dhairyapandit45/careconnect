@@ -18,6 +18,10 @@ import {
   Headphones,
   Sliders,
   X,
+  Users,
+  Briefcase,
+  AlertTriangle,
+  HelpCircle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ROLES } from '../../constants/roles';
@@ -54,11 +58,22 @@ export const Sidebar = ({ isOpen, onClose }) => {
       case ROLES.OPERATIONS_MANAGER:
         return [
           { to: '/operations/dashboard', label: 'Operations Overview', icon: Sliders },
+          { to: '/operations/users', label: 'User Management', icon: Users },
+          { to: '/operations/providers', label: 'Provider Verification', icon: UserCheck },
+          { to: '/operations/bookings', label: 'Bookings Oversight', icon: Calendar },
+          { to: '/operations/jobs', label: 'Jobs Oversight', icon: Briefcase },
+          { to: '/operations/disputes', label: 'Disputes Queue', icon: AlertTriangle },
+          { to: '/operations/support', label: 'Support Tickets', icon: HelpCircle },
         ];
       case ROLES.PLATFORM_ADMIN:
         return [
           { to: '/admin/dashboard', label: 'Admin Control Center', icon: Shield },
+          { to: '/admin/users', label: 'User Management', icon: Users },
           { to: '/admin/providers', label: 'Provider Verification', icon: UserCheck },
+          { to: '/admin/bookings', label: 'Bookings Oversight', icon: Calendar },
+          { to: '/admin/jobs', label: 'Jobs Oversight', icon: Briefcase },
+          { to: '/admin/disputes', label: 'Disputes Queue', icon: AlertTriangle },
+          { to: '/admin/support', label: 'Support Tickets', icon: HelpCircle },
           { to: '/admin/categories', label: 'Service Categories', icon: Sliders },
         ];
       default:

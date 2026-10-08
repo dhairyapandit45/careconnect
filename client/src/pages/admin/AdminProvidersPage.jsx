@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   ShieldCheck,
   Clock,
@@ -21,6 +22,7 @@ import {
   Eye,
   FileCheck,
 } from 'lucide-react';
+import { adminService } from '../../services/admin.service';
 import providerService from '../../services/provider.service';
 import categoryService from '../../services/category.service';
 import {
@@ -85,6 +87,9 @@ const ALLOWED_ACTIONS_BY_STATUS = {
 };
 
 export const AdminProvidersPage = () => {
+  const location = useLocation();
+  const isOps = location.pathname.startsWith('/operations');
+
   // Filters & Pagination
   const [statusFilter, setStatusFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -127,16 +132,18 @@ export const AdminProvidersPage = () => {
       if (searchQuery.trim()) params.search = searchQuery.trim();
       if (categoryFilter) params.category = categoryFilter;
 
-      const res = await providerService.getProvidersAdmin(params);
-      const data = res.data?.data || {};
+      const res = isOps
+        ? await adminService.listProviders(params, true)
+        : await providerService.getProvidersAdmin(params);
+      const data = res.data?.data || res.data || {};
       setProviders(data.items || []);
       setPagination(data.pagination || { page: 1, limit: 10, total: 0, pages: 1 });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch provider listings');
+      setError(err.response?.data?.message || err.message || 'Failed to fetch provider listings');
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, statusFilter, searchQuery, categoryFilter]);
+  }, [currentPage, statusFilter, searchQuery, categoryFilter, isOps]);
 
   useEffect(() => {
     fetchProviders();
@@ -151,10 +158,12 @@ export const AdminProvidersPage = () => {
       setAuditAction(null);
       setActionNotes('');
 
-      const res = await providerService.getProviderAdminById(providerId);
-      setSelectedProvider(res.data?.data?.profile);
+      const res = isOps
+        ? await adminService.getProviderById(providerId, true)
+        : await providerService.getProviderAdminById(providerId);
+      setSelectedProvider(res.data?.data?.profile || res.data?.profile);
     } catch (err) {
-      setActionError(err.response?.data?.message || 'Failed to load provider credentials');
+      setActionError(err.response?.data?.message || err.message || 'Failed to load provider credentials');
     } finally {
       setModalLoading(false);
     }
@@ -192,8 +201,10 @@ export const AdminProvidersPage = () => {
         payload.action = auditAction.action;
       }
 
-      const res = await providerService.verifyProviderAdmin(selectedProvider._id, payload);
-      const updatedProfile = res.data?.data?.profile;
+      const res = isOps
+        ? await adminService.verifyProvider(selectedProvider._id, payload, true)
+        : await providerService.verifyProviderAdmin(selectedProvider._id, payload);
+      const updatedProfile = res.data?.data?.profile || res.data?.profile;
 
       // Update local state and table
       setSelectedProvider(updatedProfile);
@@ -201,7 +212,7 @@ export const AdminProvidersPage = () => {
       setActionNotes('');
       fetchProviders();
     } catch (err) {
-      setActionError(err.response?.data?.message || 'Failed to update verification status');
+      setActionError(err.response?.data?.message || err.message || 'Failed to update verification status');
     } finally {
       setIsExecutingAction(false);
     }

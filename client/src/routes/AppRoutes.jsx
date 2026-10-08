@@ -44,6 +44,11 @@ import { OperationsDashboard } from '../pages/operations/OperationsDashboard';
 import { AdminDashboard } from '../pages/admin/AdminDashboard';
 import { AdminCategoriesPage } from '../pages/admin/AdminCategoriesPage';
 import { AdminProvidersPage } from '../pages/admin/AdminProvidersPage';
+import { UserManagementPage } from '../pages/admin/UserManagementPage';
+import { BookingsOperationsPage } from '../pages/admin/BookingsOperationsPage';
+import { JobsOperationsPage } from '../pages/admin/JobsOperationsPage';
+import { DisputesOperationsPage } from '../pages/admin/DisputesOperationsPage';
+import { SupportTicketsOperationsPage } from '../pages/admin/SupportTicketsOperationsPage';
 
 // 404 Page
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -111,15 +116,28 @@ export const AppRoutes = () => {
             <Route path="/support/dashboard" element={<SupportDashboard />} />
           </Route>
 
-          {/* Operations Manager Routes */}
-          <Route element={<ProtectedRoute allowedRoles={[ROLES.OPERATIONS_MANAGER]} />}>
+          {/* Operations Manager & Platform Admin Operational Routes */}
+          <Route element={<ProtectedRoute allowedRoles={[ROLES.OPERATIONS_MANAGER, ROLES.PLATFORM_ADMIN]} />}>
+            <Route path="/operations" element={<Navigate to="/operations/dashboard" replace />} />
             <Route path="/operations/dashboard" element={<OperationsDashboard />} />
+            <Route path="/operations/users" element={<UserManagementPage />} />
+            <Route path="/operations/providers" element={<AdminProvidersPage />} />
+            <Route path="/operations/bookings" element={<BookingsOperationsPage />} />
+            <Route path="/operations/jobs" element={<JobsOperationsPage />} />
+            <Route path="/operations/disputes" element={<DisputesOperationsPage />} />
+            <Route path="/operations/support" element={<SupportTicketsOperationsPage />} />
           </Route>
 
-          {/* Platform Admin Routes */}
+          {/* Platform Admin Exclusive Routes */}
           <Route element={<ProtectedRoute allowedRoles={[ROLES.PLATFORM_ADMIN]} />}>
+            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<UserManagementPage />} />
             <Route path="/admin/providers" element={<AdminProvidersPage />} />
+            <Route path="/admin/bookings" element={<BookingsOperationsPage />} />
+            <Route path="/admin/jobs" element={<JobsOperationsPage />} />
+            <Route path="/admin/disputes" element={<DisputesOperationsPage />} />
+            <Route path="/admin/support" element={<SupportTicketsOperationsPage />} />
             <Route path="/admin/categories" element={<AdminCategoriesPage />} />
           </Route>
         </Route>
