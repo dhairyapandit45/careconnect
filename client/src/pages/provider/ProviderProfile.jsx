@@ -67,12 +67,23 @@ export const ProviderProfile = () => {
           if (err.response?.status === 404) return null;
           throw err;
         }),
-        categoryService.getCategories({ isActive: true }).catch(() => ({ data: { data: { categories: [] } } })),
+        categoryService.getCategories({ includeInactive: false }).catch(() => ({ data: { categories: [] } })),
       ]);
 
-      const prof = profileRes?.data?.data?.profile || null;
+      const prof =
+        profileRes?.data?.profile ||
+        profileRes?.data?.data?.profile ||
+        profileRes?.profile ||
+        null;
       setProfile(prof);
-      setCategories(catRes.data?.data?.categories || []);
+
+      const activeCategories =
+        catRes?.data?.categories ||
+        catRes?.data?.data?.categories ||
+        catRes?.categories ||
+        (Array.isArray(catRes?.data) ? catRes.data : []) ||
+        (Array.isArray(catRes) ? catRes : []);
+      setCategories(activeCategories);
 
       if (prof) {
         setEditForm({

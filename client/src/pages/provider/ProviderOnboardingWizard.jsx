@@ -11,7 +11,7 @@
  * 8. Review & Submit
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Building2,
@@ -28,6 +28,7 @@ import {
   Trash2,
   AlertCircle,
   ShieldCheck,
+  RefreshCw,
 } from 'lucide-react';
 import categoryService from '../../services/category.service';
 import providerService from '../../services/provider.service';
@@ -64,9 +65,11 @@ export const ProviderOnboardingWizard = () => {
   const [submitError, setSubmitError] = useState(null);
   const [stepErrors, setStepErrors] = useState({});
 
-  // Catalogs
+  // Catalogs & Category Loading State
   const [availableCategories, setAvailableCategories] = useState([]);
   const [suggestedSkills, setSuggestedSkills] = useState([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+  const [categoryLoadError, setCategoryLoadError] = useState(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -92,6 +95,43 @@ export const ProviderOnboardingWizard = () => {
   const [customSkillInput, setCustomSkillInput] = useState('');
   const [localityInputs, setLocalityInputs] = useState({});
 
+  /**
+   * Safely unpacks category items regardless of API envelope structure
+   */
+  const extractCategories = (res) => {
+    if (!res) return [];
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res.data?.categories)) return res.data.categories;
+    if (Array.isArray(res.data?.data?.categories)) return res.data.data.categories;
+    if (Array.isArray(res.categories)) return res.categories;
+    if (Array.isArray(res.data)) return res.data;
+    return [];
+  };
+
+  /**
+   * Standalone, retryable service category loader
+   */
+  const loadCategories = useCallback(async () => {
+    try {
+      setIsLoadingCategories(true);
+      setCategoryLoadError(null);
+      const catRes = await categoryService.getCategories({ includeInactive: false });
+      const categories = extractCategories(catRes);
+      setAvailableCategories(categories);
+      return categories;
+    } catch (err) {
+      const errorMsg =
+        err?.message ||
+        err?.response?.data?.message ||
+        'Failed to load service categories. Please try again.';
+      setCategoryLoadError(errorMsg);
+      setAvailableCategories([]);
+      return [];
+    } finally {
+      setIsLoadingCategories(false);
+    }
+  }, []);
+
   // Load existing profile (if any) and active categories
   useEffect(() => {
     let isMounted = true;
@@ -99,28 +139,39 @@ export const ProviderOnboardingWizard = () => {
     const loadInitialData = async () => {
       try {
         setInitialLoading(true);
-        // Load categories
-        const catRes = await categoryService.getCategories({ isActive: true });
-        const categories = catRes.data?.data?.categories || [];
-        if (isMounted) {
-          setAvailableCategories(categories);
-        }
+
+        // Load categories using robust extractor
+        const categories = await loadCategories();
 
         // Load skills catalog
         try {
           const skillsRes = await providerService.getSkillsCatalog();
-          if (isMounted && skillsRes.data?.data?.skills) {
-            setSuggestedSkills(skillsRes.data.data.skills);
+          const skills =
+            skillsRes?.data?.skills ||
+            skillsRes?.data?.data?.skills ||
+            skillsRes?.skills ||
+            [];
+          if (isMounted && skills.length > 0) {
+            setSuggestedSkills(skills);
+          } else if (isMounted && categories.length > 0) {
+            const catSkills = categories.flatMap((c) => c.requiredSkills || []);
+            setSuggestedSkills([...new Set(catSkills)]);
           }
         } catch {
-          // Non-critical if skills catalog fails; will fallback to category suggested skills
+          if (isMounted && categories.length > 0) {
+            const catSkills = categories.flatMap((c) => c.requiredSkills || []);
+            setSuggestedSkills([...new Set(catSkills)]);
+          }
         }
 
         // Check if provider already has profile
         try {
           const profileRes = await providerService.getMyProfile();
-          if (isMounted && profileRes.data?.data?.profile) {
-            const p = profileRes.data.data.profile;
+          const p =
+            profileRes?.data?.profile ||
+            profileRes?.data?.data?.profile ||
+            profileRes?.profile;
+          if (isMounted && p) {
             setIsExistingProfile(true);
             setFormData({
               businessName: p.businessName || '',
@@ -145,13 +196,13 @@ export const ProviderOnboardingWizard = () => {
           }
         } catch (profileErr) {
           // 404 is normal for newly registered providers
-          if (profileErr.response?.status !== 404) {
+          if (profileErr.response?.status !== 404 && profileErr.status !== 404) {
             // Log non-404 error
           }
         }
       } catch (err) {
         if (isMounted) {
-          setSubmitError(err.response?.data?.message || 'Failed to initialize onboarding wizard');
+          setSubmitError(err.response?.data?.message || err.message || 'Failed to initialize onboarding wizard');
         }
       } finally {
         if (isMounted) {
@@ -165,7 +216,7 @@ export const ProviderOnboardingWizard = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [loadCategories]);
 
   // Validation per step
   const validateStep = (stepNumber) => {
@@ -256,6 +307,10 @@ export const ProviderOnboardingWizard = () => {
           : [...prev.serviceCategories, catId],
       };
     });
+    setStepErrors((prev) => ({
+      ...prev,
+      serviceCategories: null,
+    }));
   };
 
   // Skill management
@@ -533,41 +588,124 @@ export const ProviderOnboardingWizard = () => {
           />
           <CardContent className="space-y-4">
             {stepErrors.serviceCategories && (
-              <p className="text-xs text-red-600 font-medium">{stepErrors.serviceCategories}</p>
+              <p className="text-xs text-red-600 font-medium" role="alert">
+                {stepErrors.serviceCategories}
+              </p>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {availableCategories.map((cat) => {
-                const isSelected = formData.serviceCategories.includes(cat._id);
-                return (
-                  <div
-                    key={cat._id}
-                    onClick={() => toggleCategory(cat._id)}
-                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      isSelected
-                        ? 'border-blue-600 bg-blue-50/50 shadow-sm'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="font-semibold text-slate-900 text-sm">{cat.name}</div>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}} // Controlled by outer div click
-                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 mt-0.5"
-                      />
-                    </div>
-                    <p className="text-xs text-slate-500 mt-1 line-clamp-2">{cat.description}</p>
-                  </div>
-                );
-              })}
-            </div>
+
+            {/* Loading State */}
+            {isLoadingCategories && (
+              <div className="flex flex-col items-center justify-center py-12 space-y-3" role="status">
+                <LoadingSpinner size="lg" />
+                <p className="text-sm font-medium text-slate-600">Loading service categories...</p>
+              </div>
+            )}
+
+            {/* Error State with Retry Button */}
+            {!isLoadingCategories && categoryLoadError && (
+              <div className="p-6 rounded-xl bg-red-50 border border-red-200 text-center space-y-3" role="alert">
+                <AlertCircle className="w-8 h-8 text-red-600 mx-auto" />
+                <div className="space-y-1">
+                  <h4 className="text-sm font-semibold text-red-900">Failed to Load Categories</h4>
+                  <p className="text-xs text-red-700 max-w-md mx-auto">{categoryLoadError}</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={loadCategories}
+                  className="bg-white hover:bg-red-50 border-red-300 text-red-700"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Retry
+                </Button>
+              </div>
+            )}
+
+            {/* Empty State when no categories exist */}
+            {!isLoadingCategories && !categoryLoadError && availableCategories.length === 0 && (
+              <div className="p-8 rounded-xl bg-slate-50 border border-slate-200 text-center space-y-3">
+                <Layers className="w-10 h-10 text-slate-400 mx-auto" />
+                <div className="space-y-1">
+                  <h4 className="text-sm font-semibold text-slate-900">No Service Categories Available</h4>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto">
+                    There are currently no active service categories available for onboarding. Please try again later or contact platform support.
+                  </p>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={loadCategories}>
+                  <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Refresh Categories
+                </Button>
+              </div>
+            )}
+
+            {/* Active Categories Grid */}
+            {!isLoadingCategories && !categoryLoadError && availableCategories.length > 0 && (
+              <>
+                <div className="flex items-center justify-between text-xs text-slate-500 pb-1">
+                  <span>Select all trade categories you are certified and equipped to perform.</span>
+                  <span className="font-semibold text-slate-700">
+                    {formData.serviceCategories.length} selected
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {availableCategories.map((cat) => {
+                    const isSelected = formData.serviceCategories.includes(cat._id);
+                    return (
+                      <div
+                        key={cat._id}
+                        role="checkbox"
+                        aria-checked={isSelected}
+                        tabIndex={0}
+                        onClick={() => toggleCategory(cat._id)}
+                        onKeyDown={(e) => {
+                          if (e.key === ' ' || e.key === 'Enter') {
+                            e.preventDefault();
+                            toggleCategory(cat._id);
+                          }
+                        }}
+                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all select-none ${
+                          isSelected
+                            ? 'border-blue-600 bg-blue-50/50 shadow-sm'
+                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="font-semibold text-slate-900 text-sm">{cat.name}</div>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => {}} // Controlled by outer container click
+                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 mt-0.5 pointer-events-none"
+                            aria-hidden="true"
+                          />
+                        </div>
+                        {cat.description && (
+                          <p className="text-xs text-slate-500 mt-1 line-clamp-2">{cat.description}</p>
+                        )}
+                        {cat.startingPrice > 0 && (
+                          <p className="text-xs text-slate-400 mt-2">
+                            Starting from ₹{cat.startingPrice}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button variant="outline" onClick={handleBack}>
               <ArrowLeft className="w-4 h-4 mr-2" /> Back
             </Button>
-            <Button onClick={handleNext}>
+            <Button
+              onClick={handleNext}
+              disabled={
+                isLoadingCategories ||
+                !!categoryLoadError ||
+                availableCategories.length === 0 ||
+                formData.serviceCategories.length === 0
+              }
+            >
               Next: Professional Skills <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </CardFooter>

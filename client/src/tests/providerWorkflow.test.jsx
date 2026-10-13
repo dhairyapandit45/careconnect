@@ -331,4 +331,190 @@ describe('Milestone 4: Provider Onboarding, Profile & Admin Verification Fronten
       );
     });
   });
+
+  // 6. ProviderOnboardingWizard: Category step rendering, selection, persistence, error, and empty states
+  describe('ProviderOnboardingWizard: Category Selection & Resilience', () => {
+    it('should map standard API response { data: { categories } } and allow multiple selections with Next button enabling', async () => {
+      categoryService.getCategories.mockResolvedValue({
+        data: { categories: mockCategories },
+      });
+      providerService.getMyProfile.mockRejectedValue({ response: { status: 404 } });
+      providerService.getSkillsCatalog.mockResolvedValue({
+        data: { skills: ['Pipe Fitting', 'Wiring'] },
+      });
+
+      render(
+        <MemoryRouter>
+          <ProviderOnboardingWizard />
+        </MemoryRouter>
+      );
+
+      // Fill Step 1
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText(/e.g. Apex Electrical/i)).toBeInTheDocument();
+      });
+      fireEvent.change(screen.getByPlaceholderText(/e.g. Apex Electrical/i), {
+        target: { value: 'Apex Plumbing Co' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/describe your expertise/i), {
+        target: { value: 'Licensed plumbing and electrical work across the city.' },
+      });
+
+      // Advance to Step 2
+      fireEvent.click(screen.getByRole('button', { name: /next: select categories/i }));
+
+      // Step 2 should display categories
+      await waitFor(() => {
+        expect(screen.getByText('Service Categories')).toBeInTheDocument();
+        expect(screen.getByText('Plumbing Services')).toBeInTheDocument();
+        expect(screen.getByText('Electrical Repairs')).toBeInTheDocument();
+      });
+
+      // Next button should be disabled when 0 categories selected
+      const nextSkillsBtn = screen.getByRole('button', { name: /next: professional skills/i });
+      expect(nextSkillsBtn).toBeDisabled();
+
+      // Select first category
+      fireEvent.click(screen.getByText('Plumbing Services'));
+
+      // Next button should now be enabled
+      expect(screen.getByText('1 selected')).toBeInTheDocument();
+      expect(nextSkillsBtn).not.toBeDisabled();
+
+      // Select second category
+      fireEvent.click(screen.getByText('Electrical Repairs'));
+      expect(screen.getByText('2 selected')).toBeInTheDocument();
+
+      // Deselect first category
+      fireEvent.click(screen.getByText('Plumbing Services'));
+      expect(screen.getByText('1 selected')).toBeInTheDocument();
+    });
+
+    it('should preserve selected categories when navigating Back to profile and Next again', async () => {
+      categoryService.getCategories.mockResolvedValue({
+        data: { categories: mockCategories },
+      });
+      providerService.getMyProfile.mockRejectedValue({ response: { status: 404 } });
+      providerService.getSkillsCatalog.mockResolvedValue({
+        data: { skills: [] },
+      });
+
+      render(
+        <MemoryRouter>
+          <ProviderOnboardingWizard />
+        </MemoryRouter>
+      );
+
+      // Step 1
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText(/e.g. Apex Electrical/i)).toBeInTheDocument();
+      });
+      fireEvent.change(screen.getByPlaceholderText(/e.g. Apex Electrical/i), {
+        target: { value: 'Apex Co' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/describe your expertise/i), {
+        target: { value: 'Valid description with more than ten characters.' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /next: select categories/i }));
+
+      // Step 2: select Plumbing Services
+      await waitFor(() => {
+        expect(screen.getByText('Plumbing Services')).toBeInTheDocument();
+      });
+      fireEvent.click(screen.getByText('Plumbing Services'));
+      expect(screen.getByText('1 selected')).toBeInTheDocument();
+
+      // Click Back to Step 1
+      fireEvent.click(screen.getByRole('button', { name: /back/i }));
+
+      // Confirm back on Step 1
+      await waitFor(() => {
+        expect(screen.getByText('Business Identification')).toBeInTheDocument();
+      });
+
+      // Click Next to Step 2 again
+      fireEvent.click(screen.getByRole('button', { name: /next: select categories/i }));
+
+      // Confirm selection persisted
+      await waitFor(() => {
+        expect(screen.getByText('Service Categories')).toBeInTheDocument();
+        expect(screen.getByText('1 selected')).toBeInTheDocument();
+      });
+    });
+
+    it('should render empty state when API succeeds with zero categories', async () => {
+      categoryService.getCategories.mockResolvedValue({
+        data: { categories: [] },
+      });
+      providerService.getMyProfile.mockRejectedValue({ response: { status: 404 } });
+
+      render(
+        <MemoryRouter>
+          <ProviderOnboardingWizard />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText(/e.g. Apex Electrical/i)).toBeInTheDocument();
+      });
+      fireEvent.change(screen.getByPlaceholderText(/e.g. Apex Electrical/i), {
+        target: { value: 'Apex Co' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/describe your expertise/i), {
+        target: { value: 'Valid description with more than ten characters.' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /next: select categories/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText('No Service Categories Available')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /refresh categories/i })).toBeInTheDocument();
+      });
+      expect(screen.getByRole('button', { name: /next: professional skills/i })).toBeDisabled();
+    });
+
+    it('should render error state with Retry action on API failure and recover on retry', async () => {
+      categoryService.getCategories.mockRejectedValueOnce(
+        new Error('Network connection error. Server is unreachable.')
+      );
+      providerService.getMyProfile.mockRejectedValue({ response: { status: 404 } });
+
+      render(
+        <MemoryRouter>
+          <ProviderOnboardingWizard />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText(/e.g. Apex Electrical/i)).toBeInTheDocument();
+      });
+      fireEvent.change(screen.getByPlaceholderText(/e.g. Apex Electrical/i), {
+        target: { value: 'Apex Co' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/describe your expertise/i), {
+        target: { value: 'Valid description with more than ten characters.' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /next: select categories/i }));
+
+      // Error state should display
+      await waitFor(() => {
+        expect(screen.getByText('Failed to Load Categories')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+      });
+      expect(screen.getByRole('button', { name: /next: professional skills/i })).toBeDisabled();
+
+      // Configure mock to succeed on retry
+      categoryService.getCategories.mockResolvedValueOnce({
+        data: { categories: mockCategories },
+      });
+
+      // Click Retry
+      fireEvent.click(screen.getByRole('button', { name: /retry/i }));
+
+      // Categories should now load
+      await waitFor(() => {
+        expect(screen.getByText('Plumbing Services')).toBeInTheDocument();
+        expect(screen.getByText('Electrical Repairs')).toBeInTheDocument();
+      });
+    });
+  });
 });

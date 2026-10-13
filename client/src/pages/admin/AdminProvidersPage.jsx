@@ -115,7 +115,15 @@ export const AdminProvidersPage = () => {
   // Load categories for filter dropdown
   useEffect(() => {
     categoryService.getCategories({ includeInactive: true })
-      .then((res) => setCategories(res.data?.data?.categories || []))
+      .then((res) => {
+        const cats =
+          res?.data?.categories ||
+          res?.data?.data?.categories ||
+          res?.categories ||
+          (Array.isArray(res?.data) ? res.data : []) ||
+          [];
+        setCategories(cats);
+      })
       .catch(() => {});
   }, []);
 
