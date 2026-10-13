@@ -22,6 +22,7 @@ import {
   Briefcase,
   AlertTriangle,
   HelpCircle,
+  TrendingUp,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ROLES } from '../../constants/roles';
@@ -58,6 +59,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
       case ROLES.OPERATIONS_MANAGER:
         return [
           { to: '/operations/dashboard', label: 'Operations Overview', icon: Sliders },
+          { to: '/operations/analytics', label: 'Platform Analytics', icon: TrendingUp },
           { to: '/operations/users', label: 'User Management', icon: Users },
           { to: '/operations/providers', label: 'Provider Verification', icon: UserCheck },
           { to: '/operations/bookings', label: 'Bookings Oversight', icon: Calendar },
@@ -68,6 +70,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
       case ROLES.PLATFORM_ADMIN:
         return [
           { to: '/admin/dashboard', label: 'Admin Control Center', icon: Shield },
+          { to: '/admin/analytics', label: 'Platform Analytics', icon: TrendingUp },
           { to: '/admin/users', label: 'User Management', icon: Users },
           { to: '/admin/providers', label: 'Provider Verification', icon: UserCheck },
           { to: '/admin/bookings', label: 'Bookings Oversight', icon: Calendar },

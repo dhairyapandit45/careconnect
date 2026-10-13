@@ -49,6 +49,7 @@ import { BookingsOperationsPage } from '../pages/admin/BookingsOperationsPage';
 import { JobsOperationsPage } from '../pages/admin/JobsOperationsPage';
 import { DisputesOperationsPage } from '../pages/admin/DisputesOperationsPage';
 import { SupportTicketsOperationsPage } from '../pages/admin/SupportTicketsOperationsPage';
+import { AnalyticsDashboardPage } from '../pages/admin/AnalyticsDashboardPage';
 
 // 404 Page
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -126,12 +127,14 @@ export const AppRoutes = () => {
             <Route path="/operations/jobs" element={<JobsOperationsPage />} />
             <Route path="/operations/disputes" element={<DisputesOperationsPage />} />
             <Route path="/operations/support" element={<SupportTicketsOperationsPage />} />
+            <Route path="/operations/analytics" element={<AnalyticsDashboardPage />} />
           </Route>
 
           {/* Platform Admin Exclusive Routes */}
           <Route element={<ProtectedRoute allowedRoles={[ROLES.PLATFORM_ADMIN]} />}>
             <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/analytics" element={<AnalyticsDashboardPage />} />
             <Route path="/admin/users" element={<UserManagementPage />} />
             <Route path="/admin/providers" element={<AdminProvidersPage />} />
             <Route path="/admin/bookings" element={<BookingsOperationsPage />} />
