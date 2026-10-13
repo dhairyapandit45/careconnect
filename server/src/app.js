@@ -13,6 +13,10 @@ const v1Router = require('./routes/v1');
 
 const app = express();
 
+// Trust front-facing reverse proxy (Render, Cloudflare) for accurate client IP resolution via X-Forwarded-For
+// Setting 1 trusts strictly the immediate hop, preventing spoofed forwarded headers from manipulating rate limits
+app.set('trust proxy', 1);
+
 // Security HTTP headers
 app.use(helmet());
 
