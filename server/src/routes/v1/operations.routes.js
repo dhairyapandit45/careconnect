@@ -34,6 +34,7 @@ const {
   listTickets,
   getTicketById,
 } = require('../../controllers/admin.controller');
+const analyticsRoutes = require('./analytics.routes');
 
 const router = express.Router();
 
@@ -43,6 +44,11 @@ router.use(authenticate);
 // Role authorization levels
 const OPS_AND_ADMIN = [ROLES.OPERATIONS_MANAGER, ROLES.PLATFORM_ADMIN];
 const STAFF_ALL = [ROLES.OPERATIONS_MANAGER, ROLES.PLATFORM_ADMIN, ROLES.SUPPORT_AGENT];
+
+/**
+ * Operations Analytics Endpoints
+ */
+router.use('/analytics', analyticsRoutes);
 
 /**
  * Operations & Platform Statistics
