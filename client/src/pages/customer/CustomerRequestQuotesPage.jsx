@@ -18,10 +18,12 @@ import {
   Award,
   RefreshCw,
   Info,
+  Sparkles,
 } from 'lucide-react';
 import quoteService from '../../services/quote.service';
 import serviceRequestService from '../../services/serviceRequest.service';
 import bookingService from '../../services/booking.service';
+import { aiService } from '../../services/ai.service';
 import {
   Button,
   Card,
@@ -61,6 +63,11 @@ export const CustomerRequestQuotesPage = () => {
   const [endTime, setEndTime] = useState('12:00');
   const [confirmedBookingId, setConfirmedBookingId] = useState(null);
 
+  // AI Provider Matching State
+  const [aiMatchedProviders, setAiMatchedProviders] = useState([]);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiMatchMessage, setAiMatchMessage] = useState('');
+
   const fetchQuotesAndRequest = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -70,8 +77,29 @@ export const CustomerRequestQuotesPage = () => {
         quoteService.getQuotesForRequest(id),
       ]);
 
-      setRequest(reqRes.data?.request || null);
+      const reqData = reqRes.data?.request || null;
+      setRequest(reqData);
       setQuotes(quotesRes.data?.items || []);
+
+      // If request has a category, query intelligent provider matches
+      if (reqData?.category) {
+        setAiLoading(true);
+        try {
+          const categoryId = reqData.category._id || reqData.category;
+          const aiRes = await aiService.matchProviders({
+            categoryId,
+            city: reqData.location?.city,
+            preferredDate: reqData.preferredDate,
+          });
+          const matchData = aiRes.data?.data || aiRes.data;
+          setAiMatchedProviders(matchData?.providers || []);
+          setAiMatchMessage(matchData?.message || '');
+        } catch {
+          setAiMatchedProviders([]);
+        } finally {
+          setAiLoading(false);
+        }
+      }
     } catch (err) {
       setError(err.message || 'Failed to load quotes for this service request');
     } finally {
@@ -419,6 +447,103 @@ export const CustomerRequestQuotesPage = () => {
           })}
         </div>
       )}
+
+      {/* AI Recommended Providers Section */}
+      <div className="rounded-2xl border border-indigo-100 bg-gradient-to-b from-indigo-50/50 via-white to-white p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-indigo-600 text-white">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-bold text-slate-900">AI Recommended Providers</h2>
+                <Badge variant="primary" size="sm" className="bg-indigo-100 text-indigo-700 font-semibold">
+                  Intelligent Matching
+                </Badge>
+              </div>
+              <p className="text-xs text-slate-500">
+                Top verified active professionals ranked by rating, completed jobs, and location fit
+              </p>
+            </div>
+          </div>
+          {aiMatchedProviders.length > 0 && (
+            <span className="text-xs font-medium text-slate-500">
+              {aiMatchedProviders.length} verified match{aiMatchedProviders.length > 1 ? 'es' : ''} found
+            </span>
+          )}
+        </div>
+
+        {aiLoading ? (
+          <div className="py-8 flex flex-col items-center justify-center">
+            <LoadingSpinner size="md" />
+            <p className="mt-2 text-xs text-slate-500">Calculating composite provider matches...</p>
+          </div>
+        ) : aiMatchedProviders.length === 0 ? (
+          <div className="text-xs text-slate-500 bg-white border border-slate-100 rounded-xl p-4 text-center">
+            {aiMatchMessage || 'No verified providers currently matching this category in your area. Quotes from available providers will appear above.'}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {aiMatchedProviders.map((provider) => (
+              <div
+                key={provider.profileId || provider.providerId}
+                className="bg-white rounded-xl border border-slate-200 p-4 hover:border-indigo-300 transition-all shadow-2xs flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div>
+                      <h3 className="font-bold text-sm text-slate-900">{provider.businessName || provider.name}</h3>
+                      <p className="text-xs text-slate-500">{provider.name}</p>
+                    </div>
+                    <Badge variant="success" size="sm" className="font-bold">
+                      {provider.compositeScore}% Match
+                    </Badge>
+                  </div>
+
+                  <p className="text-xs text-slate-600 italic bg-indigo-50/50 rounded-lg p-2 mb-3 border border-indigo-100/60">
+                    &ldquo;{provider.explanation}&rdquo;
+                  </p>
+
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs py-2 border-y border-slate-100 mb-3">
+                    <div>
+                      <span className="text-slate-400 block text-[10px] uppercase">Rating</span>
+                      <span className="font-semibold text-slate-800 flex items-center justify-center gap-0.5">
+                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                        {provider.rating > 0 ? provider.rating.toFixed(1) : 'New'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px] uppercase">Completed</span>
+                      <span className="font-semibold text-slate-800">{provider.completedJobsCount} jobs</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px] uppercase">Experience</span>
+                      <span className="font-semibold text-slate-800">{provider.experienceYears}y</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <div className="text-xs text-slate-500">
+                    <span className="font-bold text-slate-900">₹{provider.pricing?.hourlyRate || 0}</span>
+                    <span>/hr</span>
+                  </div>
+                  {provider.cityMatch ? (
+                    <Badge variant="outline" size="sm" className="text-emerald-700 border-emerald-200 bg-emerald-50 text-[10px]">
+                      Services {request?.location?.city}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" size="sm" className="text-slate-500 text-[10px]">
+                      Verified Available
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Confirmation Modal */}
       <Modal

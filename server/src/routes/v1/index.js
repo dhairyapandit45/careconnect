@@ -59,5 +59,6 @@ router.use('/disputes', require('./dispute.routes'));
 router.use('/support-tickets', require('./supportTicket.routes'));
 router.use('/tickets', require('./supportTicket.routes'));
 router.use('/notifications', require('./notification.routes'));
+router.use('/ai', require('./ai.routes'));
 
 module.exports = router;

@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import categoryService from '../../services/category.service';
 import serviceRequestService from '../../services/serviceRequest.service';
+import { aiService } from '../../services/ai.service';
 import {
   Button,
   Input,
@@ -60,6 +61,14 @@ export const CreateRequestPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+
+  // AI Classification states
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isAiClassifying, setIsAiClassifying] = useState(false);
+  const [aiRecommendation, setAiRecommendation] = useState(null);
+  const [aiError, setAiError] = useState('');
+  const [step2AiCheck, setStep2AiCheck] = useState(null);
+  const [isCheckingStep2Ai, setIsCheckingStep2Ai] = useState(false);
 
   // Form payload state
   const [formData, setFormData] = useState({
@@ -116,6 +125,59 @@ export const CreateRequestPage = () => {
           : [...prev.requiredSkills, skill],
       };
     });
+  };
+
+  // AI Classification Handlers
+  const handleAiClassify = async () => {
+    if (!aiPrompt.trim()) return;
+    setIsAiClassifying(true);
+    setAiError('');
+    try {
+      const res = await aiService.classifyRequest({ text: aiPrompt });
+      const data = res.data?.data || res.data;
+      setAiRecommendation(data);
+    } catch (err) {
+      setAiError(err.response?.data?.message || err.message || 'Failed to classify service request');
+    } finally {
+      setIsAiClassifying(false);
+    }
+  };
+
+  const handleApplyAiRecommendation = () => {
+    if (!aiRecommendation?.categoryId) return;
+    setFormData((prev) => ({
+      ...prev,
+      categoryId: aiRecommendation.categoryId,
+      requiredSkills: [],
+    }));
+    setFieldErrors((prev) => ({ ...prev, categoryId: '' }));
+  };
+
+  const handleStep2AiCheck = async () => {
+    if (!formData.title && !formData.description) return;
+    setIsCheckingStep2Ai(true);
+    setStep2AiCheck(null);
+    try {
+      const res = await aiService.classifyRequest({
+        title: formData.title,
+        description: formData.description,
+      });
+      const data = res.data?.data || res.data;
+      setStep2AiCheck(data);
+    } catch (err) {
+      setStep2AiCheck({ error: err.response?.data?.message || err.message || 'Check failed' });
+    } finally {
+      setIsCheckingStep2Ai(false);
+    }
+  };
+
+  const handleApplyStep2Recommendation = () => {
+    if (!step2AiCheck?.categoryId) return;
+    setFormData((prev) => ({
+      ...prev,
+      categoryId: step2AiCheck.categoryId,
+      requiredSkills: [],
+    }));
   };
 
   // Step-by-step validations
@@ -263,6 +325,74 @@ export const CreateRequestPage = () => {
               <p className="text-xs text-red-600 mb-3">{fieldErrors.categoryId}</p>
             )}
 
+            {/* AI Category Assistant Widget */}
+            <div className="mb-6 rounded-xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-blue-50/50 to-white p-4 shadow-xs">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-5 w-5 text-indigo-600" />
+                <h3 className="text-sm font-semibold text-indigo-950">CareConnect AI Category Assistant</h3>
+                <Badge variant="primary" size="sm" className="bg-indigo-100 text-indigo-700 font-medium">Smart Match</Badge>
+              </div>
+              <p className="text-xs text-slate-600 mb-3">
+                Unsure which category fits? Describe your problem in everyday words and CareConnect AI will predict the right trade with explainable reasoning.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. Water is leaking from the pipe under the kitchen sink..."
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAiClassify())}
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={isAiClassifying || !aiPrompt.trim()}
+                  onClick={handleAiClassify}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5 whitespace-nowrap"
+                >
+                  {isAiClassifying ? <LoadingSpinner size="sm" /> : <Sparkles className="h-4 w-4" />}
+                  {isAiClassifying ? 'Analyzing...' : 'AI Classify'}
+                </Button>
+              </div>
+
+              {aiRecommendation && (
+                <div className="mt-3 rounded-lg border border-indigo-200 bg-white p-3 shadow-xs">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Suggested Category:</span>
+                      <span className="text-sm font-bold text-indigo-900">{aiRecommendation.categoryName}</span>
+                      <Badge
+                        variant={aiRecommendation.confidenceLevel === 'HIGH' ? 'success' : aiRecommendation.confidenceLevel === 'MEDIUM' ? 'warning' : 'default'}
+                        size="sm"
+                      >
+                        {Math.round(aiRecommendation.confidence * 100)}% Confidence
+                      </Badge>
+                      {aiRecommendation.isFallback && (
+                        <Badge variant="secondary" size="sm">Fallback Suggestion</Badge>
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={handleApplyAiRecommendation}
+                      className="border-indigo-300 text-indigo-700 hover:bg-indigo-50 text-xs py-1 h-7"
+                    >
+                      Apply Category
+                    </Button>
+                  </div>
+                  <p className="mt-1.5 text-xs text-slate-600 italic">
+                    &ldquo;{aiRecommendation.explanation}&rdquo;
+                  </p>
+                </div>
+              )}
+
+              {aiError && (
+                <p className="mt-2 text-xs font-medium text-red-600">{aiError}</p>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {categories.map((cat) => {
                 const IconComponent = iconMap[cat.icon] || Wrench;
@@ -335,10 +465,11 @@ export const CreateRequestPage = () => {
             />
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="problem-description" className="block text-sm font-medium text-slate-700 mb-1">
                 Detailed Problem Description <span className="text-red-500">*</span>
               </label>
               <textarea
+                id="problem-description"
                 name="description"
                 rows={5}
                 required
@@ -353,6 +484,59 @@ export const CreateRequestPage = () => {
               />
               {fieldErrors.description && (
                 <p className="mt-1 text-xs text-red-600">{fieldErrors.description}</p>
+              )}
+            </div>
+
+            {/* AI Category Verification Tool */}
+            <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-indigo-600" />
+                  <span className="text-xs font-medium text-slate-700">
+                    Verify category match for this problem:
+                  </span>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={isCheckingStep2Ai || (!formData.title && !formData.description)}
+                  onClick={handleStep2AiCheck}
+                  className="text-xs h-7 py-1 flex items-center gap-1 text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+                >
+                  {isCheckingStep2Ai ? <LoadingSpinner size="sm" /> : <Sparkles className="h-3.5 w-3.5" />}
+                  Check Category with AI
+                </Button>
+              </div>
+
+              {step2AiCheck && (
+                <div className="mt-2 text-xs">
+                  {step2AiCheck.error ? (
+                    <p className="text-red-600">{step2AiCheck.error}</p>
+                  ) : step2AiCheck.categoryId === formData.categoryId ? (
+                    <div className="flex items-center gap-1.5 text-emerald-700">
+                      <CheckCircle className="h-4 w-4 shrink-0 text-emerald-600" />
+                      <span>
+                        Confirmed! Problem description matches <strong>{selectedCategory?.name}</strong> with {Math.round(step2AiCheck.confidence * 100)}% confidence.
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between gap-2 text-amber-800 bg-amber-50 rounded p-2">
+                      <span>
+                        AI suggests <strong>{step2AiCheck.categoryName}</strong> ({Math.round(step2AiCheck.confidence * 100)}% confidence) may be a better match.
+                      </span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={handleApplyStep2Recommendation}
+                        className="text-xs h-6 py-0 px-2 bg-white text-amber-800 border-amber-300"
+                      >
+                        Switch to {step2AiCheck.categoryName}
+                      </Button>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
