@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareConnect — Capstone Presentation</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #0ea5e9;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #10b981;
+      --accent-warm: #f59e0b;
+      --danger: #ef4444;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #38bdf8;
+    }
+
+    .brand-badge {
+      background: #0284c7;
+      color: white;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .slide-counter {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .slide-container {
+      width: 100%;
+      max-width: 1100px;
+      height: 640px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .slide-container.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #60a5fa;
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #cbd5e1;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin: 1rem 0;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #38bdf8;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .highlight-box {
+      background: rgba(14, 165, 233, 0.1);
+      border-left: 4px solid var(--secondary);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: rgba(15, 23, 42, 0.8);
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-success { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; }
+    .badge-info { background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid #0284c7; }
+    .badge-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #d97706; }
+
+    ul {
+      margin-left: 1.5rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #38bdf8;
+      font-size: 0.9em;
+    }
+
+    pre {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin: 1rem 0;
+    }
+
+    footer {
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      border-top: 1px solid var(--border);
+    }
+
+    .nav-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: #38bdf8;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span>CareConnect</span>
+      <span class="brand-badge">Capstone Defense</span>
+    </div>
+    <div class="slide-counter" id="slideIndicator">Slide 1 of 17</div>
+  </header>
+
+  <main>
+    <!-- Slide 1: Title -->
+    <div class="slide-container active">
+      <span class="badge badge-info" style="margin-bottom: 1rem;">MERN Stack Engineering</span>
+      <h1>CareConnect</h1>
+      <div class="subtitle">Home Services Booking & Operations Management Platform</div>
+      <div class="grid-2" style="margin-top: 1.5rem;">
+        <div class="card">
+          <div class="card-title">Technology Foundation</div>
+          <p>MongoDB | Express.js | React (Vite) | Node.js | Tailwind CSS</p>
+          <div class="badge badge-success">373 Tests Passing (100%)</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Deployment Status</div>
+          <p>Frontend: Vercel CDN | Backend: Render PaaS | DB: MongoDB Atlas</p>
+          <div class="badge badge-info">Production Ready</div>
+        </div>
+      </div>
+      <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem;">
+        Use [Arrow Keys], [Spacebar], or on-screen buttons to navigate.
+      </p>
+    </div>
+
+    <!-- Slide 2: Problem Statement -->
+    <div class="slide-container">
+      <h2>1. Problem Statement & Market Friction</h2>
+      <p>Urban homeowners struggle to find verified, predictable, and transparent home trade services:</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Fragmented Discovery & Pricing</div>
+          <p>Customers deal with opaque verbal quotes, hidden charges on-site, and erratic contractor availability.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Security & Credential Deficit</div>
+          <p>Unvetted technicians entering private homes without identity, address, or trade certification screening.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Zero Operational Visibility</div>
+          <p>No milestone tracking between initial booking confirmation and physical arrival.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Absence of Arbitration</div>
+          <p>Botched or incomplete repairs leave customers without dispute mediation or refund guarantees.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Proposed Solution -->
+    <div class="slide-container">
+      <h2>2. Proposed Solution: CareConnect Platform</h2>
+      <p>CareConnect bridges the gap with a unified, transparent digital marketplace and operational engine:</p>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">Role-Specific Workflows</div>
+          <p>5 distinct portals tailored to Customers, Providers, Support Agents, Operations Managers, and Admins.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Verified Onboarding</div>
+          <p>Document verification pipelines (Identity, Address, Certifications) required before dispatch.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Explainable AI Heuristics</div>
+          <p>Instant category suggestions and multi-factor provider matching with 100% offline reliability.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Verifiable Work Orders</div>
+          <p>Strict job state machines requiring digital completion photo evidence before invoice issuance.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Financial Precision</div>
+          <p>Integer-cent accounting eliminating floating-point rounding errors on platform commissions.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Formal Dispute Mediation</div>
+          <p>Integrated arbitration queues and refund adjudication protecting customer funds.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: System Architecture -->
+    <div class="slide-container">
+      <h2>3. Decoupled Layered Architecture</h2>
+      <div class="grid-2">
+        <div>
+          <div class="highlight-box">
+            <strong>Clean 4-Layer Separation of Concerns:</strong>
+            <ul style="margin-top: 0.5rem;">
+              <li><strong>Presentation:</strong> React 18 SPA with Vite, Tailwind CSS, Lucide Icons, and Recharts.</li>
+              <li><strong>API Gateway:</strong> Express routing, rate-limiting, CORS, and central error handling.</li>
+              <li><strong>Business Service Layer:</strong> Pure business logic, state machines, and aggregations.</li>
+              <li><strong>Persistence:</strong> 14 Mongoose models with compound and geospatial indexes.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Architecture Guarantees</div>
+          <ul>
+            <li><strong>Stateless REST API:</strong> Complete horizontal scalability.</li>
+            <li><strong>Double-Booking Prevention:</strong> Pre-booking calendar conflict detection.</li>
+            <li><strong>Security-First Defaults:</strong> Passwords hashed with bcrypt (cost 12), stripped from serialization.</li>
+            <li><strong>Zero Database Pollution:</strong> In-memory MongoDB testing harness.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: RBAC Matrix -->
+    <div class="slide-container">
+      <h2>4. 5-Role Access Control Matrix (RBAC)</h2>
+      <p>Strictly enforced server-side via <code>auth.middleware.js</code>; client guards optimize UX.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Primary Capabilities</th>
+            <th>Access Boundary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CUSTOMER</strong></td>
+            <td>Post requests, compare quotes, track jobs, pay invoices, submit reviews</td>
+            <td>Own resources only</td>
+          </tr>
+          <tr>
+            <td><strong>SERVICE_PROVIDER</strong></td>
+            <td>Configure shifts & cities, submit bids, upload proof of work</td>
+            <td>Assigned work orders</td>
+          </tr>
+          <tr>
+            <td><strong>SUPPORT_AGENT</strong></td>
+            <td>Resolve customer disputes, approve refunds, triage support tickets</td>
+            <td>Support & dispute queues</td>
+          </tr>
+          <tr>
+            <td><strong>OPERATIONS_MANAGER</strong></td>
+            <td>Monitor live dispatch queues, reassign jobs, inspect quality</td>
+            <td>Operations & analytics</td>
+          </tr>
+          <tr>
+            <td><strong>PLATFORM_ADMIN</strong></td>
+            <td>Approve provider credentials, manage categories, inspect audit logs</td>
+            <td>Unrestricted system scope</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Slide 6: Database Models -->
+    <div class="slide-container">
+      <h2>5. Data Architecture: 14 Mongoose Models</h2>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">Principals</div>
+          <ul>
+            <li><code>User</code> (Auth, RBAC, Status)</li>
+            <li><code>ProviderProfile</code> (Docs, Bio, Rating)</li>
+            <li><code>Availability</code> (Shifts, Blockouts)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Marketplace</div>
+          <ul>
+            <li><code>ServiceCategory</code> (Taxonomy, Icons)</li>
+            <li><code>ServiceRequest</code> (Location, AI)</li>
+            <li><code>Quote</code> (Bids, Expirations)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Fulfillment</div>
+          <ul>
+            <li><code>Booking</code> (Contracts, Conflicts)</li>
+            <li><code>Job</code> (Milestones, Photos)</li>
+            <li><code>Review</code> (Ratings, Feedback)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Financial</div>
+          <ul>
+            <li><code>Invoice</code> (Integer cents, Tax, Fees)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Governance</div>
+          <ul>
+            <li><code>Dispute</code> (Arbitration, Refunds)</li>
+            <li><code>SupportTicket</code> (Threaded notes)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Auditing</div>
+          <ul>
+            <li><code>Notification</code> (In-app alerts)</li>
+            <li><code>AuditLog</code> (Immutable compliance)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Service Fulfillment Lifecycle -->
+    <div class="slide-container">
+      <h2>6. End-to-End Fulfillment Flow</h2>
+      <div class="highlight-box">
+        <strong>From Service Request to Completed Review:</strong>
+      </div>
+      <ol style="margin-left: 2rem; line-height: 2; font-size: 1.05rem;">
+        <li><strong>Step 1:</strong> Customer submits request; AI classifies category with confidence score.</li>
+        <li><strong>Step 2:</strong> Verified providers view marketplace and submit formal price quotes.</li>
+        <li><strong>Step 3:</strong> Customer accepts quote $\to$ Booking confirmed $\to$ Job work order provisioned.</li>
+        <li><strong>Step 4:</strong> Provider updates status: <code>ASSIGNED</code> $\to$ <code>EN_ROUTE</code> $\to$ <code>IN_PROGRESS</code>.</li>
+        <li><strong>Step 5:</strong> Provider uploads photo evidence and marks job <code>COMPLETED</code>.</li>
+        <li><strong>Step 6:</strong> Invoice generated in integer cents $\to$ Customer settles payment and submits 5★ review.</li>
+      </ol>
+    </div>
+
+    <!-- Slide 8: Provider Verification -->
+    <div class="slide-container">
+      <h2>7. Provider Verification & Scheduling</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Vetting & Compliance Pipeline</div>
+          <ul>
+            <li>Mandatory document uploads: Government ID, Address Proof, Trade License.</li>
+            <li>Status pipeline: <code>PENDING</code> $\to$ <code>APPROVED</code> / <code>REJECTED</code>.</li>
+            <li>Only approved providers with active accounts can submit quotes or receive dispatches.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Shift & Availability Engine</div>
+          <ul>
+            <li>Weekly recurring shift templates (Monday–Sunday).</li>
+            <li>Specific calendar date blockouts for holidays and sick leave.</li>
+            <li>Automated conflict check stops overlapping bookings across identical provider timeslots.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Job State Machine -->
+    <div class="slide-container">
+      <h2>8. Verifiable Job State Machine</h2>
+      <p>CareConnect eliminates contractor ambiguity with a rigorous operational state machine:</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">State Transitions</div>
+          <ul>
+            <li><code>ASSIGNED</code>: Booking accepted, technician notified.</li>
+            <li><code>EN_ROUTE</code>: Travel initiated, ETA active.</li>
+            <li><code>IN_PROGRESS</code>: Work started on premises.</li>
+            <li><code>COMPLETED</code>: Work finished, evidence uploaded.</li>
+            <li><code>CANCELLED</code>: Aborted with formal reason.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Digital Proof Verification</div>
+          <p>Before advancing to <code>COMPLETED</code>, the provider must upload:</p>
+          <ul>
+            <li>Proof photo URL / document of the finished repair.</li>
+            <li>Detailed completion notes explaining parts replaced.</li>
+          </ul>
+          <div class="badge badge-success" style="margin-top: 1rem;">Enforced at Service Layer</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: Financial Engine -->
+    <div class="slide-container">
+      <h2>9. Billing Architecture: Integer-Cent Precision</h2>
+      <div class="grid-2">
+        <div>
+          <div class="highlight-box">
+            <strong>Why Not Standard Floats?</strong><br />
+            Standard IEEE 754 floating-point math causes rounding inaccuracies:<br />
+            <code>0.1 + 0.2 = 0.30000000000000004</code><br /><br />
+            CareConnect stores all currency as <strong>integer cents</strong> (e.g. ₹1,200 is stored as <code>120000</code>).
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Platform Commission Split</div>
+          <ul>
+            <li><strong>Subtotal:</strong> Provider service fee.</li>
+            <li><strong>Platform Fee:</strong> Configurable percentage commission (10%).</li>
+            <li><strong>Tax:</strong> Applicable statutory levy.</li>
+            <li><strong>Total Amount:</strong> Exact sum payable by customer.</li>
+            <li>Conversion to decimal happens strictly in display layers.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 11: Support & Disputes -->
+    <div class="slide-container">
+      <h2>10. Dispute Arbitration & Support Ticketing</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Dispute Arbitration</div>
+          <ul>
+            <li>Customers or providers can contest jobs.</li>
+            <li>Support agents review evidence photos and job timeline.</li>
+            <li>Adjudication options: Reject dispute or approve partial/full refund.</li>
+            <li>Resolutions automatically sync booking status and financial records.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Threaded Ticketing System</div>
+          <ul>
+            <li>Auto-generated ticket IDs (e.g. <code>TCK-84920</code>).</li>
+            <li>Priority queues (<code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code>, <code>URGENT</code>).</li>
+            <li>Staff can leave internal notes hidden from customers (<code>isInternal: true</code>).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 12: Analytics Engine -->
+    <div class="slide-container">
+      <h2>11. Real-Time Platform Analytics</h2>
+      <p>High-efficiency MongoDB aggregation pipelines without external data warehouses:</p>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">Booking Trends</div>
+          <p>Daily time-series grouped by date, completed vs cancelled rates.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Revenue Trends</div>
+          <p>Total invoiced vs collected revenue, platform commission yield.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Category Demand</div>
+          <p>Aggregated customer requests and bookings by service vertical.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Provider Leaderboard</div>
+          <p>Ranked specialists by completed volume, rating, and revenue.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Operational Health</div>
+          <p>Dispute ratios, ticket resolution velocity, refund volumes.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Zero-Division Guards</div>
+          <p>Protected against empty date intervals using <code>$cond</code> stages.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 13: Explainable AI - Classification -->
+    <div class="slide-container">
+      <h2>12. Explainable AI: Category Classification</h2>
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-title">Domain Keyword Taxonomy</div>
+            <p>Maps 100+ domain indicators (e.g. <em>"p-trap"</em>, <em>"mcb"</em>, <em>"compressor"</em>, <em>"sanitization"</em>) to service verticals.</p>
+            <div class="highlight-box">
+              <strong>Multi-Tier Scoring Matrix:</strong><br />
+              Name: +35 | Slug: +30 | Skills: +20 | Phrases: +18 | Tokens: +10
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Confidence Formula & Fallback</div>
+          <p>Raw scores normalize into interval [0.50, 0.98]:</p>
+          <pre>Confidence = 0.50 + min(score, 60) * 0.008</pre>
+          <ul>
+            <li><strong>HIGH:</strong> &ge; 0.80 | <strong>MEDIUM:</strong> &ge; 0.60 | <strong>LOW:</strong> &lt; 0.60</li>
+            <li><strong>Deterministic Fallback:</strong> Zero-keyword input defaults to <code>Home Maintenance</code> (0.30 confidence) with transparent explanation.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 14: Explainable AI - Matching -->
+    <div class="slide-container">
+      <h2>13. Explainable AI: Provider Matching</h2>
+      <p>Scores active verified providers out of <strong>100 composite points</strong>:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Factor</th>
+            <th>Max Points</th>
+            <th>Scoring Logic</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Geographical Match</strong></td>
+            <td>35 pts</td>
+            <td>35 pts if operating in requested city; 10 pts if out of city; 25 neutral default.</td>
+          </tr>
+          <tr>
+            <td><strong>Rating & Reputation</strong></td>
+            <td>30 pts</td>
+            <td>Normalized star rating (up to 25 pts) + review volume bonus (up to 5 pts).</td>
+          </tr>
+          <tr>
+            <td><strong>Fulfillment Track Record</strong></td>
+            <td>20 pts</td>
+            <td>Completed jobs count (up to 15 pts) + years in trade (up to 5 pts).</td>
+          </tr>
+          <tr>
+            <td><strong>Active Availability</strong></td>
+            <td>15 pts</td>
+            <td>15 pts if provider is currently available for dispatch.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="badge badge-warning" style="margin-top: 0.5rem;">Strictly Advisory: AI cannot auto-book or bypass user approval</div>
+    </div>
+
+    <!-- Slide 15: Security Hardening -->
+    <div class="slide-container">
+      <h2>14. Security Engineering & Hardening</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Authentication & Identity</div>
+          <ul>
+            <li>Stateless JWT with HMAC-SHA256 signature (7-day expiry).</li>
+            <li>Bcrypt password hashing with work factor 12.</li>
+            <li>Mongoose <code>select: false</code> and <code>toJSON</code> strip password hashes.</li>
+            <li>Account status verification (<code>ACTIVE</code> required).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Network & Compliance</div>
+          <ul>
+            <li><code>express-rate-limit</code> prevents brute-force login attacks.</li>
+            <li>CORS origin whitelist with credentials enabled.</li>
+            <li>Immutable audit logging records actor, action, IP, and timestamp.</li>
+            <li>Central error middleware suppresses stack traces in production.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 16: Verification & Testing -->
+    <div class="slide-container">
+      <h2>15. Quality Assurance: 373 Automated Tests</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Backend Suite (Jest + Supertest)</div>
+          <p style="font-size: 2rem; font-weight: 800; color: #34d399;">307 / 307 Passed</p>
+          <p>15 test suites covering Auth, Bookings, AI Heuristics, Analytics Aggregations, RBAC, and State Transitions.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Frontend Suite (Vitest + RTL)</div>
+          <p style="font-size: 2rem; font-weight: 800; color: #38bdf8;">66 / 66 Passed</p>
+          <p>9 test files covering AuthContext, Route Guards, Dashboards, and AI Suggestion Components.</p>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-top: 1rem;">
+        <div class="card">
+          <div class="card-title">ESLint Code Hygiene</div>
+          <div class="badge badge-success">0 Errors Across Full Monorepo</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Vite Production Compilation</div>
+          <div class="badge badge-success">Clean Production Bundle in 6.44s</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 17: Summary & Conclusion -->
+    <div class="slide-container">
+      <h2>16. Conclusion & Viva Defense</h2>
+      <div class="highlight-box">
+        <strong>Milestones 1 Through 12 Successfully Completed</strong>
+      </div>
+      <div class="grid-2" style="margin-top: 1rem;">
+        <div class="card">
+          <div class="card-title">Core Achievements</div>
+          <ul>
+            <li>Production-grade MERN architecture with zero mocked business rules.</li>
+            <li>Explainable AI offering high accuracy with zero third-party API costs.</li>
+            <li>Financial integrity guaranteed by integer-cent accounting.</li>
+            <li>Complete test suite with 373 passing tests.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Future Production Roadmap</div>
+          <ul>
+            <li>WebSockets (Socket.io) for instant duplex chat.</li>
+            <li>Razorpay / Stripe live payment gateway webhooks.</li>
+            <li>MongoDB Atlas Search for fuzzy typo-tolerant queries.</li>
+            <li>GPS telemetry for live provider vehicle tracking.</li>
+          </ul>
+        </div>
+      </div>
+      <h3 style="margin-top: 1.5rem; text-align: center; color: #38bdf8;">Thank You! We welcome questions from the examination panel.</h3>
+    </div>
+  </main>
+
+  <footer>
+    <button class="nav-btn" id="prevBtn" onclick="prevSlide()">Previous</button>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">CareConnect Capstone Viva Presentation</div>
+    <button class="nav-btn" id="nextBtn" onclick="nextSlide()">Next</button>
+  </footer>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide-container');
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+
+    function updateSlide() {
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('active', index === currentSlide);
+      });
+      document.getElementById('slideIndicator').textContent = `Slide ${currentSlide + 1} of ${totalSlides}`;
+      document.getElementById('prevBtn').disabled = currentSlide === 0;
+      document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+      document.getElementById('progressBar').style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'Home') {
+        currentSlide = 0;
+        updateSlide();
+      } else if (e.key === 'End') {
+        currentSlide = totalSlides - 1;
+        updateSlide();
+      }
+    });
+
+    updateSlide();
+  </script>
+</body>
+</html>

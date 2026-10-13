@@ -1,79 +1,82 @@
-# CareConnect – Home Services Booking & Operations Platform
+# CareConnect — Home Services Booking & Operations Platform
 
-[![Node.js](https://img.shields.io/badge/Node.js-v24.x-green.svg)](https://nodejs.org)
+[![Node.js](https://img.shields.io/badge/Node.js-v20%2B-green.svg)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express-4.21.x-blue.svg)](https://expressjs.com)
 [![React](https://img.shields.io/badge/React-18.x-cyan.svg)](https://react.dev)
-[![Vite](https://img.shields.io/badge/Vite-6.x-purple.svg)](https://vitejs.dev)
+[![Vite](https://img.shields.io/badge/Vite-5.x-purple.svg)](https://vitejs.dev)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.x-38bdf8.svg)](https://tailwindcss.com)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose_8.x-47A248.svg)](https://www.mongodb.com)
+[![Tests Passing](https://img.shields.io/badge/Tests-373%2F373%20Passing-brightgreen.svg)](docs/TESTING.md)
+[![Deployment Vercel](https://img.shields.io/badge/Frontend-Vercel%20Live-success.svg)](https://careconnect-6iyi.vercel.app)
+[![Deployment Render](https://img.shields.io/badge/Backend-Render%20Live-success.svg)](https://careconnect-m0p2.onrender.com/api/v1/health)
 
 ---
 
 ## Overview
 
-**CareConnect** is an enterprise-grade marketplace and operations management platform designed to streamline home services booking, provider dispatch, job fulfillment, and dispute resolution.
+**CareConnect** is an enterprise-grade full-stack MERN marketplace and operations platform designed to streamline home services booking, provider credentialing, job fulfillment, automated invoicing, customer disputes, and executive analytics.
 
-The platform connects homeowners and property managers with verified trade specialists (plumbing, electrical, appliance repair, HVAC, cleaning, and maintenance), providing automated quote comparison, live scheduling, milestone tracking, invoicing, and escrow resolution.
-
----
-
-## Features
-
-### Foundational Capabilities
-- **Multi-Role Authentication**: JWT-based authentication with bcrypt hashing (work factor 12) and secure session management.
-- **Strict Layered Architecture**: Routes $\rightarrow$ Middleware $\rightarrow$ Controllers $\rightarrow$ Services $\rightarrow$ Models.
-- **Role-Based Access Control (RBAC)**: Comprehensive permission enforcement across 5 distinct system roles.
-- **Centralized Error Handling**: Standardized API error payloads with operational error mapping and stack trace masking in production.
-- **Defensive API Hardening**: Built-in Helmet security headers, CORS origin verification, and tiered request rate limiters.
-- **Modular Frontend UI**: Clean dashboard design system with reusable components (`Button`, `Input`, `Select`, `Modal`, `Card`, `Badge`, `Table`, `LoadingSpinner`, `EmptyState`, `ErrorState`).
-- **Unified API Client**: Centralized Axios instance with automatic JWT injection, 401 automatic recovery, and error formatting.
-- **Isolated AI Layer**: Assistive AI architecture for classification and provider ranking quarantined from business invariants.
+The platform connects homeowners with verified trade professionals (Plumbing, Electrical, Cleaning, Appliance Repair, Home Maintenance) through competitive quoting, verifiable job fulfillment milestones with photo evidence, integer-cent financial accuracy, and an explainable AI subsystem.
 
 ---
 
-## Technology Stack
+## Live Deployments & Health Checks
 
-### Frontend (`client/`)
-- **Library/Framework**: React 18
-- **Build Tool**: Vite 6
-- **Routing**: React Router 6
-- **Styling**: Tailwind CSS 3.4
-- **HTTP Client**: Axios with interceptors
-- **Icons**: Lucide React
-- **Forms**: React Hook Form
-- **Testing**: Vitest + React Testing Library + JSDOM
-
-### Backend (`server/`)
-- **Runtime**: Node.js 24
-- **Framework**: Express.js 4.21
-- **Database**: MongoDB with Mongoose 8
-- **Validation**: Zod
-- **Security**: Helmet, CORS, Express-Rate-Limit, BCryptJS, JSONWebToken
-- **Logging**: Leveled structured logger abstraction + Morgan
-- **Testing**: Jest 29 + Supertest 7 + MongoDB Memory Server
+- **Live Frontend (Vercel)**: [https://careconnect-6iyi.vercel.app](https://careconnect-6iyi.vercel.app)
+- **Live Backend API (Render)**: [https://careconnect-m0p2.onrender.com](https://careconnect-m0p2.onrender.com)
+- **API Health Check**: [https://careconnect-m0p2.onrender.com/api/v1/health](https://careconnect-m0p2.onrender.com/api/v1/health)
 
 ---
 
-## Architecture
+## Core Capabilities & Features
 
-CareConnect enforces a decoupled client-server architecture with an isolated AI service subsystem:
+### 1. Multi-Role Portals & RBAC
+- Dedicated workflows for 5 roles: `CUSTOMER`, `SERVICE_PROVIDER`, `SUPPORT_AGENT`, `OPERATIONS_MANAGER`, and `PLATFORM_ADMIN`.
+- Server-side access control with permission matrix enforcement on all Express routes.
+- Client-side navigation guards with automatic role dashboard redirection.
 
-```
-[React + Vite Single Page Application]
-                 │
-           (Axios Client)
-                 │
-                 ▼
-       [Express.js REST API]
-                 │
-       [Layered Architecture]
-  Routes -> Middleware -> Controllers -> Services -> Models
-                 │                               │
-                 ▼                               ▼
-        [MongoDB Database]           [AI Services (Advisory)]
-```
+### 2. Service Requests & Competitive Quoting
+- Customers post requests with geolocations, preferred time slots, and problem descriptions.
+- Verified service providers submit itemized quotes with estimated repair durations.
+- Transparent quote review, acceptance, and automated booking creation.
 
-For full architectural diagrams and flow details, see [`docs/architecture/system-architecture.md`](docs/architecture/system-architecture.md).
+### 3. Provider Onboarding & Scheduling
+- Multi-document verification pipeline (Government ID, Address Proof, Trade Licenses).
+- Provider calendar with weekly shift recurrence and blackout date overrides.
+- Overlap prevention algorithm stopping double-bookings for the same provider.
+
+### 4. Operational Job State Machine
+- Strict job milestone progression: `ASSIGNED` $\to$ `EN_ROUTE` $\to$ `IN_PROGRESS` $\to$ `COMPLETED`.
+- Digital proof-of-work requirement (completion photos and notes) prior to completion.
+
+### 5. Financial Billing Engine
+- Subtotal, platform commission split (10%), and tax calculations.
+- **Integer-Cent Precision Guarantee**: All invoice balances are stored and computed in integer cents to eliminate IEEE 754 floating-point drift.
+
+### 6. Customer Disputes & Support Ticketing
+- Integrated arbitration workflow with evidence inspection and refund adjudication.
+- Threaded support tickets with priority queues and staff-only internal notes.
+
+### 7. Real-Time Platform Analytics
+- Native high-performance MongoDB aggregation pipelines (no external data warehouse needed).
+- Real-time KPI summaries, daily booking timelines, revenue collection rates, category demand breakdowns, and provider leaderboards.
+- Bounded with division-by-zero protection.
+
+### 8. Explainable AI (XAI)
+- **Intelligent Request Classification**: Heuristic analysis utilizing a 100+ domain term taxonomy. Computes normalized confidence scores with transparent keyword rationales and deterministic fallback.
+- **Multi-Factor Provider Matching**: 100-point composite scoring model evaluating location, ratings, track record, and availability. Strictly advisory; never bypasses quotes or customer review.
+
+---
+
+## Technical Stack
+
+| Layer | Technologies |
+|:---|:---|
+| **Frontend** | React 18, Vite 5, React Router 6, Tailwind CSS 3.4, Recharts, Lucide React, Axios |
+| **Backend** | Node.js 20+, Express.js 4.21, Mongoose 8.x, JWT, BcryptJS, Express-Rate-Limit, Cors |
+| **Database** | MongoDB Atlas (Cloud) / In-Memory MongoDB (Testing) |
+| **Testing** | Jest 29, Supertest 7, `mongodb-memory-server`, Vitest, React Testing Library |
+| **Deployment** | Vercel (Edge SPA), Render (Containerized Web Service), MongoDB Atlas (TLS Cluster) |
 
 ---
 
@@ -81,236 +84,143 @@ For full architectural diagrams and flow details, see [`docs/architecture/system
 
 ```
 careconnect/
-├── client/                     # Vite + React Frontend
-│   ├── public/                 # Static assets
+├── client/                     # Vite + React Frontend Application
+│   ├── public/                 # Static branding assets
 │   └── src/
-│       ├── assets/             # Branding and icons
-│       ├── components/
-│       │   ├── common/         # ProtectedRoute, ResourcePlaceholder
-│       │   ├── forms/          # Form components
-│       │   ├── layout/         # Navbar, Sidebar, DashboardLayout
-│       │   └── ui/             # Reusable design system components
-│       ├── pages/
-│       │   ├── auth/           # LoginPage, RegisterPage
-│       │   ├── customer/       # Customer dashboard & subpages
-│       │   ├── provider/       # Provider dashboard & subpages
-│       │   ├── support/        # Support agent dashboard
-│       │   ├── operations/     # Operations manager dashboard
-│       │   ├── admin/          # Platform admin dashboard
-│       │   └── NotFoundPage.jsx
-│       ├── routes/             # AppRoutes routing table
+│       ├── components/         # Common, form, layout, and UI components
 │       ├── context/            # AuthContext provider
-│       ├── services/           # apiClient, auth.service, health.service
-│       ├── constants/          # Role and navigation constants
-│       ├── tests/              # Frontend component tests
-│       ├── App.jsx             # Root application component
-│       └── main.jsx            # Entry point
+│       ├── pages/              # Customer, Provider, Support, Ops, Admin pages
+│       ├── routes/             # AppRoutes and ProtectedRoute guards
+│       ├── services/           # Axios API client and domain endpoints
+│       └── tests/              # 66 Vitest UI integration tests
 │
 ├── server/                     # Node.js + Express REST API
 │   ├── src/
-│   │   ├── config/             # env.js, db.js
-│   │   ├── constants/          # roles.js, status.js, errorCodes.js
-│   │   ├── controllers/        # health.controller.js, auth.controller.js
-│   │   ├── middleware/         # auth, error, rateLimiter, validate
-│   │   ├── models/             # Mongoose schemas for all 13 domain entities
-│   │   ├── routes/             # v1 versioned API routes
-│   │   ├── services/           # auth.service.js, ai/ (classification, matching)
-│   │   ├── validators/         # auth.validator.js (Zod)
-│   │   ├── utils/              # apiResponse, apiError, logger
-│   │   ├── jobs/               # Background task scheduler stubs
-│   │   ├── app.js              # Express app pipeline
-│   │   └── server.js           # Server bootstrap and lifecycle
-│   └── tests/                  # Integration tests (Supertest + Jest)
+│   │   ├── config/             # Environment parsing and DB connection
+│   │   ├── constants/          # Roles, status codes, and permissions
+│   │   ├── controllers/        # Express request handlers across 17 domains
+│   │   ├── middleware/         # Auth, RBAC, error handling, rate limiting
+│   │   ├── models/             # 14 Mongoose schemas and indexes
+│   │   ├── routes/             # Versioned /api/v1 router endpoints
+│   │   ├── services/           # Business logic, state machines, analytics, AI
+│   │   └── validators/         # Input sanitization and validators
+│   └── tests/                  # 307 Jest + Supertest integration tests
 │
-├── docs/                       # Project Documentation
-│   ├── architecture/           # System architecture guide
-│   ├── api/                    # API specification and endpoints
-│   └── database/               # Entity relationship and database dictionary
+├── docs/                       # Comprehensive System Documentation
+│   ├── ARCHITECTURE.md         # Full architectural design & data flow
+│   ├── API_REFERENCE.md        # Complete v1 REST API endpoint reference
+│   ├── DATABASE_MODELS.md      # Detailed reference for all 14 Mongoose models
+│   ├── AUTHENTICATION_AND_RBAC.md # Auth lifecycle & 5-role permission matrix
+│   ├── ANALYTICS.md            # MongoDB aggregation pipelines & financial math
+│   ├── AI_FEATURES.md          # Heuristic classification & provider matching
+│   ├── TESTING.md              # Automated testing methodology & metrics
+│   └── DEMO_AND_VIVA_GUIDE.md  # 5-10 min demo script & 25+ viva questions
 │
-├── .gitignore
-├── .env.example
-├── package.json                # Root orchestration package
+├── presentation/               # Capstone Presentation Materials
+│   ├── CareConnect_Capstone_Presentation.md   # Marp markdown presentation deck
+│   └── CareConnect_Capstone_Presentation.html # Standalone interactive HTML presentation
+│
+├── package.json                # Monorepo root scripts
 └── README.md
 ```
 
 ---
 
-## Getting Started
+## Getting Started Locally
 
 ### Prerequisites
-- [Node.js](https://nodejs.org) >= 18.x (Recommended: v20 or v24)
-- [npm](https://www.npmjs.com) >= 9.x
-- [MongoDB](https://www.mongodb.com) (Local community server or MongoDB Atlas URI)
-- [Git](https://git-scm.com)
+- Node.js >= 18.x (Recommended: Node 20 LTS)
+- npm >= 9.x
+- Git
+
+### 1. Clone & Install Dependencies
+```bash
+git clone https://github.com/dhairya-test/careconnect.git
+cd careconnect
+
+# Install client and server dependencies
+npm --prefix server install
+npm --prefix client install
+```
+
+### 2. Configure Environment Variables
+
+**Server (`server/.env`)**:
+```env
+PORT=5000
+NODE_ENV=development
+MONGODB_URI=mongodb://localhost:27017/careconnect
+JWT_SECRET=careconnect_super_secret_jwt_key_2026_test
+JWT_EXPIRES_IN=7d
+CLIENT_URL=http://localhost:5173
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX=500
+```
+
+**Client (`client/.env`)**:
+```env
+VITE_API_BASE_URL=http://localhost:5000/api/v1
+```
+
+### 3. Run Development Servers
+```bash
+# Terminal 1: Run Backend API
+npm --prefix server run dev
+
+# Terminal 2: Run Frontend UI
+npm --prefix client run dev
+```
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:5000/api/v1`
+- Health: `http://localhost:5000/api/v1/health`
 
 ---
 
-## Environment Variables
+## Automated Testing & Quality Assurance
 
-Copy the example environment configurations:
+CareConnect maintains **373 automated tests** with a **100% pass rate**:
 
 ```bash
-# Server configuration
-cp server/.env.example server/.env
+# Run backend test suite (307 tests across 15 suites)
+npm --prefix server test
 
-# Client configuration
-cp client/.env.example client/.env
+# Run frontend test suite (66 tests across 9 files)
+npm --prefix client test
+
+# Run code linters
+npm --prefix server run lint
+npm --prefix client run lint
+
+# Compile production frontend build
+npm --prefix client run build
 ```
 
-### Server Configuration (`server/.env`)
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `PORT` | API listener port | `5000` |
-| `NODE_ENV` | Runtime environment (`development`, `test`, `production`) | `development` |
-| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/careconnect` |
-| `JWT_SECRET` | Secret key for signing JWTs ($\ge 16$ chars) | *(Required in production)* |
-| `JWT_EXPIRES_IN` | Token validity duration | `7d` |
-| `CLIENT_URL` | Frontend origin for CORS | `http://localhost:5173` |
-| `RATE_LIMIT_WINDOW_MS` | Rate limiting sliding window (ms) | `900000` (15 min) |
-| `RATE_LIMIT_MAX` | Max requests per window | `100` |
-| `OPENAI_API_KEY` | Optional LLM key for AI classification/matching | `""` |
-
-### Client Configuration (`client/.env`)
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `VITE_API_BASE_URL` | Base URI of backend REST API | `http://localhost:5000/api/v1` |
+| Suite | Tests | Result |
+|:---|:---:|:---:|
+| Backend (Jest + Supertest + In-Memory Mongo) | 307 | **307 Passed** |
+| Frontend (Vitest + React Testing Library) | 66 | **66 Passed** |
+| Client & Server Linters | Codebase | **0 Errors** |
+| Production Build Compilation | Bundle | **0 Errors** |
 
 ---
 
-## Running Locally
+## Capstone Documentation Directory
 
-### 1. Install All Dependencies
-From the project root:
-```bash
-npm run install:all
-```
-*(Or install inside `client/` and `server/` individually with `npm install`).*
+Detailed technical documentation and presentation artifacts:
 
-### 2. Start Both Server and Client Concurrently
-```bash
-npm run dev
-```
-- Frontend will be available at: [http://localhost:5173](http://localhost:5173)
-- Backend API will be available at: [http://localhost:5000/api/v1](http://localhost:5000/api/v1)
-- Health check endpoint: [http://localhost:5000/api/v1/health](http://localhost:5000/api/v1/health)
-
-### 3. Running Services Independently
-To run only the backend:
-```bash
-npm run dev:server
-```
-
-To run only the frontend:
-```bash
-npm run dev:client
-```
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — Architectural pattern, micro-layers, state machines, and sequence diagrams.
+- [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) — Complete REST specification covering all 17 route files.
+- [`docs/DATABASE_MODELS.md`](docs/DATABASE_MODELS.md) — Schema definitions, indexes, hooks, and relationships for all 14 models.
+- [`docs/AUTHENTICATION_AND_RBAC.md`](docs/AUTHENTICATION_AND_RBAC.md) — JWT lifecycle, password hashing, and role permission matrix.
+- [`docs/ANALYTICS.md`](docs/ANALYTICS.md) — Aggregation pipelines, revenue formulas, and integer-cent precision.
+- [`docs/AI_FEATURES.md`](docs/AI_FEATURES.md) — Heuristic classification rules, scoring formulas, and deterministic fallback.
+- [`docs/TESTING.md`](docs/TESTING.md) — Test directory layout, test scenarios, and security assertions.
+- [`docs/DEMO_AND_VIVA_GUIDE.md`](docs/DEMO_AND_VIVA_GUIDE.md) — 5–10 min demo script, role checklists, and 25+ viva voce Q&As.
+- [`presentation/CareConnect_Capstone_Presentation.md`](presentation/CareConnect_Capstone_Presentation.md) — 17-slide Marp markdown deck.
+- [`presentation/CareConnect_Capstone_Presentation.html`](presentation/CareConnect_Capstone_Presentation.html) — Interactive standalone presentation deck with keyboard controls.
 
 ---
 
-## API
+## License
 
-CareConnect features versioned REST APIs under `/api/v1`.
-
-### Health Check Endpoint
-```http
-GET /api/v1/health
-```
-**Response**:
-```json
-{
-  "success": true,
-  "message": "CareConnect API is running",
-  "data": {
-    "uptime": 12.45,
-    "timestamp": "2026-09-23T16:00:00.000Z",
-    "environment": "development"
-  }
-}
-```
-
-For complete documentation of endpoints, status codes, and headers, see [`docs/api/api-overview.md`](docs/api/api-overview.md).
-
----
-
-## Database
-
-The database layer contains 13 models prepared for the complete marketplace lifecycle:
-1. `User` – Authenticated principals across all roles
-2. `ProviderProfile` – Certifications, skills, hourly rates, and verification status
-3. `ServiceCategory` – Configurable service catalogs and price estimates
-4. `ServiceRequest` – Customer requests with geolocation and AI tags
-5. `Quote` – Provider bids and price estimates
-6. `Booking` – Confirmed appointments and agreements
-7. `Availability` – Provider weekly schedules and blackout dates
-8. `Job` – Live field fulfillment, check-ins, and evidence photos
-9. `Invoice` – Split billing, platform commission, and payment records
-10. `Review` – Customer ratings and reviews
-11. `Dispute` – Conflict tickets and refund handling
-12. `Notification` – Notification stream
-13. `AuditLog` – Immutable compliance audit log
-
-For the full entity-relationship schema and indices, see [`docs/database/database-design.md`](docs/database/database-design.md).
-
----
-
-## Authentication
-
-- **Registration**: `POST /api/v1/auth/register`
-- **Login**: `POST /api/v1/auth/login`
-- **Session Profile**: `GET /api/v1/auth/me` (Requires `Authorization: Bearer <token>`)
-- **Logout**: `POST /api/v1/auth/logout`
-
-Passwords are automatically hashed via bcrypt in Mongoose pre-save hooks and omitted from JSON output.
-
----
-
-## User Roles
-
-The platform enforces Role-Based Access Control (RBAC) across 5 roles:
-- `CUSTOMER` – Creates service requests, reviews quotes, books providers, tracks jobs.
-- `SERVICE_PROVIDER` – Manages profile, availability, quotes, and active job evidence.
-- `SUPPORT_AGENT` – Resolves disputes, handles cancellations, and initiates refunds.
-- `OPERATIONS_MANAGER` – Oversees marketplace health, provider dispatch, and unassigned requests.
-- `PLATFORM_ADMIN` – Verifies provider licenses, manages service categories, and reviews audit logs.
-
----
-
-## Future AI Features
-
-The AI architecture is cleanly partitioned under `server/src/services/ai/`:
-- **`classification.service.js`**: Analyzes natural language descriptions to predict category, extract urgency, and flag required trade skills.
-- **`matching.service.js`**: Ranks pre-screened providers based on customer location, availability, verified ratings, and skill match.
-- **Non-Bypass Guarantee**: AI rankings operate exclusively on providers that have already passed hard database constraints (verified status, active account, and schedule availability).
-
----
-
-## Testing
-
-Automated testing is configured using **Supertest**, **Jest**, and **Vitest**.
-
-### Run All Tests
-```bash
-npm test
-```
-
-### Run Backend Tests Only
-```bash
-npm run test:server
-```
-*(Runs against an in-memory MongoDB instance using `mongodb-memory-server` without requiring external database setup).*
-
-### Run Frontend Tests Only
-```bash
-npm run test:client
-```
-*(Runs UI unit tests using Vitest and React Testing Library).*
-
----
-
-## Development Guidelines
-
-1. **Keep Controllers Thin**: Controllers must only parse requests and format responses. Business logic belongs in `services/`.
-2. **Never Commit Secrets**: Always use `.env` and never commit credentials or API keys.
-3. **Validate All Inputs**: Validate client requests using Zod schemas before reaching controllers.
-4. **Standardize Responses**: Always return responses using `sendSuccess` or `sendError` helpers.
-5. **Protect Core Rules from AI**: AI must assist workflows; it must never mutate state or bypass business validation.
+This project is developed as an academic capstone software engineering project under the MIT License.
