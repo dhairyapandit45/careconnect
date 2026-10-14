@@ -146,26 +146,26 @@ export const AnalyticsDashboardPage = () => {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-darkgreen">
               {isOps ? 'Operations Analytics & Performance' : 'Platform Analytics & Intelligence'}
             </h1>
             <Badge variant={isOps ? 'secondary' : 'default'} className="font-semibold text-xs">
               {isOps ? 'OPERATIONS' : 'ADMIN'}
             </Badge>
           </div>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-darkgreen-muted">
             Real-time domain metrics, revenue trends, completion rates, and provider performance.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {appliedRange.startDate || appliedRange.endDate ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-palesage px-3 py-1 text-xs font-medium text-forest-deep">
               <Calendar className="h-3.5 w-3.5" />
               {appliedRange.startDate || 'Start'} → {appliedRange.endDate || 'Present'}
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-ivory border border-themeborder px-3 py-1 text-xs font-medium text-darkgreen-muted">
               <Activity className="h-3.5 w-3.5" />
               Lifetime Platform Data
             </span>
@@ -174,12 +174,12 @@ export const AnalyticsDashboardPage = () => {
       </div>
 
       {/* Date Filter Bar */}
-      <Card className="border border-slate-200/80 shadow-xs">
+      <Card className="border border-themeborder shadow-xs">
         <CardContent className="p-4">
           <form onSubmit={handleApplyFilter} className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:w-2/3">
               <div>
-                <label htmlFor="analytics-start-date" className="block text-xs font-medium text-slate-700 mb-1">
+                <label htmlFor="analytics-start-date" className="block text-xs font-medium text-darkgreen mb-1">
                   From Date
                 </label>
                 <input
@@ -187,11 +187,11 @@ export const AnalyticsDashboardPage = () => {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-md border border-themeborder px-3 py-1.5 text-sm text-darkgreen focus:border-forest focus:outline-none focus:ring-1 focus:ring-forest"
                 />
               </div>
               <div>
-                <label htmlFor="analytics-end-date" className="block text-xs font-medium text-slate-700 mb-1">
+                <label htmlFor="analytics-end-date" className="block text-xs font-medium text-darkgreen mb-1">
                   To Date
                 </label>
                 <input
@@ -199,13 +199,13 @@ export const AnalyticsDashboardPage = () => {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-md border border-themeborder px-3 py-1.5 text-sm text-darkgreen focus:border-forest focus:outline-none focus:ring-1 focus:ring-forest"
                 />
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <Button type="submit" size="sm" className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white">
+              <Button type="submit" size="sm" className="flex items-center gap-1.5">
                 <Filter className="h-4 w-4" />
                 Apply Filter
               </Button>
@@ -214,7 +214,7 @@ export const AnalyticsDashboardPage = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleResetFilter}
-                className="flex items-center gap-1.5 text-slate-600 hover:text-slate-900"
+                className="flex items-center gap-1.5 text-darkgreen-muted hover:text-darkgreen"
               >
                 <RotateCcw className="h-4 w-4" />
                 Reset
@@ -223,7 +223,7 @@ export const AnalyticsDashboardPage = () => {
           </form>
 
           {dateError && (
-            <div className="mt-3 rounded-md bg-red-50 p-2 text-xs font-medium text-red-600">
+            <div className="mt-3 rounded-md bg-[#FDF2F2] p-2 text-xs font-medium text-[#B42318]">
               {dateError}
             </div>
           )}
@@ -234,7 +234,7 @@ export const AnalyticsDashboardPage = () => {
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center">
           <LoadingSpinner size="lg" />
-          <p className="mt-4 text-sm text-slate-500">Aggregating platform intelligence metrics...</p>
+          <p className="mt-4 text-sm text-darkgreen-muted">Aggregating platform intelligence metrics...</p>
         </div>
       ) : error ? (
         <ErrorState
@@ -247,28 +247,28 @@ export const AnalyticsDashboardPage = () => {
           {/* Top Executive KPI Row */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {/* Total Bookings & Completion Rate */}
-            <Card className="border border-slate-200/80 shadow-xs">
+            <Card className="border border-themeborder shadow-xs">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Bookings</span>
-                  <div className="rounded-lg bg-blue-50 p-2 text-blue-600">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-darkgreen-muted">Total Bookings</span>
+                  <div className="rounded-lg bg-palesage p-2 text-forest">
                     <Calendar className="h-5 w-5" />
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-slate-900">{bookings?.summary?.totalBookings ?? 0}</span>
-                  <span className="text-xs font-medium text-emerald-600">
+                  <span className="text-2xl font-bold text-darkgreen">{bookings?.summary?.totalBookings ?? 0}</span>
+                  <span className="text-xs font-medium text-[#276749]">
                     {bookings?.summary?.completedBookings ?? 0} completed
                   </span>
                 </div>
                 <div className="mt-3">
-                  <div className="flex justify-between text-xs text-slate-500 mb-1">
+                  <div className="flex justify-between text-xs text-darkgreen-muted mb-1">
                     <span>Completion Rate</span>
-                    <span className="font-semibold text-slate-700">{bookings?.summary?.completionRate ?? 0}%</span>
+                    <span className="font-semibold text-darkgreen">{bookings?.summary?.completionRate ?? 0}%</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-palesage/50 overflow-hidden">
                     <div
-                      className="h-full bg-emerald-500 rounded-full transition-all duration-300"
+                      className="h-full bg-forest rounded-full transition-all duration-300"
                       style={{ width: `${Math.min(bookings?.summary?.completionRate ?? 0, 100)}%` }}
                     />
                   </div>
@@ -277,30 +277,30 @@ export const AnalyticsDashboardPage = () => {
             </Card>
 
             {/* Paid Revenue */}
-            <Card className="border border-slate-200/80 shadow-xs">
+            <Card className="border border-themeborder shadow-xs">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Paid Revenue</span>
-                  <div className="rounded-lg bg-emerald-50 p-2 text-emerald-600">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-darkgreen-muted">Paid Revenue</span>
+                  <div className="rounded-lg bg-[#EAF5EE] p-2 text-[#276749]">
                     <IndianRupee className="h-5 w-5" />
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-slate-900">
+                  <span className="text-2xl font-bold text-darkgreen">
                     {formatCurrency(revenue?.summary?.paidRevenue ?? 0)}
                   </span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-darkgreen-muted">
                     of {formatCurrency(revenue?.summary?.totalInvoiced ?? 0)}
                   </span>
                 </div>
                 <div className="mt-3">
-                  <div className="flex justify-between text-xs text-slate-500 mb-1">
+                  <div className="flex justify-between text-xs text-darkgreen-muted mb-1">
                     <span>Collection Rate</span>
-                    <span className="font-semibold text-slate-700">{revenue?.summary?.paidRate ?? 0}%</span>
+                    <span className="font-semibold text-darkgreen">{revenue?.summary?.paidRate ?? 0}%</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-palesage/50 overflow-hidden">
                     <div
-                      className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                      className="h-full bg-forest rounded-full transition-all duration-300"
                       style={{ width: `${Math.min(revenue?.summary?.paidRate ?? 0, 100)}%` }}
                     />
                   </div>
@@ -309,28 +309,28 @@ export const AnalyticsDashboardPage = () => {
             </Card>
 
             {/* Dispute Resolution Rate */}
-            <Card className="border border-slate-200/80 shadow-xs">
+            <Card className="border border-themeborder shadow-xs">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Disputes Oversight</span>
-                  <div className="rounded-lg bg-amber-50 p-2 text-amber-600">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-darkgreen-muted">Disputes Oversight</span>
+                  <div className="rounded-lg bg-[#FFFBEB] p-2 text-[#92400E]">
                     <AlertTriangle className="h-5 w-5" />
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-slate-900">{disputes?.totalDisputes ?? 0}</span>
-                  <span className="text-xs text-amber-700">
+                  <span className="text-2xl font-bold text-darkgreen">{disputes?.totalDisputes ?? 0}</span>
+                  <span className="text-xs text-[#92400E]">
                     {disputes?.byStatus?.OPEN ?? 0} open queue
                   </span>
                 </div>
                 <div className="mt-3">
-                  <div className="flex justify-between text-xs text-slate-500 mb-1">
+                  <div className="flex justify-between text-xs text-darkgreen-muted mb-1">
                     <span>Resolution Rate</span>
-                    <span className="font-semibold text-slate-700">{disputes?.resolutionRate ?? 0}%</span>
+                    <span className="font-semibold text-darkgreen">{disputes?.resolutionRate ?? 0}%</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-palesage/50 overflow-hidden">
                     <div
-                      className="h-full bg-amber-500 rounded-full transition-all duration-300"
+                      className="h-full bg-[#92400E] rounded-full transition-all duration-300"
                       style={{ width: `${Math.min(disputes?.resolutionRate ?? 0, 100)}%` }}
                     />
                   </div>
@@ -339,28 +339,28 @@ export const AnalyticsDashboardPage = () => {
             </Card>
 
             {/* Support Resolution Rate */}
-            <Card className="border border-slate-200/80 shadow-xs">
+            <Card className="border border-themeborder shadow-xs">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Support Tickets</span>
-                  <div className="rounded-lg bg-purple-50 p-2 text-purple-600">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-darkgreen-muted">Support Tickets</span>
+                  <div className="rounded-lg bg-palesage p-2 text-forest">
                     <HelpCircle className="h-5 w-5" />
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-slate-900">{support?.totalTickets ?? 0}</span>
-                  <span className="text-xs text-purple-700">
+                  <span className="text-2xl font-bold text-darkgreen">{support?.totalTickets ?? 0}</span>
+                  <span className="text-xs text-forest-deep">
                     {support?.resolvedCount ?? 0} resolved
                   </span>
                 </div>
                 <div className="mt-3">
-                  <div className="flex justify-between text-xs text-slate-500 mb-1">
+                  <div className="flex justify-between text-xs text-darkgreen-muted mb-1">
                     <span>Resolution Rate</span>
-                    <span className="font-semibold text-slate-700">{support?.resolutionRate ?? 0}%</span>
+                    <span className="font-semibold text-darkgreen">{support?.resolutionRate ?? 0}%</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-palesage/50 overflow-hidden">
                     <div
-                      className="h-full bg-purple-500 rounded-full transition-all duration-300"
+                      className="h-full bg-forest rounded-full transition-all duration-300"
                       style={{ width: `${Math.min(support?.resolutionRate ?? 0, 100)}%` }}
                     />
                   </div>
@@ -372,15 +372,15 @@ export const AnalyticsDashboardPage = () => {
           {/* Section 1: Booking & Revenue Trends */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Booking Trends Daily Timeline */}
-            <Card className="border border-slate-200/80 shadow-xs">
-              <CardHeader className="border-b border-slate-100 pb-3">
+            <Card className="border border-themeborder shadow-xs">
+              <CardHeader className="border-b border-themeborder/60 pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-blue-600" />
-                    <h2 className="text-base font-semibold text-slate-900">Booking Trends by Date</h2>
+                    <TrendingUp className="h-5 w-5 text-forest" />
+                    <h2 className="text-base font-semibold text-darkgreen">Booking Trends by Date</h2>
                   </div>
-                  <span className="text-xs text-slate-500">
-                    Cancellation: <strong className="text-red-600">{bookings?.summary?.cancellationRate ?? 0}%</strong>
+                  <span className="text-xs text-darkgreen-muted">
+                    Cancellation: <strong className="text-[#B42318]">{bookings?.summary?.cancellationRate ?? 0}%</strong>
                   </span>
                 </div>
               </CardHeader>
@@ -390,7 +390,7 @@ export const AnalyticsDashboardPage = () => {
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs">
                         <thead>
-                          <tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
+                          <tr className="border-b border-themeborder bg-ivory text-darkgreen-muted">
                             <th className="py-2 px-3">Date</th>
                             <th className="py-2 px-3 text-center">Total</th>
                             <th className="py-2 px-3 text-center">Completed</th>
@@ -398,14 +398,14 @@ export const AnalyticsDashboardPage = () => {
                             <th className="py-2 px-3 text-center">In Progress</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-themeborder/60">
                           {bookings.timeline.map((item) => (
-                            <tr key={item.date} className="hover:bg-slate-50/50">
-                              <td className="py-2 px-3 font-medium text-slate-800">{item.date}</td>
-                              <td className="py-2 px-3 text-center font-bold text-slate-900">{item.total}</td>
-                              <td className="py-2 px-3 text-center text-emerald-600 font-semibold">{item.completed}</td>
-                              <td className="py-2 px-3 text-center text-red-500 font-semibold">{item.cancelled}</td>
-                              <td className="py-2 px-3 text-center text-blue-600 font-semibold">{item.inProgress}</td>
+                            <tr key={item.date} className="hover:bg-ivory/50">
+                              <td className="py-2 px-3 font-medium text-darkgreen">{item.date}</td>
+                              <td className="py-2 px-3 text-center font-bold text-darkgreen">{item.total}</td>
+                              <td className="py-2 px-3 text-center text-[#276749] font-semibold">{item.completed}</td>
+                              <td className="py-2 px-3 text-center text-[#B42318] font-semibold">{item.cancelled}</td>
+                              <td className="py-2 px-3 text-center text-forest font-semibold">{item.inProgress}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -422,15 +422,15 @@ export const AnalyticsDashboardPage = () => {
             </Card>
 
             {/* Revenue Trends Daily Timeline */}
-            <Card className="border border-slate-200/80 shadow-xs">
-              <CardHeader className="border-b border-slate-100 pb-3">
+            <Card className="border border-themeborder shadow-xs">
+              <CardHeader className="border-b border-themeborder/60 pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <IndianRupee className="h-5 w-5 text-emerald-600" />
-                    <h2 className="text-base font-semibold text-slate-900">Revenue & Invoicing Timeline</h2>
+                    <IndianRupee className="h-5 w-5 text-[#276749]" />
+                    <h2 className="text-base font-semibold text-darkgreen">Revenue & Invoicing Timeline</h2>
                   </div>
-                  <span className="text-xs text-slate-500">
-                    Paid Invoices: <strong className="text-emerald-600">{revenue?.summary?.paidInvoices ?? 0}</strong> / {revenue?.summary?.totalInvoices ?? 0}
+                  <span className="text-xs text-darkgreen-muted">
+                    Paid Invoices: <strong className="text-[#276749]">{revenue?.summary?.paidInvoices ?? 0}</strong> / {revenue?.summary?.totalInvoices ?? 0}
                   </span>
                 </div>
               </CardHeader>
@@ -440,24 +440,24 @@ export const AnalyticsDashboardPage = () => {
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs">
                         <thead>
-                          <tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
+                          <tr className="border-b border-themeborder bg-ivory text-darkgreen-muted">
                             <th className="py-2 px-3">Date</th>
                             <th className="py-2 px-3 text-right">Invoiced Amount</th>
                             <th className="py-2 px-3 text-right">Paid Revenue</th>
                             <th className="py-2 px-3 text-center">Paid Count</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-themeborder/60">
                           {revenue.timeline.map((item) => (
-                            <tr key={item.date} className="hover:bg-slate-50/50">
-                              <td className="py-2 px-3 font-medium text-slate-800">{item.date}</td>
-                              <td className="py-2 px-3 text-right font-medium text-slate-700">
+                            <tr key={item.date} className="hover:bg-ivory/50">
+                              <td className="py-2 px-3 font-medium text-darkgreen">{item.date}</td>
+                              <td className="py-2 px-3 text-right font-medium text-darkgreen">
                                 {formatCurrency(item.totalInvoiced)}
                               </td>
-                              <td className="py-2 px-3 text-right font-bold text-emerald-600">
+                              <td className="py-2 px-3 text-right font-bold text-[#276749]">
                                 {formatCurrency(item.paidRevenue)}
                               </td>
-                              <td className="py-2 px-3 text-center text-slate-600">
+                              <td className="py-2 px-3 text-center text-darkgreen-muted">
                                 {item.paidInvoices} / {item.totalInvoices}
                               </td>
                             </tr>
@@ -479,14 +479,14 @@ export const AnalyticsDashboardPage = () => {
           {/* Section 2: Provider Performance & Category Demand */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Top Provider Performance */}
-            <Card className="border border-slate-200/80 shadow-xs">
-              <CardHeader className="border-b border-slate-100 pb-3">
+            <Card className="border border-themeborder shadow-xs">
+              <CardHeader className="border-b border-themeborder/60 pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-indigo-600" />
-                    <h2 className="text-base font-semibold text-slate-900">Provider Performance Rankings</h2>
+                    <Users className="h-5 w-5 text-forest" />
+                    <h2 className="text-base font-semibold text-darkgreen">Provider Performance Rankings</h2>
                   </div>
-                  <span className="text-xs text-slate-500">Sorted by completed jobs</span>
+                  <span className="text-xs text-darkgreen-muted">Sorted by completed jobs</span>
                 </div>
               </CardHeader>
               <CardContent className="p-4">
@@ -494,7 +494,7 @@ export const AnalyticsDashboardPage = () => {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs">
                       <thead>
-                        <tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
+                        <tr className="border-b border-themeborder bg-ivory text-darkgreen-muted">
                           <th className="py-2 px-3">Provider</th>
                           <th className="py-2 px-3 text-center">Rating</th>
                           <th className="py-2 px-3 text-center">Completed</th>
@@ -502,36 +502,36 @@ export const AnalyticsDashboardPage = () => {
                           <th className="py-2 px-3 text-right">Paid Revenue</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-themeborder/60">
                         {providers.map((p, idx) => (
-                          <tr key={p.providerId || idx} className="hover:bg-slate-50/50">
+                          <tr key={p.providerId || idx} className="hover:bg-ivory/50">
                             <td className="py-2.5 px-3">
-                              <div className="font-semibold text-slate-900">{p.name}</div>
-                              <div className="text-[11px] text-slate-500">{p.businessName || p.email}</div>
+                              <div className="font-semibold text-darkgreen">{p.name}</div>
+                              <div className="text-[11px] text-darkgreen-muted">{p.businessName || p.email}</div>
                             </td>
                             <td className="py-2.5 px-3 text-center">
-                              <span className="inline-flex items-center gap-1 font-semibold text-amber-600">
+                              <span className="inline-flex items-center gap-1 font-semibold text-[#92400E]">
                                 <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                                 {p.rating ? p.rating.toFixed(1) : 'N/A'}
                               </span>
                             </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-slate-800">
+                            <td className="py-2.5 px-3 text-center font-bold text-darkgreen">
                               {p.completedJobs} / {p.totalJobs}
                             </td>
                             <td className="py-2.5 px-3 text-center">
                               <span
                                 className={`inline-block rounded-md px-1.5 py-0.5 text-[11px] font-semibold ${
                                   p.completionRate >= 70
-                                    ? 'bg-emerald-50 text-emerald-700'
+                                    ? 'bg-[#EAF5EE] text-[#276749]'
                                     : p.completionRate >= 40
-                                    ? 'bg-amber-50 text-amber-700'
-                                    : 'bg-slate-100 text-slate-600'
+                                    ? 'bg-[#FFFBEB] text-[#92400E]'
+                                    : 'bg-ivory border border-themeborder text-darkgreen-muted'
                                 }`}
                               >
                                 {p.completionRate}%
                               </span>
                             </td>
-                            <td className="py-2.5 px-3 text-right font-semibold text-emerald-600">
+                            <td className="py-2.5 px-3 text-right font-semibold text-[#276749]">
                               {formatCurrency(p.revenue)}
                             </td>
                           </tr>
@@ -549,14 +549,14 @@ export const AnalyticsDashboardPage = () => {
             </Card>
 
             {/* Category Demand Rankings */}
-            <Card className="border border-slate-200/80 shadow-xs">
-              <CardHeader className="border-b border-slate-100 pb-3">
+            <Card className="border border-themeborder shadow-xs">
+              <CardHeader className="border-b border-themeborder/60 pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Layers className="h-5 w-5 text-teal-600" />
-                    <h2 className="text-base font-semibold text-slate-900">Service Category Demand</h2>
+                    <Layers className="h-5 w-5 text-forest" />
+                    <h2 className="text-base font-semibold text-darkgreen">Service Category Demand</h2>
                   </div>
-                  <span className="text-xs text-slate-500">Sorted by booking volume</span>
+                  <span className="text-xs text-darkgreen-muted">Sorted by booking volume</span>
                 </div>
               </CardHeader>
               <CardContent className="p-4">
@@ -564,20 +564,20 @@ export const AnalyticsDashboardPage = () => {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs">
                       <thead>
-                        <tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
+                        <tr className="border-b border-themeborder bg-ivory text-darkgreen-muted">
                           <th className="py-2 px-3">Category</th>
                           <th className="py-2 px-3 text-center">Bookings</th>
                           <th className="py-2 px-3 text-center">Requests</th>
                           <th className="py-2 px-3 text-right">Revenue</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-themeborder/60">
                         {categories.map((c, idx) => (
-                          <tr key={c.categoryId || idx} className="hover:bg-slate-50/50">
-                            <td className="py-2.5 px-3 font-semibold text-slate-800">{c.name}</td>
-                            <td className="py-2.5 px-3 text-center font-bold text-blue-700">{c.bookingCount}</td>
-                            <td className="py-2.5 px-3 text-center text-slate-600">{c.requestCount}</td>
-                            <td className="py-2.5 px-3 text-right font-medium text-emerald-600">
+                          <tr key={c.categoryId || idx} className="hover:bg-ivory/50">
+                            <td className="py-2.5 px-3 font-semibold text-darkgreen">{c.name}</td>
+                            <td className="py-2.5 px-3 text-center font-bold text-forest">{c.bookingCount}</td>
+                            <td className="py-2.5 px-3 text-center text-darkgreen-muted">{c.requestCount}</td>
+                            <td className="py-2.5 px-3 text-right font-medium text-[#276749]">
                               {formatCurrency(c.totalRevenue)}
                             </td>
                           </tr>
@@ -598,43 +598,43 @@ export const AnalyticsDashboardPage = () => {
           {/* Section 3: Dispute & Support Operations Oversight */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Disputes Status Breakdown */}
-            <Card className="border border-slate-200/80 shadow-xs">
-              <CardHeader className="border-b border-slate-100 pb-3">
+            <Card className="border border-themeborder shadow-xs">
+              <CardHeader className="border-b border-themeborder/60 pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-amber-600" />
-                    <h2 className="text-base font-semibold text-slate-900">Dispute Trends & SLA</h2>
+                    <AlertTriangle className="h-5 w-5 text-[#92400E]" />
+                    <h2 className="text-base font-semibold text-darkgreen">Dispute Trends & SLA</h2>
                   </div>
-                  <span className="text-xs font-semibold text-emerald-700">
+                  <span className="text-xs font-semibold text-[#276749]">
                     Resolution: {disputes?.resolutionRate ?? 0}%
                   </span>
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  <div className="rounded-lg bg-amber-50 p-3 text-center">
-                    <span className="block text-xs font-medium text-amber-700">Open Queue</span>
-                    <span className="text-lg font-bold text-amber-900">{disputes?.byStatus?.OPEN ?? 0}</span>
+                  <div className="rounded-lg bg-[#FFFBEB] p-3 text-center">
+                    <span className="block text-xs font-medium text-[#92400E]">Open Queue</span>
+                    <span className="text-lg font-bold text-[#92400E]">{disputes?.byStatus?.OPEN ?? 0}</span>
                   </div>
-                  <div className="rounded-lg bg-blue-50 p-3 text-center">
-                    <span className="block text-xs font-medium text-blue-700">Under Review</span>
-                    <span className="text-lg font-bold text-blue-900">{disputes?.byStatus?.UNDER_REVIEW ?? 0}</span>
+                  <div className="rounded-lg bg-palesage p-3 text-center">
+                    <span className="block text-xs font-medium text-forest">Under Review</span>
+                    <span className="text-lg font-bold text-forest-deep">{disputes?.byStatus?.UNDER_REVIEW ?? 0}</span>
                   </div>
-                  <div className="rounded-lg bg-emerald-50 p-3 text-center">
-                    <span className="block text-xs font-medium text-emerald-700">Resolved</span>
-                    <span className="text-lg font-bold text-emerald-900">{disputes?.byStatus?.RESOLVED ?? 0}</span>
+                  <div className="rounded-lg bg-[#EAF5EE] p-3 text-center">
+                    <span className="block text-xs font-medium text-[#276749]">Resolved</span>
+                    <span className="text-lg font-bold text-[#276749]">{disputes?.byStatus?.RESOLVED ?? 0}</span>
                   </div>
-                  <div className="rounded-lg bg-rose-50 p-3 text-center">
-                    <span className="block text-xs font-medium text-rose-700">Rejected</span>
-                    <span className="text-lg font-bold text-rose-900">{disputes?.byStatus?.REJECTED ?? 0}</span>
+                  <div className="rounded-lg bg-[#FDF2F2] p-3 text-center">
+                    <span className="block text-xs font-medium text-[#B42318]">Rejected</span>
+                    <span className="text-lg font-bold text-[#B42318]">{disputes?.byStatus?.REJECTED ?? 0}</span>
                   </div>
-                  <div className="rounded-lg bg-slate-100 p-3 text-center">
-                    <span className="block text-xs font-medium text-slate-700">Refunds Approved</span>
-                    <span className="text-lg font-bold text-slate-900">{disputes?.refundApprovedCount ?? 0}</span>
+                  <div className="rounded-lg bg-ivory border border-themeborder p-3 text-center">
+                    <span className="block text-xs font-medium text-darkgreen-muted">Refunds Approved</span>
+                    <span className="text-lg font-bold text-darkgreen">{disputes?.refundApprovedCount ?? 0}</span>
                   </div>
-                  <div className="rounded-lg bg-emerald-50 p-3 text-center">
-                    <span className="block text-xs font-medium text-emerald-700">Refund Total</span>
-                    <span className="text-sm font-bold text-emerald-900">
+                  <div className="rounded-lg bg-[#EAF5EE] p-3 text-center">
+                    <span className="block text-xs font-medium text-[#276749]">Refund Total</span>
+                    <span className="text-sm font-bold text-[#276749]">
                       {formatCurrency((disputes?.refundAmountTotal ?? 0) / 100)}
                     </span>
                   </div>
@@ -642,12 +642,12 @@ export const AnalyticsDashboardPage = () => {
 
                 {disputes?.byCategory?.length > 0 && (
                   <div className="pt-2">
-                    <h3 className="text-xs font-semibold text-slate-700 mb-2">Disputes by Category</h3>
+                    <h3 className="text-xs font-semibold text-darkgreen mb-2">Disputes by Category</h3>
                     <div className="flex flex-wrap gap-2">
                       {disputes.byCategory.map((catItem) => (
                         <span
                           key={catItem.category}
-                          className="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2.5 py-1 text-xs text-slate-700"
+                          className="inline-flex items-center gap-1.5 rounded-md bg-ivory border border-themeborder px-2.5 py-1 text-xs text-darkgreen"
                         >
                           <span className="font-medium">{catItem.category}:</span>
                           <span className="font-bold">{catItem.count}</span>
@@ -660,57 +660,57 @@ export const AnalyticsDashboardPage = () => {
             </Card>
 
             {/* Support Ticket Operations Breakdown */}
-            <Card className="border border-slate-200/80 shadow-xs">
-              <CardHeader className="border-b border-slate-100 pb-3">
+            <Card className="border border-themeborder shadow-xs">
+              <CardHeader className="border-b border-themeborder/60 pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <HelpCircle className="h-5 w-5 text-purple-600" />
-                    <h2 className="text-base font-semibold text-slate-900">Support Ticket Operations</h2>
+                    <HelpCircle className="h-5 w-5 text-forest" />
+                    <h2 className="text-base font-semibold text-darkgreen">Support Ticket Operations</h2>
                   </div>
-                  <span className="text-xs font-semibold text-purple-700">
+                  <span className="text-xs font-semibold text-forest">
                     Resolution: {support?.resolutionRate ?? 0}%
                   </span>
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <div className="rounded-lg bg-purple-50 p-2.5 text-center">
-                    <span className="block text-xs font-medium text-purple-700">Open</span>
-                    <span className="text-lg font-bold text-purple-900">{support?.byStatus?.OPEN ?? 0}</span>
+                  <div className="rounded-lg bg-palesage p-2.5 text-center">
+                    <span className="block text-xs font-medium text-forest">Open</span>
+                    <span className="text-lg font-bold text-forest-deep">{support?.byStatus?.OPEN ?? 0}</span>
                   </div>
-                  <div className="rounded-lg bg-blue-50 p-2.5 text-center">
-                    <span className="block text-xs font-medium text-blue-700">In Progress</span>
-                    <span className="text-lg font-bold text-blue-900">{support?.byStatus?.IN_PROGRESS ?? 0}</span>
+                  <div className="rounded-lg bg-palesage p-2.5 text-center">
+                    <span className="block text-xs font-medium text-forest">In Progress</span>
+                    <span className="text-lg font-bold text-forest-deep">{support?.byStatus?.IN_PROGRESS ?? 0}</span>
                   </div>
-                  <div className="rounded-lg bg-emerald-50 p-2.5 text-center">
-                    <span className="block text-xs font-medium text-emerald-700">Resolved</span>
-                    <span className="text-lg font-bold text-emerald-900">{support?.byStatus?.RESOLVED ?? 0}</span>
+                  <div className="rounded-lg bg-[#EAF5EE] p-2.5 text-center">
+                    <span className="block text-xs font-medium text-[#276749]">Resolved</span>
+                    <span className="text-lg font-bold text-[#276749]">{support?.byStatus?.RESOLVED ?? 0}</span>
                   </div>
-                  <div className="rounded-lg bg-slate-100 p-2.5 text-center">
-                    <span className="block text-xs font-medium text-slate-700">Closed</span>
-                    <span className="text-lg font-bold text-slate-900">{support?.byStatus?.CLOSED ?? 0}</span>
+                  <div className="rounded-lg bg-ivory border border-themeborder p-2.5 text-center">
+                    <span className="block text-xs font-medium text-darkgreen-muted">Closed</span>
+                    <span className="text-lg font-bold text-darkgreen">{support?.byStatus?.CLOSED ?? 0}</span>
                   </div>
                 </div>
 
                 {/* Priority Breakdown */}
                 <div className="pt-2">
-                  <h3 className="text-xs font-semibold text-slate-700 mb-2">Tickets by Priority</h3>
+                  <h3 className="text-xs font-semibold text-darkgreen mb-2">Tickets by Priority</h3>
                   <div className="grid grid-cols-4 gap-2">
-                    <div className="rounded-md border border-slate-200 p-2 text-center">
-                      <span className="block text-[11px] text-slate-500">Low</span>
-                      <span className="text-sm font-bold text-slate-800">{support?.byPriority?.LOW ?? 0}</span>
+                    <div className="rounded-md border border-themeborder p-2 text-center">
+                      <span className="block text-[11px] text-darkgreen-muted">Low</span>
+                      <span className="text-sm font-bold text-darkgreen">{support?.byPriority?.LOW ?? 0}</span>
                     </div>
-                    <div className="rounded-md border border-blue-200 bg-blue-50/50 p-2 text-center">
-                      <span className="block text-[11px] text-blue-600">Medium</span>
-                      <span className="text-sm font-bold text-blue-900">{support?.byPriority?.MEDIUM ?? 0}</span>
+                    <div className="rounded-md border border-sage/40 bg-palesage/40 p-2 text-center">
+                      <span className="block text-[11px] text-forest">Medium</span>
+                      <span className="text-sm font-bold text-forest-deep">{support?.byPriority?.MEDIUM ?? 0}</span>
                     </div>
-                    <div className="rounded-md border border-amber-200 bg-amber-50/50 p-2 text-center">
-                      <span className="block text-[11px] text-amber-600">High</span>
-                      <span className="text-sm font-bold text-amber-900">{support?.byPriority?.HIGH ?? 0}</span>
+                    <div className="rounded-md border border-[#FEE685] bg-[#FFFBEB] p-2 text-center">
+                      <span className="block text-[11px] text-[#92400E]">High</span>
+                      <span className="text-sm font-bold text-[#92400E]">{support?.byPriority?.HIGH ?? 0}</span>
                     </div>
-                    <div className="rounded-md border border-red-200 bg-red-50/50 p-2 text-center">
-                      <span className="block text-[11px] text-red-600">Urgent</span>
-                      <span className="text-sm font-bold text-red-900">{support?.byPriority?.URGENT ?? 0}</span>
+                    <div className="rounded-md border border-[#F8D0D0] bg-[#FDF2F2] p-2 text-center">
+                      <span className="block text-[11px] text-[#B42318]">Urgent</span>
+                      <span className="text-sm font-bold text-[#B42318]">{support?.byPriority?.URGENT ?? 0}</span>
                     </div>
                   </div>
                 </div>

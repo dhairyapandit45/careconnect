@@ -122,7 +122,7 @@ export const ProviderBookingDetailPage = () => {
       <div className="space-y-4">
         <Link
           to="/provider/bookings"
-          className="inline-flex items-center text-xs text-slate-500 hover:text-slate-800"
+          className="inline-flex items-center text-xs text-darkgreen-muted hover:text-darkgreen"
         >
           <ArrowLeft className="h-4 w-4 mr-1" /> Back to Scheduled Jobs
         </Link>
@@ -143,7 +143,7 @@ export const ProviderBookingDetailPage = () => {
       <div>
         <Link
           to="/provider/bookings"
-          className="inline-flex items-center text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors"
+          className="inline-flex items-center text-xs font-medium text-darkgreen-muted hover:text-darkgreen transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-1" /> Back to Scheduled Jobs
         </Link>
@@ -153,15 +153,15 @@ export const ProviderBookingDetailPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-2xl font-bold text-slate-900">
+            <h1 className="text-2xl font-bold text-darkgreen">
               {booking.serviceRequest?.title || 'Scheduled Service Job'}
             </h1>
             <Badge variant={statusBadgeVariants[booking.status] || 'default'}>
               {booking.status.replace('_', ' ')}
             </Badge>
           </div>
-          <p className="text-xs text-slate-500">
-            Booking Reference: <span className="font-mono text-slate-700">{getBookingReference(booking)}</span>
+          <p className="text-xs text-darkgreen-muted">
+            Booking Reference: <span className="font-mono text-darkgreen">{getBookingReference(booking)}</span>
           </p>
         </div>
 
@@ -177,7 +177,7 @@ export const ProviderBookingDetailPage = () => {
           {canCancel && (
             <Button
               variant="outline"
-              className="text-rose-600 border-rose-200 hover:bg-rose-50"
+              className="text-status-error border-status-error/30 hover:bg-status-error/10"
               icon={XCircle}
               onClick={() => {
                 setCancellationReason('');
@@ -201,10 +201,10 @@ export const ProviderBookingDetailPage = () => {
 
       {/* Cancellation Notice Banner */}
       {booking.status === 'CANCELLED' && (
-        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-start gap-3">
-          <XCircle className="h-5 w-5 text-rose-600 flex-shrink-0 mt-0.5" />
-          <div className="space-y-1 text-xs text-rose-900">
-            <div className="font-semibold text-sm text-rose-800">Job Booking Cancelled</div>
+        <div className="bg-status-error/10 border border-status-error/20 rounded-xl p-4 flex items-start gap-3">
+          <XCircle className="h-5 w-5 text-status-error flex-shrink-0 mt-0.5" />
+          <div className="space-y-1 text-xs text-status-error">
+            <div className="font-semibold text-sm">Job Booking Cancelled</div>
             <div>
               <strong>Cancelled At:</strong> {formatDateTime(booking.cancellation?.cancelledAt || booking.cancelledAt)}
             </div>
@@ -225,29 +225,29 @@ export const ProviderBookingDetailPage = () => {
           {/* Appointment Timing Card */}
           <Card>
             <CardHeader>
-              <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-blue-600" /> Appointment Schedule Window
+              <h2 className="text-base font-semibold text-darkgreen flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-forest" /> Appointment Schedule Window
               </h2>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-ivory/60 border border-themeborder rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-xs text-slate-500 uppercase font-semibold">Start Window (UTC)</div>
-                  <div className="text-sm font-semibold text-slate-900 mt-1">
+                  <div className="text-xs text-darkgreen-muted uppercase font-semibold">Start Window (UTC)</div>
+                  <div className="text-sm font-semibold text-darkgreen mt-1">
                     {formatDateTime(booking.scheduledStart)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 uppercase font-semibold">End Window (UTC)</div>
-                  <div className="text-sm font-semibold text-slate-900 mt-1">
+                  <div className="text-xs text-darkgreen-muted uppercase font-semibold">End Window (UTC)</div>
+                  <div className="text-sm font-semibold text-darkgreen mt-1">
                     {formatDateTime(booking.scheduledEnd)}
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-                <span className="text-xs text-slate-600">Agreed Job Payout:</span>
-                <span className="text-lg font-bold text-slate-900">
+              <div className="flex items-center justify-between border-t border-themeborder pt-3">
+                <span className="text-xs text-darkgreen-muted">Agreed Job Payout:</span>
+                <span className="text-lg font-bold text-darkgreen">
                   ₹{(booking.price || 0).toLocaleString('en-IN')} {booking.currency || 'INR'}
                 </span>
               </div>
@@ -257,17 +257,17 @@ export const ProviderBookingDetailPage = () => {
           {/* Job Specifications Card */}
           <Card>
             <CardHeader>
-              <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2">
-                <Briefcase className="h-4 w-4 text-blue-600" /> Work Description
+              <h2 className="text-base font-semibold text-darkgreen flex items-center gap-2">
+                <Briefcase className="h-4 w-4 text-forest" /> Work Description
               </h2>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
-              <p className="text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100 text-xs">
+              <p className="text-darkgreen leading-relaxed bg-ivory/60 p-3 rounded-lg border border-themeborder text-xs">
                 {booking.serviceRequest?.description || 'No work description specified.'}
               </p>
 
-              <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-                <span className="text-xs text-slate-500 font-medium">Service Category:</span>
+              <div className="flex items-center justify-between border-t border-themeborder pt-3">
+                <span className="text-xs text-darkgreen-muted font-medium">Service Category:</span>
                 <Badge variant="primary" size="sm">
                   {booking.serviceRequest?.category?.name || 'Home Service'}
                 </Badge>
@@ -278,45 +278,45 @@ export const ProviderBookingDetailPage = () => {
 
         {/* Right Column: Customer & Location Card */}
         <div className="space-y-6">
-          <Card className="border-t-4 border-t-emerald-600">
+          <Card className="border-t-4 border-t-forest">
             <CardHeader>
-              <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-emerald-600" /> Service Location
+              <h2 className="text-base font-semibold text-darkgreen flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-forest" /> Service Location
               </h2>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-3 text-xs text-emerald-900">
+              <div className="bg-palesage/50 border border-sage/40 rounded-lg p-3 text-xs text-forest-deep">
                 <span className="font-semibold block mb-0.5">Address Unlocked</span>
                 <span>The client&apos;s full address is revealed for service execution.</span>
               </div>
 
-              <div className="space-y-2 text-xs text-slate-800">
-                <div className="font-medium text-slate-900 text-sm">
+              <div className="space-y-2 text-xs text-darkgreen">
+                <div className="font-medium text-darkgreen text-sm">
                   {booking.serviceRequest?.location?.address || 'Street Address Available'}
                 </div>
-                <div className="text-slate-600">
+                <div className="text-darkgreen-muted">
                   {booking.serviceRequest?.location?.city || ''}
                   {booking.serviceRequest?.location?.postalCode ? ` - ${booking.serviceRequest.location.postalCode}` : ''}
                 </div>
               </div>
 
-              <div className="border-t border-slate-100 pt-3 space-y-2 text-xs text-slate-700">
-                <span className="text-xs text-slate-500 uppercase font-semibold block mb-1">
+              <div className="border-t border-themeborder pt-3 space-y-2 text-xs text-darkgreen">
+                <span className="text-xs text-darkgreen-muted uppercase font-semibold block mb-1">
                   Client Contact
                 </span>
                 <div className="flex items-center gap-2">
-                  <User className="h-3.5 w-3.5 text-slate-400" />
-                  <span className="font-medium text-slate-900">{booking.customer?.name}</span>
+                  <User className="h-3.5 w-3.5 text-darkgreen-muted" />
+                  <span className="font-medium text-darkgreen">{booking.customer?.name}</span>
                 </div>
                 {booking.customer?.email && (
                   <div className="flex items-center gap-2">
-                    <Mail className="h-3.5 w-3.5 text-slate-400" />
+                    <Mail className="h-3.5 w-3.5 text-darkgreen-muted" />
                     <span className="truncate">{booking.customer.email}</span>
                   </div>
                 )}
                 {booking.customer?.phone && (
                   <div className="flex items-center gap-2">
-                    <Phone className="h-3.5 w-3.5 text-slate-400" />
+                    <Phone className="h-3.5 w-3.5 text-darkgreen-muted" />
                     <span>{booking.customer.phone}</span>
                   </div>
                 )}
@@ -345,7 +345,6 @@ export const ProviderBookingDetailPage = () => {
               variant="danger"
               onClick={handleConfirmCancel}
               isLoading={isCancelling}
-              className="bg-rose-600 hover:bg-rose-700 text-white"
             >
               Confirm Cancellation
             </Button>
@@ -354,19 +353,19 @@ export const ProviderBookingDetailPage = () => {
       >
         <div className="space-y-4 py-2">
           {cancelError && (
-            <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-start gap-2 text-xs text-rose-700">
-              <AlertCircle className="h-4 w-4 text-rose-500 flex-shrink-0 mt-0.5" />
+            <div className="bg-status-error/10 border border-status-error/20 rounded-xl p-3 flex items-start gap-2 text-xs text-status-error">
+              <AlertCircle className="h-4 w-4 text-status-error flex-shrink-0 mt-0.5" />
               <span>{cancelError}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Cancellation Reason <span className="text-rose-500">*</span>
+            <label className="block text-xs font-semibold text-darkgreen mb-1">
+              Cancellation Reason <span className="text-status-error">*</span>
             </label>
             <textarea
               rows="3"
-              className="w-full text-xs rounded-lg border border-slate-300 p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500"
+              className="w-full text-xs rounded-lg border border-themeborder p-2.5 text-darkgreen focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest"
               placeholder="Why are you cancelling this job (minimum 5 characters)..."
               value={cancellationReason}
               onChange={(e) => setCancellationReason(e.target.value)}
@@ -374,7 +373,7 @@ export const ProviderBookingDetailPage = () => {
             />
           </div>
 
-          <p className="text-[11px] text-slate-500 leading-normal">
+          <p className="text-[11px] text-darkgreen-muted leading-normal">
             Cancelling this job will notify the customer and allow them to choose another provider.
           </p>
         </div>

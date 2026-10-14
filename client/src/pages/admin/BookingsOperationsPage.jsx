@@ -139,10 +139,10 @@ export const BookingsOperationsPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
-            <Calendar className="h-6 w-6 text-indigo-600" />
-            <h1 className="text-2xl font-bold text-slate-900">Bookings Oversight</h1>
+            <Calendar className="h-6 w-6 text-forest" />
+            <h1 className="text-2xl font-bold text-darkgreen">Bookings Oversight</h1>
           </div>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-darkgreen-muted mt-1">
             Read-only operational tracking and status inspection across platform service bookings.
           </p>
         </div>
@@ -162,7 +162,7 @@ export const BookingsOperationsPage = () => {
 
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
               <div className="flex items-center space-x-2">
-                <label htmlFor="startDate" className="text-xs text-slate-500 font-medium">From:</label>
+                <label htmlFor="startDate" className="text-xs text-darkgreen-muted font-medium">From:</label>
                 <input
                   id="startDate"
                   type="date"
@@ -171,12 +171,12 @@ export const BookingsOperationsPage = () => {
                     setStartDate(e.target.value);
                     setDateError('');
                   }}
-                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-700 focus:border-indigo-500 focus:outline-hidden"
+                  className="rounded-lg border border-themeborder px-3 py-1.5 text-xs text-darkgreen focus:border-forest focus:outline-hidden bg-white"
                 />
               </div>
 
               <div className="flex items-center space-x-2">
-                <label htmlFor="endDate" className="text-xs text-slate-500 font-medium">To:</label>
+                <label htmlFor="endDate" className="text-xs text-darkgreen-muted font-medium">To:</label>
                 <input
                   id="endDate"
                   type="date"
@@ -185,7 +185,7 @@ export const BookingsOperationsPage = () => {
                     setEndDate(e.target.value);
                     setDateError('');
                   }}
-                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-700 focus:border-indigo-500 focus:outline-hidden"
+                  className="rounded-lg border border-themeborder px-3 py-1.5 text-xs text-darkgreen focus:border-forest focus:outline-hidden bg-white"
                 />
               </div>
 
@@ -202,7 +202,7 @@ export const BookingsOperationsPage = () => {
           </form>
 
           {dateError && (
-            <p className="text-xs font-semibold text-rose-600 mt-2" role="alert">
+            <p className="text-xs font-semibold text-status-error mt-2" role="alert">
               {dateError}
             </p>
           )}
@@ -261,29 +261,29 @@ export const BookingsOperationsPage = () => {
                   {bookings.map((b) => (
                     <TableRow key={b._id}>
                       <TableCell>
-                        <span className="font-mono text-xs font-semibold text-slate-900">
+                        <span className="font-mono text-xs font-semibold text-darkgreen">
                           {b.bookingNumber || b._id.substring(b._id.length - 8).toUpperCase()}
                         </span>
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium text-slate-900">{b.customer?.name || 'Customer'}</p>
-                          <p className="text-xs text-slate-500">{b.customer?.email || '—'}</p>
+                          <p className="font-medium text-darkgreen">{b.customer?.name || 'Customer'}</p>
+                          <p className="text-xs text-darkgreen-muted">{b.customer?.email || '—'}</p>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium text-slate-900">{b.provider?.name || 'Provider'}</p>
-                          <p className="text-xs text-slate-500">{b.provider?.email || '—'}</p>
+                          <p className="font-medium text-darkgreen">{b.provider?.name || 'Provider'}</p>
+                          <p className="text-xs text-darkgreen-muted">{b.provider?.email || '—'}</p>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <p className="text-sm text-slate-700">
+                        <p className="text-sm text-darkgreen">
                           {b.serviceRequest?.title || b.serviceCategory || 'Service'}
                         </p>
                       </TableCell>
                       <TableCell>{getBookingStatusBadge(b.status)}</TableCell>
-                      <TableCell className="text-sm text-slate-600">
+                      <TableCell className="text-sm text-darkgreen-muted">
                         {b.createdAt ? new Date(b.createdAt).toLocaleDateString() : '—'}
                       </TableCell>
                       <TableCell className="text-right">
@@ -303,10 +303,10 @@ export const BookingsOperationsPage = () => {
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-              <p className="text-xs text-slate-500">
-                Showing <span className="font-semibold">{bookings.length}</span> of{' '}
-                <span className="font-semibold">{pagination.total || 0}</span> bookings
+            <div className="flex items-center justify-between px-6 py-4 border-t border-themeborder">
+              <p className="text-xs text-darkgreen-muted">
+                Showing <span className="font-semibold text-darkgreen">{bookings.length}</span> of{' '}
+                <span className="font-semibold text-darkgreen">{pagination.total || 0}</span> bookings
               </p>
               <div className="flex items-center space-x-2">
                 <Button
@@ -318,7 +318,7 @@ export const BookingsOperationsPage = () => {
                 >
                   Previous
                 </Button>
-                <span className="text-xs text-slate-600 px-2 font-medium">
+                <span className="text-xs text-darkgreen-muted px-2 font-medium">
                   Page {currentPage} of {pagination.totalPages || 1}
                 </span>
                 <Button
@@ -345,45 +345,45 @@ export const BookingsOperationsPage = () => {
       >
         {selectedBooking && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="grid grid-cols-2 gap-4 text-sm bg-ivory p-4 rounded-xl border border-themeborder">
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Booking ID</span>
-                <p className="font-mono text-xs text-slate-800 break-all">{selectedBooking._id}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Booking ID</span>
+                <p className="font-mono text-xs text-darkgreen break-all">{selectedBooking._id}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Status</span>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Status</span>
                 <div className="mt-1">{getBookingStatusBadge(selectedBooking.status)}</div>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Customer</span>
-                <p className="font-semibold text-slate-900">{selectedBooking.customer?.name || '—'}</p>
-                <p className="text-xs text-slate-500">{selectedBooking.customer?.email || '—'}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Customer</span>
+                <p className="font-semibold text-darkgreen">{selectedBooking.customer?.name || '—'}</p>
+                <p className="text-xs text-darkgreen-muted">{selectedBooking.customer?.email || '—'}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Provider</span>
-                <p className="font-semibold text-slate-900">{selectedBooking.provider?.name || '—'}</p>
-                <p className="text-xs text-slate-500">{selectedBooking.provider?.email || '—'}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Provider</span>
+                <p className="font-semibold text-darkgreen">{selectedBooking.provider?.name || '—'}</p>
+                <p className="text-xs text-darkgreen-muted">{selectedBooking.provider?.email || '—'}</p>
               </div>
               <div className="col-span-2">
-                <span className="text-xs font-medium text-slate-400 uppercase">Service Details</span>
-                <p className="font-medium text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Service Details</span>
+                <p className="font-medium text-darkgreen">
                   {selectedBooking.serviceRequest?.title || 'Direct Booking'}
                 </p>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-darkgreen-muted mt-0.5">
                   {selectedBooking.serviceRequest?.description || 'No extended description recorded.'}
                 </p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Scheduled Date</span>
-                <p className="text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Scheduled Date</span>
+                <p className="text-darkgreen">
                   {selectedBooking.scheduledDate
                     ? new Date(selectedBooking.scheduledDate).toLocaleString()
                     : selectedBooking.date || '—'}
                 </p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Created Date</span>
-                <p className="text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Created Date</span>
+                <p className="text-darkgreen">
                   {selectedBooking.createdAt ? new Date(selectedBooking.createdAt).toLocaleString() : '—'}
                 </p>
               </div>

@@ -460,7 +460,7 @@ export const ProviderOnboardingWizard = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
         <LoadingSpinner size="lg" />
-        <p className="text-sm font-medium text-slate-600">Loading onboarding wizard...</p>
+        <p className="text-sm font-medium text-darkgreen-muted">Loading onboarding wizard...</p>
       </div>
     );
   }
@@ -470,10 +470,10 @@ export const ProviderOnboardingWizard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-darkgreen">
             {isExistingProfile ? 'Update Business Profile' : 'Service Provider Onboarding'}
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-darkgreen-muted mt-1">
             Complete your trade credentials and service offerings to get verified and start receiving jobs.
           </p>
         </div>
@@ -483,7 +483,7 @@ export const ProviderOnboardingWizard = () => {
       </div>
 
       {/* Step Indicator */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm overflow-x-auto">
+      <div className="bg-white border border-themeborder rounded-xl p-4 shadow-xs overflow-x-auto">
         <div className="flex items-center justify-between min-w-[650px] gap-2">
           {STEPS.map((s) => {
             const Icon = s.icon;
@@ -502,19 +502,19 @@ export const ProviderOnboardingWizard = () => {
                 disabled={!isCompleted && s.id > currentStep}
                 className={`flex flex-col items-center gap-1.5 flex-1 p-2 rounded-lg text-center transition-all ${
                   isCurrent
-                    ? 'bg-blue-50 text-blue-700 font-semibold'
+                    ? 'bg-palesage text-forest-deep font-semibold'
                     : isCompleted
-                    ? 'text-emerald-700 hover:bg-slate-50 cursor-pointer'
-                    : 'text-slate-400 opacity-60 cursor-not-allowed'
+                    ? 'text-emerald-700 hover:bg-palesage/30 cursor-pointer'
+                    : 'text-darkgreen-muted/60 opacity-60 cursor-not-allowed'
                 }`}
               >
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                     isCurrent
-                      ? 'bg-blue-600 text-white shadow-sm'
+                      ? 'bg-forest text-white shadow-xs'
                       : isCompleted
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-slate-100 text-slate-500'
+                      ? 'bg-forest text-white'
+                      : 'bg-palesage/50 text-darkgreen-muted'
                   }`}
                 >
                   {isCompleted ? '✓' : <Icon className="w-4 h-4" />}
@@ -554,20 +554,20 @@ export const ProviderOnboardingWizard = () => {
               required
             />
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Company Bio / Professional Summary <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-darkgreen mb-1">
+                Company Bio / Professional Summary <span className="text-status-error">*</span>
               </label>
               <textarea
                 rows={4}
-                className={`w-full px-3 py-2 border rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  stepErrors.description ? 'border-red-500 bg-red-50/20' : 'border-slate-300'
+                className={`w-full px-3 py-2 border rounded-lg text-sm text-darkgreen focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest ${
+                  stepErrors.description ? 'border-status-error bg-status-error/10' : 'border-themeborder'
                 }`}
                 placeholder="Describe your expertise, work ethics, and customer satisfaction guarantees (minimum 10 characters)..."
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
               {stepErrors.description && (
-                <p className="text-xs text-red-600 mt-1">{stepErrors.description}</p>
+                <p className="text-xs text-status-error mt-1">{stepErrors.description}</p>
               )}
             </div>
           </CardContent>
@@ -588,7 +588,7 @@ export const ProviderOnboardingWizard = () => {
           />
           <CardContent className="space-y-4">
             {stepErrors.serviceCategories && (
-              <p className="text-xs text-red-600 font-medium" role="alert">
+              <p className="text-xs text-status-error font-medium" role="alert">
                 {stepErrors.serviceCategories}
               </p>
             )}
@@ -597,24 +597,24 @@ export const ProviderOnboardingWizard = () => {
             {isLoadingCategories && (
               <div className="flex flex-col items-center justify-center py-12 space-y-3" role="status">
                 <LoadingSpinner size="lg" />
-                <p className="text-sm font-medium text-slate-600">Loading service categories...</p>
+                <p className="text-sm font-medium text-darkgreen-muted">Loading service categories...</p>
               </div>
             )}
 
             {/* Error State with Retry Button */}
             {!isLoadingCategories && categoryLoadError && (
-              <div className="p-6 rounded-xl bg-red-50 border border-red-200 text-center space-y-3" role="alert">
-                <AlertCircle className="w-8 h-8 text-red-600 mx-auto" />
+              <div className="p-6 rounded-xl bg-status-error/10 border border-status-error/20 text-center space-y-3" role="alert">
+                <AlertCircle className="w-8 h-8 text-status-error mx-auto" />
                 <div className="space-y-1">
-                  <h4 className="text-sm font-semibold text-red-900">Failed to Load Categories</h4>
-                  <p className="text-xs text-red-700 max-w-md mx-auto">{categoryLoadError}</p>
+                  <h4 className="text-sm font-semibold text-status-error">Failed to Load Categories</h4>
+                  <p className="text-xs text-status-error/80 max-w-md mx-auto">{categoryLoadError}</p>
                 </div>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={loadCategories}
-                  className="bg-white hover:bg-red-50 border-red-300 text-red-700"
+                  className="bg-white hover:bg-status-error/10 border-status-error/30 text-status-error"
                 >
                   <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Retry
                 </Button>
@@ -623,11 +623,11 @@ export const ProviderOnboardingWizard = () => {
 
             {/* Empty State when no categories exist */}
             {!isLoadingCategories && !categoryLoadError && availableCategories.length === 0 && (
-              <div className="p-8 rounded-xl bg-slate-50 border border-slate-200 text-center space-y-3">
-                <Layers className="w-10 h-10 text-slate-400 mx-auto" />
+              <div className="p-8 rounded-xl bg-ivory/60 border border-themeborder text-center space-y-3">
+                <Layers className="w-10 h-10 text-darkgreen-muted mx-auto" />
                 <div className="space-y-1">
-                  <h4 className="text-sm font-semibold text-slate-900">No Service Categories Available</h4>
-                  <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  <h4 className="text-sm font-semibold text-darkgreen">No Service Categories Available</h4>
+                  <p className="text-xs text-darkgreen-muted max-w-md mx-auto">
                     There are currently no active service categories available for onboarding. Please try again later or contact platform support.
                   </p>
                 </div>
@@ -640,9 +640,9 @@ export const ProviderOnboardingWizard = () => {
             {/* Active Categories Grid */}
             {!isLoadingCategories && !categoryLoadError && availableCategories.length > 0 && (
               <>
-                <div className="flex items-center justify-between text-xs text-slate-500 pb-1">
+                <div className="flex items-center justify-between text-xs text-darkgreen-muted pb-1">
                   <span>Select all trade categories you are certified and equipped to perform.</span>
-                  <span className="font-semibold text-slate-700">
+                  <span className="font-semibold text-darkgreen">
                     {formData.serviceCategories.length} selected
                   </span>
                 </div>
@@ -664,25 +664,25 @@ export const ProviderOnboardingWizard = () => {
                         }}
                         className={`p-4 rounded-xl border-2 cursor-pointer transition-all select-none ${
                           isSelected
-                            ? 'border-blue-600 bg-blue-50/50 shadow-sm'
-                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                            ? 'border-forest bg-palesage/30 shadow-xs'
+                            : 'border-themeborder hover:border-sage bg-white'
                         }`}
                       >
                         <div className="flex items-start justify-between">
-                          <div className="font-semibold text-slate-900 text-sm">{cat.name}</div>
+                          <div className="font-semibold text-darkgreen text-sm">{cat.name}</div>
                           <input
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => {}} // Controlled by outer container click
-                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 mt-0.5 pointer-events-none"
+                            className="rounded border-themeborder text-forest focus:ring-forest mt-0.5 pointer-events-none"
                             aria-hidden="true"
                           />
                         </div>
                         {cat.description && (
-                          <p className="text-xs text-slate-500 mt-1 line-clamp-2">{cat.description}</p>
+                          <p className="text-xs text-darkgreen-muted mt-1 line-clamp-2">{cat.description}</p>
                         )}
                         {cat.startingPrice > 0 && (
-                          <p className="text-xs text-slate-400 mt-2">
+                          <p className="text-xs text-darkgreen-muted mt-2">
                             Starting from ₹{cat.startingPrice}
                           </p>
                         )}
@@ -721,17 +721,17 @@ export const ProviderOnboardingWizard = () => {
           />
           <CardContent className="space-y-5">
             {stepErrors.skills && (
-              <p className="text-xs text-red-600 font-medium">{stepErrors.skills}</p>
+              <p className="text-xs text-status-error font-medium">{stepErrors.skills}</p>
             )}
 
             {/* Selected Skills Tags */}
             <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-darkgreen-muted uppercase tracking-wider mb-2">
                 Selected Skills ({formData.skills.length})
               </label>
-              <div className="flex flex-wrap gap-2 min-h-[44px] p-3 rounded-lg border border-slate-200 bg-slate-50/50">
+              <div className="flex flex-wrap gap-2 min-h-[44px] p-3 rounded-lg border border-themeborder bg-ivory/40">
                 {formData.skills.length === 0 ? (
-                  <p className="text-xs text-slate-400 self-center">No skills added yet. Select from below or type a custom skill.</p>
+                  <p className="text-xs text-darkgreen-muted self-center">No skills added yet. Select from below or type a custom skill.</p>
                 ) : (
                   formData.skills.map((skill) => (
                     <Badge key={skill} variant="primary" size="md" className="flex items-center gap-1.5 py-1 px-2.5">
@@ -739,7 +739,7 @@ export const ProviderOnboardingWizard = () => {
                       <button
                         type="button"
                         onClick={() => removeSkill(skill)}
-                        className="text-blue-700 hover:text-blue-900 font-bold ml-1"
+                        className="text-forest hover:text-forest-deep font-bold ml-1"
                       >
                         ×
                       </button>
@@ -770,7 +770,7 @@ export const ProviderOnboardingWizard = () => {
             {/* Suggested / Catalog Skills */}
             {suggestedSkills.length > 0 && (
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-darkgreen-muted uppercase tracking-wider mb-2">
                   Suggested Industry Skills
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -783,8 +783,8 @@ export const ProviderOnboardingWizard = () => {
                         onClick={() => (isAdded ? removeSkill(sk) : addSkill(sk))}
                         className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
                           isAdded
-                            ? 'bg-blue-600 text-white border-blue-600 font-medium'
-                            : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
+                            ? 'bg-forest text-white border-forest font-medium'
+                            : 'bg-white text-darkgreen border-themeborder hover:border-sage'
                         }`}
                       >
                         {isAdded ? `✓ ${sk}` : `+ ${sk}`}
@@ -815,11 +815,11 @@ export const ProviderOnboardingWizard = () => {
           />
           <CardContent className="space-y-4">
             {stepErrors.serviceAreas && (
-              <p className="text-xs text-red-600 font-medium">{stepErrors.serviceAreas}</p>
+              <p className="text-xs text-status-error font-medium">{stepErrors.serviceAreas}</p>
             )}
 
             {formData.serviceAreas.map((sa, idx) => (
-              <div key={idx} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+              <div key={idx} className="p-4 rounded-xl border border-themeborder bg-ivory/40 space-y-3">
                 <div className="flex items-center justify-between gap-2">
                   <Input
                     label={`City / Region #${idx + 1}`}
@@ -834,7 +834,7 @@ export const ProviderOnboardingWizard = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => removeCityRow(idx)}
-                      className="text-red-600 hover:bg-red-50 mt-6"
+                      className="text-status-error hover:bg-status-error/10 mt-6"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -842,7 +842,7 @@ export const ProviderOnboardingWizard = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">
+                  <label className="block text-xs font-semibold text-darkgreen mb-1">
                     Coverage Localities / Sub-areas
                   </label>
                   <div className="flex flex-wrap gap-1.5 mb-2">
@@ -852,7 +852,7 @@ export const ProviderOnboardingWizard = () => {
                         <button
                           type="button"
                           onClick={() => removeAreaTag(idx, tagIdx)}
-                          className="hover:text-red-700 ml-1"
+                          className="hover:text-status-error ml-1"
                         >
                           ×
                         </button>
@@ -914,7 +914,7 @@ export const ProviderOnboardingWizard = () => {
               error={stepErrors.experienceYears}
               required
             />
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-darkgreen-muted">
               Entering verified industry experience increases customer trust and fast-tracks admin review.
             </p>
           </CardContent>
@@ -938,11 +938,11 @@ export const ProviderOnboardingWizard = () => {
           />
           <CardContent className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-darkgreen mb-1">
                 Pricing Model
               </label>
               <select
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-themeborder rounded-lg text-sm text-darkgreen focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest"
                 value={formData.pricing.model}
                 onChange={(e) =>
                   setFormData({
@@ -1012,21 +1012,21 @@ export const ProviderOnboardingWizard = () => {
             subtitle="Submit licenses, certifications, and identification metadata for Platform Admin audit."
           />
           <CardContent className="space-y-4">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-darkgreen-muted">
               Provide verifiable document links (e.g. government trade license register, cloud document URL). Platform Admins will inspect these credentials prior to approving your profile.
             </p>
 
             {formData.documents.map((doc, idx) => (
-              <div key={idx} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+              <div key={idx} className="p-4 rounded-xl border border-themeborder bg-ivory/40 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-600 uppercase">Document #{idx + 1}</span>
+                  <span className="text-xs font-bold text-darkgreen-muted uppercase">Document #{idx + 1}</span>
                   {formData.documents.length > 1 && (
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={() => removeDocumentRow(idx)}
-                      className="text-red-600 hover:bg-red-50"
+                      className="text-status-error hover:bg-status-error/10"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -1035,11 +1035,11 @@ export const ProviderOnboardingWizard = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">
+                    <label className="block text-xs font-medium text-darkgreen mb-1">
                       Document Type
                     </label>
                     <select
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-themeborder rounded-lg text-xs text-darkgreen focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest"
                       value={doc.type}
                       onChange={(e) => updateDocument(idx, 'type', e.target.value)}
                     >
@@ -1097,11 +1097,11 @@ export const ProviderOnboardingWizard = () => {
             subtitle="Verify all business details before submitting to Platform Admins for review."
           />
           <CardContent className="space-y-6">
-            <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 flex items-start gap-3">
-              <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl bg-palesage/40 border border-sage/40 flex items-start gap-3">
+              <ShieldCheck className="w-6 h-6 text-forest shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-sm font-semibold text-blue-900">Verification Lifecycle Notice</h4>
-                <p className="text-xs text-blue-700 mt-1">
+                <h4 className="text-sm font-semibold text-darkgreen">Verification Lifecycle Notice</h4>
+                <p className="text-xs text-darkgreen-muted mt-1">
                   Once submitted, your verification status will be set to <strong>PENDING</strong>. A Platform Admin will inspect your documents and trade credentials before activating customer booking dispatch.
                 </p>
               </div>
@@ -1109,25 +1109,25 @@ export const ProviderOnboardingWizard = () => {
 
             {/* Business summary */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                <span className="text-xs font-bold text-slate-500 uppercase">Business Info</span>
-                <p className="text-base font-bold text-slate-900 mt-1">{formData.businessName}</p>
-                <p className="text-xs text-slate-600 mt-1 line-clamp-3">{formData.description}</p>
-                <p className="text-xs text-slate-500 mt-2"><strong>Experience:</strong> {formData.experienceYears} Years</p>
+              <div className="p-4 rounded-lg bg-ivory/60 border border-themeborder">
+                <span className="text-xs font-bold text-darkgreen-muted uppercase">Business Info</span>
+                <p className="text-base font-bold text-darkgreen mt-1">{formData.businessName}</p>
+                <p className="text-xs text-darkgreen mt-1 line-clamp-3">{formData.description}</p>
+                <p className="text-xs text-darkgreen-muted mt-2"><strong>Experience:</strong> {formData.experienceYears} Years</p>
               </div>
 
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                <span className="text-xs font-bold text-slate-500 uppercase">Pricing Configuration</span>
-                <p className="text-sm font-semibold text-slate-900 mt-1">Model: {formData.pricing.model}</p>
-                <p className="text-xs text-slate-600 mt-1">Minimum Visit Charge: ₹{formData.pricing.minimumCharge}</p>
-                <p className="text-xs text-slate-600">Hourly Labor Rate: ₹{formData.pricing.hourlyRate}/hr</p>
+              <div className="p-4 rounded-lg bg-ivory/60 border border-themeborder">
+                <span className="text-xs font-bold text-darkgreen-muted uppercase">Pricing Configuration</span>
+                <p className="text-sm font-semibold text-darkgreen mt-1">Model: {formData.pricing.model}</p>
+                <p className="text-xs text-darkgreen mt-1">Minimum Visit Charge: ₹{formData.pricing.minimumCharge}</p>
+                <p className="text-xs text-darkgreen">Hourly Labor Rate: ₹{formData.pricing.hourlyRate}/hr</p>
               </div>
             </div>
 
             {/* Categories & Skills */}
-            <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
+            <div className="p-4 rounded-lg bg-ivory/60 border border-themeborder space-y-3">
               <div>
-                <span className="text-xs font-bold text-slate-500 uppercase">Selected Categories ({formData.serviceCategories.length})</span>
+                <span className="text-xs font-bold text-darkgreen-muted uppercase">Selected Categories ({formData.serviceCategories.length})</span>
                 <div className="flex flex-wrap gap-1.5 mt-1.5">
                   {formData.serviceCategories.map((catId) => {
                     const found = availableCategories.find((c) => c._id === catId);
@@ -1141,7 +1141,7 @@ export const ProviderOnboardingWizard = () => {
               </div>
 
               <div>
-                <span className="text-xs font-bold text-slate-500 uppercase">Skills ({formData.skills.length})</span>
+                <span className="text-xs font-bold text-darkgreen-muted uppercase">Skills ({formData.skills.length})</span>
                 <div className="flex flex-wrap gap-1.5 mt-1.5">
                   {formData.skills.map((s) => (
                     <Badge key={s} variant="secondary">
@@ -1154,9 +1154,9 @@ export const ProviderOnboardingWizard = () => {
 
             {/* Coverage & Documents */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                <span className="text-xs font-bold text-slate-500 uppercase">Coverage Cities</span>
-                <ul className="text-xs text-slate-700 mt-2 space-y-1">
+              <div className="p-4 rounded-lg bg-ivory/60 border border-themeborder">
+                <span className="text-xs font-bold text-darkgreen-muted uppercase">Coverage Cities</span>
+                <ul className="text-xs text-darkgreen mt-2 space-y-1">
                   {formData.serviceAreas.filter((sa) => sa.city).map((sa, i) => (
                     <li key={i}>
                       📍 <strong>{sa.city}</strong> {sa.areas.length > 0 ? `(${sa.areas.join(', ')})` : ''}
@@ -1165,9 +1165,9 @@ export const ProviderOnboardingWizard = () => {
                 </ul>
               </div>
 
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                <span className="text-xs font-bold text-slate-500 uppercase">Attached Credentials</span>
-                <ul className="text-xs text-slate-700 mt-2 space-y-1">
+              <div className="p-4 rounded-lg bg-ivory/60 border border-themeborder">
+                <span className="text-xs font-bold text-darkgreen-muted uppercase">Attached Credentials</span>
+                <ul className="text-xs text-darkgreen mt-2 space-y-1">
                   {formData.documents.filter((d) => d.name).map((d, i) => (
                     <li key={i}>
                       📄 <strong>{d.type}:</strong> {d.name}

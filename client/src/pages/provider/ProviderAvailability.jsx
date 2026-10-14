@@ -160,8 +160,8 @@ export const ProviderAvailability = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Weekly Availability</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-darkgreen">Weekly Availability</h1>
+          <p className="text-sm text-darkgreen-muted mt-1">
             Set your weekly working shifts and hours to receive job requests that match your schedule.
           </p>
         </div>
@@ -181,9 +181,9 @@ export const ProviderAvailability = () => {
       </div>
 
       {/* Info Banner */}
-      <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 flex items-start gap-3">
-        <Info className="h-5 w-5 text-sky-600 flex-shrink-0 mt-0.5" />
-        <div className="text-xs text-sky-800 leading-relaxed">
+      <div className="bg-[#F0F5F8] border border-[#CFE1EB] rounded-xl p-4 flex items-start gap-3">
+        <Info className="h-5 w-5 text-status-info flex-shrink-0 mt-0.5" />
+        <div className="text-xs text-[#245B75] leading-relaxed">
           <strong>Deterministic Scheduling:</strong> Our marketplace respects your configured hours.
           Customers booking services can only request appointments when you have active availability.
           Shifts cannot overlap on the same day. All times use 24-hour format.
@@ -192,15 +192,15 @@ export const ProviderAvailability = () => {
 
       {/* Alerts */}
       {successMessage && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-3 text-sm text-emerald-800 animate-in fade-in duration-200">
-          <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+        <div className="bg-[#EAF5EE] border border-[#BCE2C9] rounded-xl p-4 flex items-center gap-3 text-sm text-[#276749] animate-in fade-in duration-200">
+          <CheckCircle2 className="h-5 w-5 text-[#276749] flex-shrink-0" />
           <span>{successMessage}</span>
         </div>
       )}
 
       {error && (
-        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center gap-3 text-sm text-rose-800">
-          <AlertCircle className="h-5 w-5 text-rose-600 flex-shrink-0" />
+        <div className="bg-[#FDF2F2] border border-[#F8D0D0] rounded-xl p-4 flex items-center gap-3 text-sm text-[#B42318]">
+          <AlertCircle className="h-5 w-5 text-[#B42318] flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -213,7 +213,7 @@ export const ProviderAvailability = () => {
       ) : (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-slate-700">
+            <span className="text-sm font-semibold text-darkgreen">
               Weekly Roster ({totalShifts} active {totalShifts === 1 ? 'shift' : 'shifts'})
             </span>
           </div>
@@ -228,19 +228,19 @@ export const ProviderAvailability = () => {
                   key={day}
                   className={`rounded-2xl border transition-all flex flex-col justify-between ${
                     dayShifts.length > 0
-                      ? 'bg-white border-slate-200 shadow-sm'
+                      ? 'bg-white border-themeborder shadow-sm'
                       : isWeekend
-                      ? 'bg-slate-50/60 border-dashed border-slate-200'
-                      : 'bg-white/60 border-dashed border-slate-200'
+                      ? 'bg-ivory/60 border-dashed border-themeborder'
+                      : 'bg-white/60 border-dashed border-themeborder'
                   }`}
                 >
                   {/* Card Day Header */}
-                  <div className="p-3 border-b border-slate-100 flex items-center justify-between">
+                  <div className="p-3 border-b border-themeborder/60 flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                      <span className="text-xs font-bold uppercase tracking-wider text-darkgreen">
                         {day.substring(0, 3)}
                       </span>
-                      <span className="block text-[11px] text-slate-400 capitalize">
+                      <span className="block text-[11px] text-darkgreen-muted capitalize">
                         {day.toLowerCase()}
                       </span>
                     </div>
@@ -259,33 +259,33 @@ export const ProviderAvailability = () => {
                   <div className="p-3 flex-1 space-y-2">
                     {dayShifts.length === 0 ? (
                       <div className="py-4 text-center">
-                        <Sun className="h-5 w-5 text-slate-300 mx-auto mb-1" />
-                        <p className="text-[11px] text-slate-400">Day Off</p>
+                        <Sun className="h-5 w-5 text-darkgreen-muted/40 mx-auto mb-1" />
+                        <p className="text-[11px] text-darkgreen-muted">Day Off</p>
                       </div>
                     ) : (
                       dayShifts.map((shift) => (
                         <div
                           key={shift._id}
-                          className="group relative bg-slate-50 hover:bg-slate-100 border border-slate-200/80 rounded-xl p-2.5 transition-all text-left"
+                          className="group relative bg-ivory hover:bg-palesage/40 border border-themeborder rounded-xl p-2.5 transition-all text-left"
                         >
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center text-xs font-semibold text-slate-800">
-                              <Clock className="h-3 w-3 mr-1 text-primary-500" />
+                            <div className="flex items-center text-xs font-semibold text-darkgreen">
+                              <Clock className="h-3 w-3 mr-1 text-forest" />
                               {shift.startTime} – {shift.endTime}
                             </div>
                             <button
                               type="button"
                               onClick={() => handleDeleteShift(shift._id)}
                               disabled={deletingId === shift._id}
-                              className="text-slate-400 hover:text-rose-600 transition-colors p-1"
+                              className="text-darkgreen-muted hover:text-[#B42318] transition-colors p-1"
                               title="Delete shift"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           </div>
                           <div className="mt-1 flex items-center gap-1">
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            <span className="text-[10px] text-slate-500">Available</span>
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#276749]" />
+                            <span className="text-[10px] text-darkgreen-muted">Available</span>
                           </div>
                         </div>
                       ))
@@ -293,11 +293,11 @@ export const ProviderAvailability = () => {
                   </div>
 
                   {/* Card Footer - Add Slot Button */}
-                  <div className="p-2 border-t border-slate-100 bg-slate-50/40 rounded-b-2xl">
+                  <div className="p-2 border-t border-themeborder bg-ivory/40 rounded-b-2xl">
                     <button
                       type="button"
                       onClick={() => handleOpenAddModal(day)}
-                      className="w-full text-center text-xs text-primary-600 hover:text-primary-700 font-medium py-1.5 rounded-lg hover:bg-primary-50 transition-colors flex items-center justify-center gap-1"
+                      className="w-full text-center text-xs text-forest hover:text-forest-deep font-medium py-1.5 rounded-lg hover:bg-palesage/50 transition-colors flex items-center justify-center gap-1"
                     >
                       <Plus className="h-3.5 w-3.5" /> Add Slot
                     </button>
@@ -328,15 +328,15 @@ export const ProviderAvailability = () => {
       >
         <form onSubmit={handleSaveShift} className="space-y-4 py-2">
           {formError && (
-            <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-start gap-2 text-xs text-rose-700">
-              <AlertCircle className="h-4 w-4 text-rose-500 flex-shrink-0 mt-0.5" />
+            <div className="bg-[#FDF2F2] border border-[#F8D0D0] rounded-xl p-3 flex items-start gap-2 text-xs text-[#B42318]">
+              <AlertCircle className="h-4 w-4 text-[#B42318] flex-shrink-0 mt-0.5" />
               <span>{formError}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              Day of Week <span className="text-rose-500">*</span>
+            <label className="block text-xs font-semibold text-darkgreen mb-1.5">
+              Day of Week <span className="text-[#B42318]">*</span>
             </label>
             <Select
               name="dayOfWeek"
@@ -354,8 +354,8 @@ export const ProviderAvailability = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Start Time (24h) <span className="text-rose-500">*</span>
+              <label className="block text-xs font-semibold text-darkgreen mb-1.5">
+                Start Time (24h) <span className="text-[#B42318]">*</span>
               </label>
               <Input
                 type="time"
@@ -366,8 +366,8 @@ export const ProviderAvailability = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                End Time (24h) <span className="text-rose-500">*</span>
+              <label className="block text-xs font-semibold text-darkgreen mb-1.5">
+                End Time (24h) <span className="text-[#B42318]">*</span>
               </label>
               <Input
                 type="time"
@@ -386,9 +386,9 @@ export const ProviderAvailability = () => {
                 name="isAvailable"
                 checked={formData.isAvailable}
                 onChange={handleFormChange}
-                className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-slate-300"
+                className="w-4 h-4 rounded text-forest focus:ring-forest border-themeborder"
               />
-              <span className="text-xs font-medium text-slate-700">
+              <span className="text-xs font-medium text-darkgreen">
                 Mark as active working shift
               </span>
             </label>

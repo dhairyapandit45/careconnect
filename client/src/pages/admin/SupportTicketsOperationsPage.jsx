@@ -160,10 +160,10 @@ export const SupportTicketsOperationsPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
-            <HelpCircle className="h-6 w-6 text-rose-600" />
-            <h1 className="text-2xl font-bold text-slate-900">Support Tickets Oversight</h1>
+            <HelpCircle className="h-6 w-6 text-forest" />
+            <h1 className="text-2xl font-bold text-darkgreen">Support Tickets Oversight</h1>
           </div>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-darkgreen-muted mt-1">
             Operational auditing and ticket monitoring across platform customer and provider inquiries.
           </p>
         </div>
@@ -265,22 +265,22 @@ export const SupportTicketsOperationsPage = () => {
                   {tickets.map((t) => (
                     <TableRow key={t._id}>
                       <TableCell>
-                        <span className="font-mono text-xs font-semibold text-slate-900">
+                        <span className="font-mono text-xs font-semibold text-darkgreen">
                           {t.ticketNumber || t._id.substring(t._id.length - 8).toUpperCase()}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <p className="font-medium text-slate-900 text-sm">{t.subject}</p>
+                        <p className="font-medium text-darkgreen text-sm">{t.subject}</p>
                       </TableCell>
                       <TableCell>
-                        <span className="text-xs text-slate-600 font-medium">{t.category || 'Support'}</span>
+                        <span className="text-xs text-darkgreen-muted font-medium">{t.category || 'Support'}</span>
                       </TableCell>
                       <TableCell>{getPriorityBadge(t.priority)}</TableCell>
                       <TableCell>{getTicketStatusBadge(t.status)}</TableCell>
                       <TableCell>
-                        <p className="text-xs text-slate-700">{t.assignedTo?.name || 'Unassigned'}</p>
+                        <p className="text-xs text-darkgreen">{t.assignedTo?.name || 'Unassigned'}</p>
                       </TableCell>
-                      <TableCell className="text-sm text-slate-600">
+                      <TableCell className="text-sm text-darkgreen-muted">
                         {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—'}
                       </TableCell>
                       <TableCell className="text-right">
@@ -300,10 +300,10 @@ export const SupportTicketsOperationsPage = () => {
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-              <p className="text-xs text-slate-500">
-                Showing <span className="font-semibold">{tickets.length}</span> of{' '}
-                <span className="font-semibold">{pagination.total || 0}</span> tickets
+            <div className="flex items-center justify-between px-6 py-4 border-t border-themeborder">
+              <p className="text-xs text-darkgreen-muted">
+                Showing <span className="font-semibold text-darkgreen">{tickets.length}</span> of{' '}
+                <span className="font-semibold text-darkgreen">{pagination.total || 0}</span> tickets
               </p>
               <div className="flex items-center space-x-2">
                 <Button
@@ -315,7 +315,7 @@ export const SupportTicketsOperationsPage = () => {
                 >
                   Previous
                 </Button>
-                <span className="text-xs text-slate-600 px-2 font-medium">
+                <span className="text-xs text-darkgreen-muted px-2 font-medium">
                   Page {currentPage} of {pagination.totalPages || 1}
                 </span>
                 <Button
@@ -342,45 +342,45 @@ export const SupportTicketsOperationsPage = () => {
       >
         {selectedTicket && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="grid grid-cols-2 gap-4 text-sm bg-ivory p-4 rounded-xl border border-themeborder">
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Ticket ID</span>
-                <p className="font-mono text-xs text-slate-800 break-all">{selectedTicket._id}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Ticket ID</span>
+                <p className="font-mono text-xs text-darkgreen break-all">{selectedTicket._id}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Status & Priority</span>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Status & Priority</span>
                 <div className="flex items-center space-x-2 mt-1">
                   {getTicketStatusBadge(selectedTicket.status)}
                   {getPriorityBadge(selectedTicket.priority)}
                 </div>
               </div>
               <div className="col-span-2">
-                <span className="text-xs font-medium text-slate-400 uppercase">Subject</span>
-                <p className="font-semibold text-slate-900 mt-0.5">{selectedTicket.subject}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Subject</span>
+                <p className="font-semibold text-darkgreen mt-0.5">{selectedTicket.subject}</p>
               </div>
               <div className="col-span-2">
-                <span className="text-xs font-medium text-slate-400 uppercase">Description</span>
-                <p className="text-slate-800 mt-1 whitespace-pre-wrap">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Description</span>
+                <p className="text-darkgreen mt-1 whitespace-pre-wrap">
                   {selectedTicket.description || 'No description provided.'}
                 </p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Created By</span>
-                <p className="font-medium text-slate-800">{selectedTicket.createdBy?.name || '—'}</p>
-                <p className="text-xs text-slate-500">{selectedTicket.createdBy?.email || '—'}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Created By</span>
+                <p className="font-medium text-darkgreen">{selectedTicket.createdBy?.name || '—'}</p>
+                <p className="text-xs text-darkgreen-muted">{selectedTicket.createdBy?.email || '—'}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Assigned Agent</span>
-                <p className="font-medium text-slate-800">{selectedTicket.assignedTo?.name || 'Unassigned'}</p>
-                <p className="text-xs text-slate-500">{selectedTicket.assignedTo?.email || '—'}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Assigned Agent</span>
+                <p className="font-medium text-darkgreen">{selectedTicket.assignedTo?.name || 'Unassigned'}</p>
+                <p className="text-xs text-darkgreen-muted">{selectedTicket.assignedTo?.email || '—'}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Category</span>
-                <p className="text-slate-800">{selectedTicket.category || '—'}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Category</span>
+                <p className="text-darkgreen">{selectedTicket.category || '—'}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Created Date</span>
-                <p className="text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Created Date</span>
+                <p className="text-darkgreen">
                   {selectedTicket.createdAt ? new Date(selectedTicket.createdAt).toLocaleString() : '—'}
                 </p>
               </div>

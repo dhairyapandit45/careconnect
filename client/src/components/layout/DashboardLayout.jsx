@@ -11,7 +11,7 @@ export const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-ivory flex flex-col">
       <Navbar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
 
       <div className="flex flex-1">

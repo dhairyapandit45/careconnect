@@ -232,8 +232,8 @@ export const AdminCategoriesPage = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Service Categories</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-darkgreen">Service Categories</h1>
+          <p className="text-sm text-darkgreen-muted mt-1">
             Configure service offerings, base pricing models, and required provider capabilities.
           </p>
         </div>
@@ -247,15 +247,15 @@ export const AdminCategoriesPage = () => {
         <div
           className={`p-4 rounded-lg flex items-center justify-between text-sm ${
             actionMessage.type === 'success'
-              ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
-              : 'bg-rose-50 border border-rose-200 text-rose-800'
+              ? 'bg-[#EAF5EE] border border-[#BCE2C9] text-[#276749]'
+              : 'bg-[#FDF2F2] border border-[#F8D0D0] text-[#B42318]'
           }`}
         >
           <div className="flex items-center">
             {actionMessage.type === 'success' ? (
-              <CheckCircle className="h-5 w-5 mr-2 text-emerald-600 shrink-0" />
+              <CheckCircle className="h-5 w-5 mr-2 text-[#276749] shrink-0" />
             ) : (
-              <AlertCircle className="h-5 w-5 mr-2 text-rose-600 shrink-0" />
+              <AlertCircle className="h-5 w-5 mr-2 text-[#B42318] shrink-0" />
             )}
             <span>{actionMessage.text}</span>
           </div>
@@ -273,10 +273,10 @@ export const AdminCategoriesPage = () => {
         <Card>
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">Total Categories</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{categories.length}</p>
+              <p className="text-xs font-medium uppercase text-darkgreen-muted">Total Categories</p>
+              <p className="text-2xl font-bold text-darkgreen mt-1">{categories.length}</p>
             </div>
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+            <div className="p-3 bg-palesage text-forest rounded-lg">
               <Sliders className="h-5 w-5" />
             </div>
           </CardContent>
@@ -285,10 +285,10 @@ export const AdminCategoriesPage = () => {
         <Card>
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">Active Offerings</p>
-              <p className="text-2xl font-bold text-emerald-600 mt-1">{activeCount}</p>
+              <p className="text-xs font-medium uppercase text-darkgreen-muted">Active Offerings</p>
+              <p className="text-2xl font-bold text-[#276749] mt-1">{activeCount}</p>
             </div>
-            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
+            <div className="p-3 bg-[#EAF5EE] text-[#276749] rounded-lg">
               <CheckCircle className="h-5 w-5" />
             </div>
           </CardContent>
@@ -297,10 +297,10 @@ export const AdminCategoriesPage = () => {
         <Card>
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">Inactive / Archived</p>
-              <p className="text-2xl font-bold text-slate-500 mt-1">{inactiveCount}</p>
+              <p className="text-xs font-medium uppercase text-darkgreen-muted">Inactive / Archived</p>
+              <p className="text-2xl font-bold text-darkgreen-muted mt-1">{inactiveCount}</p>
             </div>
-            <div className="p-3 bg-slate-100 text-slate-500 rounded-lg">
+            <div className="p-3 bg-ivory border border-themeborder text-darkgreen-muted rounded-lg">
               <XCircle className="h-5 w-5" />
             </div>
           </CardContent>
@@ -353,13 +353,13 @@ export const AdminCategoriesPage = () => {
                   <TableRow key={cat._id}>
                     <TableCell>
                       <div className="flex items-start space-x-3">
-                        <div className="p-2 rounded-lg bg-blue-50 text-blue-600 mt-0.5 shrink-0">
+                        <div className="p-2 rounded-lg bg-palesage text-forest mt-0.5 shrink-0">
                           <IconComponent className="h-4 w-4" />
                         </div>
                         <div>
-                          <div className="font-semibold text-slate-900 text-sm">{cat.name}</div>
-                          <div className="text-xs text-slate-400 font-mono">/{cat.slug}</div>
-                          <div className="text-xs text-slate-500 mt-1 line-clamp-1 max-w-md">
+                          <div className="font-semibold text-darkgreen text-sm">{cat.name}</div>
+                          <div className="text-xs text-darkgreen-muted font-mono">/{cat.slug}</div>
+                          <div className="text-xs text-darkgreen-muted mt-1 line-clamp-1 max-w-md">
                             {cat.description}
                           </div>
                         </div>
@@ -367,10 +367,10 @@ export const AdminCategoriesPage = () => {
                     </TableCell>
 
                     <TableCell>
-                      <div className="text-sm font-semibold text-slate-900">
+                      <div className="text-sm font-semibold text-darkgreen">
                         ₹{cat.startingPrice !== undefined ? cat.startingPrice.toLocaleString('en-IN') : 0}
                       </div>
-                      <div className="text-xs text-slate-400">{cat.pricingUnit}</div>
+                      <div className="text-xs text-darkgreen-muted">{cat.pricingUnit}</div>
                     </TableCell>
 
                     <TableCell>
@@ -382,7 +382,7 @@ export const AdminCategoriesPage = () => {
                             </Badge>
                           ))
                         ) : (
-                          <span className="text-xs text-slate-400">None specified</span>
+                          <span className="text-xs text-darkgreen-muted">None specified</span>
                         )}
                       </div>
                     </TableCell>
@@ -402,9 +402,9 @@ export const AdminCategoriesPage = () => {
                           onClick={() => handleToggleActive(cat)}
                         >
                           {cat.isActive ? (
-                            <XCircle className="h-4 w-4 text-amber-600" />
+                            <XCircle className="h-4 w-4 text-[#92400E]" />
                           ) : (
-                            <CheckCircle className="h-4 w-4 text-emerald-600" />
+                            <CheckCircle className="h-4 w-4 text-[#276749]" />
                           )}
                         </Button>
 
@@ -420,7 +420,7 @@ export const AdminCategoriesPage = () => {
                           variant="ghost"
                           size="sm"
                           icon={Trash2}
-                          className="text-rose-600 hover:text-rose-700"
+                          className="text-[#B42318] hover:opacity-80"
                           disabled={deletingId === cat._id}
                           onClick={() => handleDelete(cat._id, cat.name)}
                           title="Delete category"
@@ -443,7 +443,7 @@ export const AdminCategoriesPage = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           {formErrors.submit && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center">
+            <div className="p-3 rounded-lg bg-[#FDF2F2] border border-[#F8D0D0] text-xs text-[#B42318] flex items-center">
               <AlertCircle className="h-4 w-4 mr-2 shrink-0" />
               <span>{formErrors.submit}</span>
             </div>
@@ -466,20 +466,20 @@ export const AdminCategoriesPage = () => {
           />
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Description <span className="text-rose-500">*</span>
+            <label className="block text-xs font-semibold text-darkgreen mb-1">
+              Description <span className="text-[#B42318]">*</span>
             </label>
             <textarea
               rows={3}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Detailed description of what this service covers..."
-              className={`w-full rounded-lg border px-3 py-2 text-sm text-slate-900 transition-colors focus:outline-hidden ${
-                formErrors.description ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-blue-500'
+              className={`w-full rounded-lg border px-3 py-2 text-sm text-darkgreen transition-colors focus:outline-hidden ${
+                formErrors.description ? 'border-[#F8D0D0] focus:border-[#B42318]' : 'border-themeborder focus:border-forest focus:ring-1 focus:ring-forest'
               }`}
             />
             {formErrors.description && (
-              <p className="text-xs text-rose-500 mt-1">{formErrors.description}</p>
+              <p className="text-xs text-[#B42318] mt-1">{formErrors.description}</p>
             )}
           </div>
 
@@ -523,14 +523,14 @@ export const AdminCategoriesPage = () => {
               id="isActive"
               checked={formData.isActive}
               onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-              className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-themeborder text-forest focus:ring-forest"
             />
-            <label htmlFor="isActive" className="text-sm font-medium text-slate-700">
+            <label htmlFor="isActive" className="text-sm font-medium text-darkgreen">
               Active offering (customers can book this service)
             </label>
           </div>
 
-          <div className="flex items-center justify-end space-x-2 pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-end space-x-2 pt-4 border-t border-themeborder">
             <Button
               type="button"
               variant="outline"

@@ -276,8 +276,8 @@ export const CreateRequestPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Create Service Request</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-darkgreen">Create Service Request</h1>
+          <p className="text-sm text-darkgreen-muted mt-1">
             Step {step} of 5: {
               step === 1 ? 'Select Category' :
               step === 2 ? 'Problem Details' :
@@ -286,7 +286,7 @@ export const CreateRequestPage = () => {
             }
           </p>
         </div>
-        <Link to="/customer/requests" className="text-sm text-slate-500 hover:text-slate-800">
+        <Link to="/customer/requests" className="text-sm text-darkgreen-muted hover:text-darkgreen">
           Cancel
         </Link>
       </div>
@@ -297,7 +297,7 @@ export const CreateRequestPage = () => {
           <div
             key={i}
             className={`h-2 rounded-full transition-colors ${
-              i <= step ? 'bg-blue-600' : 'bg-slate-200'
+              i <= step ? 'bg-forest' : 'bg-themeborder'
             }`}
           />
         ))}
@@ -326,13 +326,13 @@ export const CreateRequestPage = () => {
             )}
 
             {/* AI Category Assistant Widget */}
-            <div className="mb-6 rounded-xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-blue-50/50 to-white p-4 shadow-xs">
+            <div className="mb-6 rounded-xl border border-sage/60 bg-gradient-to-r from-palesage/60 via-ivory to-white p-4 shadow-xs">
               <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="h-5 w-5 text-indigo-600" />
-                <h3 className="text-sm font-semibold text-indigo-950">CareConnect AI Category Assistant</h3>
-                <Badge variant="primary" size="sm" className="bg-indigo-100 text-indigo-700 font-medium">Smart Match</Badge>
+                <Sparkles className="h-5 w-5 text-forest" />
+                <h3 className="text-sm font-semibold text-darkgreen">CareConnect AI Category Assistant</h3>
+                <Badge variant="primary" size="sm" className="bg-palesage text-forest-deep font-medium border-sage">Smart Match</Badge>
               </div>
-              <p className="text-xs text-slate-600 mb-3">
+              <p className="text-xs text-darkgreen-muted mb-3">
                 Unsure which category fits? Describe your problem in everyday words and CareConnect AI will predict the right trade with explainable reasoning.
               </p>
               <div className="flex flex-col sm:flex-row gap-2">
@@ -341,7 +341,7 @@ export const CreateRequestPage = () => {
                   placeholder="e.g. Water is leaking from the pipe under the kitchen sink..."
                   value={aiPrompt}
                   onChange={(e) => setAiPrompt(e.target.value)}
-                  className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="flex-1 rounded-lg border border-themeborder bg-white px-3 py-2 text-sm focus:border-forest focus:outline-none focus:ring-1 focus:ring-forest"
                   onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAiClassify())}
                 />
                 <Button
@@ -349,7 +349,7 @@ export const CreateRequestPage = () => {
                   size="sm"
                   disabled={isAiClassifying || !aiPrompt.trim()}
                   onClick={handleAiClassify}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5 whitespace-nowrap"
+                  className="bg-forest hover:bg-forest-deep text-white flex items-center gap-1.5 whitespace-nowrap"
                 >
                   {isAiClassifying ? <LoadingSpinner size="sm" /> : <Sparkles className="h-4 w-4" />}
                   {isAiClassifying ? 'Analyzing...' : 'AI Classify'}
@@ -357,11 +357,11 @@ export const CreateRequestPage = () => {
               </div>
 
               {aiRecommendation && (
-                <div className="mt-3 rounded-lg border border-indigo-200 bg-white p-3 shadow-xs">
+                <div className="mt-3 rounded-lg border border-themeborder bg-white p-3 shadow-xs">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Suggested Category:</span>
-                      <span className="text-sm font-bold text-indigo-900">{aiRecommendation.categoryName}</span>
+                      <span className="text-xs font-semibold text-darkgreen-muted uppercase tracking-wider">Suggested Category:</span>
+                      <span className="text-sm font-bold text-darkgreen">{aiRecommendation.categoryName}</span>
                       <Badge
                         variant={aiRecommendation.confidenceLevel === 'HIGH' ? 'success' : aiRecommendation.confidenceLevel === 'MEDIUM' ? 'warning' : 'default'}
                         size="sm"
@@ -377,12 +377,12 @@ export const CreateRequestPage = () => {
                       size="sm"
                       variant="outline"
                       onClick={handleApplyAiRecommendation}
-                      className="border-indigo-300 text-indigo-700 hover:bg-indigo-50 text-xs py-1 h-7"
+                      className="border-sage text-forest-deep hover:bg-palesage text-xs py-1 h-7"
                     >
                       Apply Category
                     </Button>
                   </div>
-                  <p className="mt-1.5 text-xs text-slate-600 italic">
+                  <p className="mt-1.5 text-xs text-darkgreen-muted italic">
                     &ldquo;{aiRecommendation.explanation}&rdquo;
                   </p>
                 </div>
@@ -412,14 +412,14 @@ export const CreateRequestPage = () => {
                     }}
                     className={`flex flex-col text-left p-4 rounded-xl border-2 transition-all ${
                       isSelected
-                        ? 'border-blue-600 bg-blue-50/60 shadow-sm'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                        ? 'border-forest bg-palesage/60 shadow-xs'
+                        : 'border-themeborder hover:border-sage bg-white'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full mb-3">
                       <div
                         className={`p-2.5 rounded-lg ${
-                          isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'
+                          isSelected ? 'bg-forest text-white' : 'bg-ivory text-darkgreen'
                         }`}
                       >
                         <IconComponent className="h-5 w-5" />
@@ -429,8 +429,8 @@ export const CreateRequestPage = () => {
                       </Badge>
                     </div>
 
-                    <h3 className="font-semibold text-slate-900">{cat.name}</h3>
-                    <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                    <h3 className="font-semibold text-darkgreen">{cat.name}</h3>
+                    <p className="text-xs text-darkgreen-muted mt-1 line-clamp-2">
                       {cat.description || 'Verified licensed professional service.'}
                     </p>
                   </button>
@@ -465,34 +465,34 @@ export const CreateRequestPage = () => {
             />
 
             <div>
-              <label htmlFor="problem-description" className="block text-sm font-medium text-slate-700 mb-1">
-                Detailed Problem Description <span className="text-red-500">*</span>
+              <label htmlFor="problem-description" className="block text-sm font-medium text-darkgreen mb-1">
+                Detailed Problem Description <span className="text-status-error">*</span>
               </label>
               <textarea
                 id="problem-description"
                 name="description"
                 rows={5}
                 required
-                className={`block w-full rounded-lg border text-sm p-3 focus:outline-none focus:ring-2 ${
+                className={`block w-full rounded-lg border text-sm p-3 bg-white focus:outline-none focus:ring-2 ${
                   fieldErrors.description
-                    ? 'border-red-300 text-red-900 focus:border-red-500 focus:ring-red-200'
-                    : 'border-slate-300 text-slate-900 focus:border-blue-500 focus:ring-blue-200'
+                    ? 'border-status-error/60 text-status-error focus:border-status-error focus:ring-status-error/20'
+                    : 'border-themeborder text-darkgreen focus:border-forest focus:ring-sage/40'
                 }`}
                 placeholder="Describe what happened, any error codes, appliance brand/model, or specific issues noticed..."
                 value={formData.description}
                 onChange={handleInputChange}
               />
               {fieldErrors.description && (
-                <p className="mt-1 text-xs text-red-600">{fieldErrors.description}</p>
+                <p className="mt-1 text-xs text-status-error">{fieldErrors.description}</p>
               )}
             </div>
 
             {/* AI Category Verification Tool */}
-            <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3">
+            <div className="rounded-lg border border-themeborder bg-ivory/70 p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-indigo-600" />
-                  <span className="text-xs font-medium text-slate-700">
+                  <Sparkles className="h-4 w-4 text-forest" />
+                  <span className="text-xs font-medium text-darkgreen">
                     Verify category match for this problem:
                   </span>
                 </div>
@@ -502,7 +502,7 @@ export const CreateRequestPage = () => {
                   variant="outline"
                   disabled={isCheckingStep2Ai || (!formData.title && !formData.description)}
                   onClick={handleStep2AiCheck}
-                  className="text-xs h-7 py-1 flex items-center gap-1 text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+                  className="text-xs h-7 py-1 flex items-center gap-1 text-forest-deep border-sage hover:bg-palesage"
                 >
                   {isCheckingStep2Ai ? <LoadingSpinner size="sm" /> : <Sparkles className="h-3.5 w-3.5" />}
                   Check Category with AI
@@ -512,7 +512,7 @@ export const CreateRequestPage = () => {
               {step2AiCheck && (
                 <div className="mt-2 text-xs">
                   {step2AiCheck.error ? (
-                    <p className="text-red-600">{step2AiCheck.error}</p>
+                    <p className="text-status-error">{step2AiCheck.error}</p>
                   ) : step2AiCheck.categoryId === formData.categoryId ? (
                     <div className="flex items-center gap-1.5 text-emerald-700">
                       <CheckCircle className="h-4 w-4 shrink-0 text-emerald-600" />
@@ -542,7 +542,7 @@ export const CreateRequestPage = () => {
 
             {selectedCategory?.requiredSkills?.length > 0 && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-darkgreen mb-2">
                   Specialized Skills (Optional)
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -555,8 +555,8 @@ export const CreateRequestPage = () => {
                         onClick={() => handleSkillToggle(skill)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                           active
-                            ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                            ? 'bg-forest text-white border-forest shadow-xs'
+                            : 'bg-ivory text-darkgreen border-themeborder hover:bg-palesage/50'
                         }`}
                       >
                         {skill} {active ? '✓' : '+'}
@@ -699,17 +699,17 @@ export const CreateRequestPage = () => {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Category & Problem */}
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+              <div className="p-4 rounded-xl bg-ivory border border-themeborder space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase text-slate-500">Service Category</span>
+                  <span className="text-xs font-semibold uppercase text-darkgreen-muted">Service Category</span>
                   <Badge variant="primary">{selectedCategory?.name}</Badge>
                 </div>
-                <h4 className="text-base font-bold text-slate-900">{formData.title}</h4>
-                <p className="text-sm text-slate-600 whitespace-pre-wrap">{formData.description}</p>
+                <h4 className="text-base font-bold text-darkgreen">{formData.title}</h4>
+                <p className="text-sm text-darkgreen-muted whitespace-pre-wrap">{formData.description}</p>
                 {formData.requiredSkills.length > 0 && (
                   <div className="pt-2 flex flex-wrap gap-1.5">
                     {formData.requiredSkills.map((s) => (
-                      <span key={s} className="px-2 py-0.5 text-xs bg-white border rounded text-slate-700">
+                      <span key={s} className="px-2 py-0.5 text-xs bg-white border border-themeborder rounded text-darkgreen">
                         {s}
                       </span>
                     ))}
@@ -718,21 +718,21 @@ export const CreateRequestPage = () => {
               </div>
 
               {/* Location & Time */}
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+              <div className="p-4 rounded-xl bg-ivory border border-themeborder space-y-3">
                 <div>
-                  <span className="text-xs font-semibold uppercase text-slate-500">Service Location</span>
-                  <p className="text-sm font-medium text-slate-900 mt-1">
+                  <span className="text-xs font-semibold uppercase text-darkgreen-muted">Service Location</span>
+                  <p className="text-sm font-medium text-darkgreen mt-1">
                     {formData.address}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-darkgreen-muted">
                     {formData.city}, {formData.state} {formData.postalCode}
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-slate-200">
-                  <span className="text-xs font-semibold uppercase text-slate-500">Preferred Timing</span>
-                  <p className="text-sm font-medium text-slate-900 mt-1 flex items-center">
-                    <Calendar className="h-4 w-4 mr-1.5 text-slate-400" />
+                <div className="pt-2 border-t border-themeborder">
+                  <span className="text-xs font-semibold uppercase text-darkgreen-muted">Preferred Timing</span>
+                  <p className="text-sm font-medium text-darkgreen mt-1 flex items-center">
+                    <Calendar className="h-4 w-4 mr-1.5 text-darkgreen-muted" />
                     {new Date(formData.preferredDate).toLocaleDateString(undefined, {
                       weekday: 'short',
                       year: 'numeric',
@@ -740,23 +740,23 @@ export const CreateRequestPage = () => {
                       day: 'numeric',
                     })}
                   </p>
-                  <p className="text-xs text-slate-500 flex items-center mt-0.5">
-                    <Clock className="h-3.5 w-3.5 mr-1.5 text-slate-400" />
+                  <p className="text-xs text-darkgreen-muted flex items-center mt-0.5">
+                    <Clock className="h-3.5 w-3.5 mr-1.5 text-darkgreen-muted" />
                     {formData.startTime} – {formData.endTime}
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
-                  <span className="text-slate-500">Starting Price Est:</span>
-                  <span className="font-semibold text-slate-900">
-                    ${selectedCategory?.startingPrice} ({selectedCategory?.pricingUnit})
+                <div className="pt-2 border-t border-themeborder flex items-center justify-between text-xs">
+                  <span className="text-darkgreen-muted">Starting Price Est:</span>
+                  <span className="font-semibold text-darkgreen">
+                    ₹{selectedCategory?.startingPrice} ({selectedCategory?.pricingUnit})
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 flex items-center">
-              <CheckCircle className="h-4 w-4 mr-2 text-blue-600 shrink-0" />
+            <div className="p-3 bg-palesage/60 border border-sage/50 rounded-lg text-xs text-forest-deep flex items-center">
+              <CheckCircle className="h-4 w-4 mr-2 text-forest shrink-0" />
               <span>
                 Your request will be submitted with status <strong>SUBMITTED</strong>. Certified service providers in your area will be able to review requirements and provide quotes.
               </span>

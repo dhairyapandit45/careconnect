@@ -213,7 +213,7 @@ export const CustomerRequestQuotesPage = () => {
   if (error || !request) {
     return (
       <div className="space-y-4">
-        <Link to="/customer/requests" className="inline-flex items-center text-xs text-slate-500 hover:text-slate-800">
+        <Link to="/customer/requests" className="inline-flex items-center text-xs text-darkgreen-muted hover:text-darkgreen transition-colors">
           <ArrowLeft className="h-4 w-4 mr-1" /> Back to My Requests
         </Link>
         <ErrorState
@@ -233,7 +233,7 @@ export const CustomerRequestQuotesPage = () => {
       <div>
         <Link
           to={`/customer/requests/${id}`}
-          className="inline-flex items-center text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors"
+          className="inline-flex items-center text-xs font-medium text-darkgreen-muted hover:text-darkgreen transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-1" /> Back to Request Details
         </Link>
@@ -243,13 +243,13 @@ export const CustomerRequestQuotesPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl font-bold text-slate-900">Quotes & Proposals</h1>
+            <h1 className="text-2xl font-bold text-darkgreen">Quotes & Proposals</h1>
             <Badge variant="primary" size="sm">
               {quotes.length} {quotes.length === 1 ? 'Quote' : 'Quotes'} Received
             </Badge>
           </div>
-          <p className="text-sm text-slate-500">
-            For: <strong className="text-slate-700">{request.title}</strong>
+          <p className="text-sm text-darkgreen-muted">
+            For: <strong className="text-darkgreen">{request.title}</strong>
           </p>
         </div>
 
@@ -265,7 +265,7 @@ export const CustomerRequestQuotesPage = () => {
 
       {/* Success Notification */}
       {successMessage && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-emerald-800 animate-in fade-in duration-200">
+        <div className="bg-[#EAF5EE] border border-[#BCE2C9] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-emerald-800 animate-in fade-in duration-200">
           <div className="flex items-center gap-3">
             <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
             <span>{successMessage}</span>
@@ -288,10 +288,10 @@ export const CustomerRequestQuotesPage = () => {
 
       {/* Booking Status Notice when accepted */}
       {hasAcceptedQuote && (
-        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 flex items-center justify-between gap-3">
+        <div className="bg-[#E0F2FE] border border-[#BAE6FD] rounded-xl p-4 flex items-center justify-between gap-3">
           <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-sky-600 flex-shrink-0 mt-0.5" />
-            <div className="text-xs text-sky-900 leading-relaxed">
+            <Info className="h-5 w-5 text-status-info flex-shrink-0 mt-0.5" />
+            <div className="text-xs text-[#1e475e] leading-relaxed">
               <strong>Booking Confirmed:</strong> You have accepted a quote for this request and scheduled the appointment. Your request status is now <strong>BOOKED</strong>.
             </div>
           </div>
@@ -328,20 +328,20 @@ export const CustomerRequestQuotesPage = () => {
                 key={quote._id}
                 className={`flex flex-col justify-between transition-all ${
                   isAccepted
-                    ? 'border-2 border-emerald-500 shadow-md ring-2 ring-emerald-100'
-                    : 'hover:border-slate-300'
+                    ? 'border-2 border-forest shadow-md ring-2 ring-sage/30'
+                    : 'border-themeborder hover:border-sage'
                 }`}
               >
                 <CardHeader
                   title={
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <div className="font-bold text-slate-900 text-base">
+                        <div className="font-bold text-darkgreen text-base">
                           {quote.providerProfile?.businessName ||
                             quote.provider?.name ||
                             'Verified Service Professional'}
                         </div>
-                        <div className="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5">
+                        <div className="text-xs text-darkgreen-muted mt-0.5 flex items-center gap-1.5">
                           {quote.providerProfile?.experienceYears ? (
                             <span>{quote.providerProfile.experienceYears} yrs experience</span>
                           ) : null}
@@ -362,23 +362,23 @@ export const CustomerRequestQuotesPage = () => {
 
                 <CardContent className="space-y-4 flex-1">
                   {/* Pricing and Duration Highlight */}
-                  <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between">
+                  <div className="bg-ivory border border-themeborder rounded-xl p-4 flex items-center justify-between">
                     <div>
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-darkgreen-muted block">
                         Estimated Cost
                       </span>
-                      <div className="text-2xl font-black text-slate-900">
+                      <div className="text-2xl font-black text-darkgreen">
                         ₹{quote.amount?.toLocaleString('en-IN') || quote.pricing?.totalAmount}
                       </div>
-                      <span className="text-[10px] text-slate-400">Total estimated INR</span>
+                      <span className="text-[10px] text-darkgreen-muted">Total estimated INR</span>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-darkgreen-muted block">
                         Est. Duration
                       </span>
-                      <div className="text-lg font-bold text-slate-700 flex items-center justify-end gap-1">
-                        <Clock className="h-4 w-4 text-slate-400" />
+                      <div className="text-lg font-bold text-darkgreen flex items-center justify-end gap-1">
+                        <Clock className="h-4 w-4 text-darkgreen-muted" />
                         <span>{quote.estimatedDuration || quote.estimatedHours || 1} hrs</span>
                       </div>
                     </div>
@@ -386,10 +386,10 @@ export const CustomerRequestQuotesPage = () => {
 
                   {/* Scope / Notes */}
                   <div>
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-1">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-darkgreen-muted block mb-1">
                       Proposal Details
                     </span>
-                    <p className="text-xs text-slate-600 leading-relaxed bg-white border border-slate-100 rounded-lg p-3">
+                    <p className="text-xs text-darkgreen/85 leading-relaxed bg-ivory/50 border border-themeborder rounded-lg p-3">
                       {quote.description}
                     </p>
                   </div>
@@ -397,16 +397,16 @@ export const CustomerRequestQuotesPage = () => {
                   {/* Skills badge */}
                   {quote.providerProfile?.skills && quote.providerProfile.skills.length > 0 && (
                     <div>
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-1">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-darkgreen-muted block mb-1">
                         Provider Skills
                       </span>
                       <div className="flex flex-wrap gap-1">
                         {quote.providerProfile.skills.map((skill, idx) => (
                           <span
                             key={idx}
-                            className="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700"
+                            className="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-palesage/60 text-darkgreen border border-sage/30"
                           >
-                            <Tag className="h-2.5 w-2.5 mr-1 text-slate-400" />
+                            <Tag className="h-2.5 w-2.5 mr-1 text-darkgreen-muted" />
                             {skill}
                           </span>
                         ))}
@@ -415,8 +415,8 @@ export const CustomerRequestQuotesPage = () => {
                   )}
 
                   {/* Validity Info */}
-                  <div className="text-xs text-slate-400 flex items-center gap-1.5 pt-2 border-t border-slate-100">
-                    <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                  <div className="text-xs text-darkgreen-muted flex items-center gap-1.5 pt-2 border-t border-themeborder">
+                    <Calendar className="h-3.5 w-3.5 text-darkgreen-muted" />
                     <span>
                       Valid until:{' '}
                       {quote.validUntil
@@ -427,7 +427,7 @@ export const CustomerRequestQuotesPage = () => {
                 </CardContent>
 
                 {/* Footer Action */}
-                <div className="p-4 bg-slate-50/50 border-t border-slate-100 rounded-b-2xl">
+                <div className="p-4 bg-ivory/40 border-t border-themeborder rounded-b-2xl">
                   {isAccepted ? (
                     <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-700 py-1.5">
                       <CheckCircle2 className="h-4 w-4 text-emerald-600" />
@@ -442,7 +442,7 @@ export const CustomerRequestQuotesPage = () => {
                       Accept This Quote
                     </Button>
                   ) : (
-                    <div className="text-center text-xs text-slate-400 py-1.5">
+                    <div className="text-center text-xs text-darkgreen-muted py-1.5">
                       {hasAcceptedQuote
                         ? 'Another quote was selected'
                         : `Proposal ${quote.status.toLowerCase()}`}
@@ -456,26 +456,26 @@ export const CustomerRequestQuotesPage = () => {
       )}
 
       {/* AI Recommended Providers Section */}
-      <div className="rounded-2xl border border-indigo-100 bg-gradient-to-b from-indigo-50/50 via-white to-white p-5 shadow-xs">
+      <div className="rounded-2xl border border-sage/40 bg-gradient-to-b from-palesage/40 via-white to-white p-5 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-indigo-600 text-white">
+            <div className="p-2 rounded-lg bg-forest text-white">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-slate-900">AI Recommended Providers</h2>
-                <Badge variant="primary" size="sm" className="bg-indigo-100 text-indigo-700 font-semibold">
+                <h2 className="text-base font-bold text-darkgreen">AI Recommended Providers</h2>
+                <Badge variant="primary" size="sm" className="bg-palesage text-forest-deep font-semibold border border-sage/30">
                   Intelligent Matching
                 </Badge>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-darkgreen-muted">
                 Top verified active professionals ranked by rating, completed jobs, and location fit
               </p>
             </div>
           </div>
           {aiMatchedProviders.length > 0 && (
-            <span className="text-xs font-medium text-slate-500">
+            <span className="text-xs font-medium text-darkgreen-muted">
               {aiMatchedProviders.length} verified match{aiMatchedProviders.length > 1 ? 'es' : ''} found
             </span>
           )}
@@ -484,10 +484,10 @@ export const CustomerRequestQuotesPage = () => {
         {aiLoading ? (
           <div className="py-8 flex flex-col items-center justify-center">
             <LoadingSpinner size="md" />
-            <p className="mt-2 text-xs text-slate-500">Calculating composite provider matches...</p>
+            <p className="mt-2 text-xs text-darkgreen-muted">Calculating composite provider matches...</p>
           </div>
         ) : aiMatchedProviders.length === 0 ? (
-          <div className="text-xs text-slate-500 bg-white border border-slate-100 rounded-xl p-4 text-center">
+          <div className="text-xs text-darkgreen-muted bg-white border border-themeborder rounded-xl p-4 text-center">
             {aiMatchMessage || 'No verified providers currently matching this category in your area. Quotes from available providers will appear above.'}
           </div>
         ) : (
@@ -495,45 +495,45 @@ export const CustomerRequestQuotesPage = () => {
             {aiMatchedProviders.map((provider) => (
               <div
                 key={provider.profileId || provider.providerId}
-                className="bg-white rounded-xl border border-slate-200 p-4 hover:border-indigo-300 transition-all shadow-2xs flex flex-col justify-between"
+                className="bg-white rounded-xl border border-themeborder p-4 hover:border-sage hover:shadow-xs transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">{provider.businessName || provider.name}</h3>
-                      <p className="text-xs text-slate-500">{provider.name}</p>
+                      <h3 className="font-bold text-sm text-darkgreen">{provider.businessName || provider.name}</h3>
+                      <p className="text-xs text-darkgreen-muted">{provider.name}</p>
                     </div>
                     <Badge variant="success" size="sm" className="font-bold">
                       {provider.compositeScore}% Match
                     </Badge>
                   </div>
 
-                  <p className="text-xs text-slate-600 italic bg-indigo-50/50 rounded-lg p-2 mb-3 border border-indigo-100/60">
+                  <p className="text-xs text-darkgreen/80 italic bg-ivory/70 rounded-lg p-2 mb-3 border border-themeborder">
                     &ldquo;{provider.explanation}&rdquo;
                   </p>
 
-                  <div className="grid grid-cols-3 gap-2 text-center text-xs py-2 border-y border-slate-100 mb-3">
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs py-2 border-y border-themeborder mb-3">
                     <div>
-                      <span className="text-slate-400 block text-[10px] uppercase">Rating</span>
-                      <span className="font-semibold text-slate-800 flex items-center justify-center gap-0.5">
+                      <span className="text-darkgreen-muted block text-[10px] uppercase">Rating</span>
+                      <span className="font-semibold text-darkgreen flex items-center justify-center gap-0.5">
                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                         {provider.rating > 0 ? provider.rating.toFixed(1) : 'New'}
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px] uppercase">Completed</span>
-                      <span className="font-semibold text-slate-800">{provider.completedJobsCount} jobs</span>
+                      <span className="text-darkgreen-muted block text-[10px] uppercase">Completed</span>
+                      <span className="font-semibold text-darkgreen">{provider.completedJobsCount} jobs</span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px] uppercase">Experience</span>
-                      <span className="font-semibold text-slate-800">{provider.experienceYears}y</span>
+                      <span className="text-darkgreen-muted block text-[10px] uppercase">Experience</span>
+                      <span className="font-semibold text-darkgreen">{provider.experienceYears}y</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between pt-1">
-                  <div className="text-xs text-slate-500">
-                    <span className="font-bold text-slate-900">₹{provider.pricing?.hourlyRate || 0}</span>
+                  <div className="text-xs text-darkgreen-muted">
+                    <span className="font-bold text-darkgreen">₹{provider.pricing?.hourlyRate || 0}</span>
                     <span>/hr</span>
                   </div>
                   {provider.cityMatch ? (
@@ -541,7 +541,7 @@ export const CustomerRequestQuotesPage = () => {
                       Services {request?.location?.city}
                     </Badge>
                   ) : (
-                    <Badge variant="outline" size="sm" className="text-slate-500 text-[10px]">
+                    <Badge variant="outline" size="sm" className="text-darkgreen-muted border-themeborder bg-ivory/60 text-[10px]">
                       Verified Available
                     </Badge>
                   )}
@@ -578,40 +578,40 @@ export const CustomerRequestQuotesPage = () => {
               </div>
             )}
 
-            <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 space-y-2 text-xs text-slate-700">
+            <div className="bg-ivory/60 border border-themeborder rounded-xl p-4 space-y-2 text-xs text-darkgreen">
               <div className="flex justify-between">
-                <span className="text-slate-500">Provider:</span>
-                <span className="font-semibold text-slate-900">
+                <span className="text-darkgreen-muted">Provider:</span>
+                <span className="font-semibold text-darkgreen">
                   {selectedQuoteForAccept.providerProfile?.businessName ||
                     selectedQuoteForAccept.provider?.name}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Agreed Price:</span>
-                <span className="font-bold text-slate-900 text-sm">
+                <span className="text-darkgreen-muted">Agreed Price:</span>
+                <span className="font-bold text-darkgreen text-sm">
                   ₹{selectedQuoteForAccept.amount?.toLocaleString('en-IN') || selectedQuoteForAccept.pricing?.totalAmount} INR
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Estimated Duration:</span>
-                <span className="font-semibold text-slate-900">
+                <span className="text-darkgreen-muted">Estimated Duration:</span>
+                <span className="font-semibold text-darkgreen">
                   {selectedQuoteForAccept.estimatedDuration || selectedQuoteForAccept.estimatedHours} hours
                 </span>
               </div>
             </div>
 
             {/* Schedule Slot Selection */}
-            <div className="space-y-3 border-t border-slate-200 pt-3">
-              <h4 className="text-xs font-semibold text-slate-900 flex items-center gap-1.5">
-                <Calendar className="h-3.5 w-3.5 text-blue-600" /> Appointment Schedule
+            <div className="space-y-3 border-t border-themeborder pt-3">
+              <h4 className="text-xs font-semibold text-darkgreen flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-forest" /> Appointment Schedule
               </h4>
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-darkgreen mb-1">
                   Service Date
                 </label>
                 <input
                   type="date"
-                  className="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full text-xs rounded-lg border border-themeborder px-3 py-2 text-darkgreen focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest"
                   value={scheduleDate}
                   min={new Date().toISOString().split('T')[0]}
                   onChange={(e) => setScheduleDate(e.target.value)}
@@ -621,24 +621,24 @@ export const CustomerRequestQuotesPage = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-darkgreen mb-1">
                     Start Time (UTC)
                   </label>
                   <input
                     type="time"
-                    className="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full text-xs rounded-lg border border-themeborder px-3 py-2 text-darkgreen focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-darkgreen mb-1">
                     End Time (UTC)
                   </label>
                   <input
                     type="time"
-                    className="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full text-xs rounded-lg border border-themeborder px-3 py-2 text-darkgreen focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
                     required
@@ -646,12 +646,12 @@ export const CustomerRequestQuotesPage = () => {
                 </div>
               </div>
 
-              <p className="text-[11px] text-slate-500 leading-normal">
+              <p className="text-[11px] text-darkgreen-muted leading-normal">
                 Double-booking prevention is enforced. The selected slot must fit completely within the provider’s recurring working shift.
               </p>
             </div>
 
-            <p className="text-xs text-slate-500 leading-relaxed border-t border-slate-100 pt-2">
+            <p className="text-xs text-darkgreen-muted leading-relaxed border-t border-themeborder pt-2">
               By confirming, this quote will be marked <strong>ACCEPTED</strong>, a confirmed booking will be created, and all other active quotes for this request will be automatically rejected.
             </p>
           </div>

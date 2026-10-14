@@ -14,8 +14,8 @@ export const SupportDashboard = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Support Operations Desk</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-darkgreen">Support Operations Desk</h1>
+          <p className="text-sm text-darkgreen-muted mt-1">
             Welcome, {user?.name || 'Support Agent'}. Manage dispute resolutions, cancellations, and customer tickets.
           </p>
         </div>
@@ -27,10 +27,10 @@ export const SupportDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500 uppercase">Open Disputes</p>
-                <p className="text-2xl font-bold text-rose-600 mt-1">3</p>
+                <p className="text-xs font-medium text-darkgreen-muted uppercase">Open Disputes</p>
+                <p className="text-2xl font-bold text-[#B42318] mt-1">3</p>
               </div>
-              <div className="p-2.5 rounded-lg bg-rose-50 text-rose-600">
+              <div className="p-2.5 rounded-lg bg-[#FDF2F2] text-[#B42318]">
                 <AlertTriangle className="h-5 w-5" />
               </div>
             </div>
@@ -41,10 +41,10 @@ export const SupportDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500 uppercase">Pending Cancellations</p>
-                <p className="text-2xl font-bold text-amber-600 mt-1">2</p>
+                <p className="text-xs font-medium text-darkgreen-muted uppercase">Pending Cancellations</p>
+                <p className="text-2xl font-bold text-[#92400E] mt-1">2</p>
               </div>
-              <div className="p-2.5 rounded-lg bg-amber-50 text-amber-600">
+              <div className="p-2.5 rounded-lg bg-[#FFFBEB] text-[#92400E]">
                 <MessageSquare className="h-5 w-5" />
               </div>
             </div>
@@ -55,10 +55,10 @@ export const SupportDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500 uppercase">Resolved Today</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">8</p>
+                <p className="text-xs font-medium text-darkgreen-muted uppercase">Resolved Today</p>
+                <p className="text-2xl font-bold text-darkgreen mt-1">8</p>
               </div>
-              <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-600">
+              <div className="p-2.5 rounded-lg bg-[#EAF5EE] text-[#276749]">
                 <CheckCircle className="h-5 w-5" />
               </div>
             </div>
@@ -69,10 +69,10 @@ export const SupportDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500 uppercase">Avg Response Time</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">14m</p>
+                <p className="text-xs font-medium text-darkgreen-muted uppercase">Avg Response Time</p>
+                <p className="text-2xl font-bold text-darkgreen mt-1">14m</p>
               </div>
-              <div className="p-2.5 rounded-lg bg-blue-50 text-blue-600">
+              <div className="p-2.5 rounded-lg bg-palesage text-forest">
                 <Headphones className="h-5 w-5" />
               </div>
             </div>
@@ -87,10 +87,10 @@ export const SupportDashboard = () => {
         />
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3.5 rounded-lg bg-slate-50 border border-slate-100">
+            <div className="flex items-center justify-between p-3.5 rounded-lg bg-ivory border border-themeborder">
               <div>
-                <p className="text-sm font-semibold text-slate-900">Dispute #DSP-4019: Incomplete Plumbing Work</p>
-                <p className="text-xs text-slate-500 mt-0.5">Raised 2 hours ago • Customer requested refund</p>
+                <p className="text-sm font-semibold text-darkgreen">Dispute #DSP-4019: Incomplete Plumbing Work</p>
+                <p className="text-xs text-darkgreen-muted mt-0.5">Raised 2 hours ago • Customer requested refund</p>
               </div>
               <Badge variant="danger">High Priority</Badge>
             </div>

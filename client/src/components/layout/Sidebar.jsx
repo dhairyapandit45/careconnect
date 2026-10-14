@@ -91,24 +91,24 @@ export const Sidebar = ({ isOpen, onClose }) => {
       {/* Mobile backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-40 bg-darkgreen/40 backdrop-blur-xs lg:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar container */}
       <aside
-        className={`fixed top-16 bottom-0 left-0 z-40 w-64 border-r border-slate-200/80 bg-white p-4 transition-transform duration-200 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-16 bottom-0 left-0 z-40 w-64 border-r border-themeborder bg-white p-4 transition-transform duration-200 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex items-center justify-between pb-4 lg:hidden">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <span className="text-xs font-semibold uppercase tracking-wider text-darkgreen-muted">
             Navigation
           </span>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1 text-darkgreen-muted hover:bg-ivory hover:text-darkgreen"
           >
             <X className="h-5 w-5" />
           </button>
@@ -125,8 +125,8 @@ export const Sidebar = ({ isOpen, onClose }) => {
                 className={({ isActive }) =>
                   `flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-blue-50 text-blue-700 font-semibold'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-palesage text-forest-deep font-semibold shadow-2xs'
+                      : 'text-darkgreen-muted hover:bg-ivory hover:text-darkgreen'
                   }`
                 }
               >

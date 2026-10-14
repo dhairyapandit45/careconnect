@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Provider Bookings List & Agenda Page
  * Displays confirmed customer appointments assigned to the authenticated provider.
  * Supports Table list view and Chronological Agenda view with status filters.
@@ -164,21 +164,21 @@ export const ProviderBookings = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Scheduled Service Jobs</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-darkgreen">Scheduled Service Jobs</h1>
+          <p className="text-sm text-darkgreen-muted">
             Confirmed customer appointments, service execution dates, and location details
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {/* View Mode Toggle */}
-          <div className="bg-slate-100 p-0.5 rounded-lg flex items-center border border-slate-200">
+          <div className="bg-palesage/60 p-0.5 rounded-lg flex items-center border border-themeborder">
             <button
               onClick={() => setViewMode('list')}
               className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-colors ${
                 viewMode === 'list'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white text-darkgreen shadow-xs'
+                  : 'text-darkgreen-muted hover:text-darkgreen'
               }`}
               title="Table List View"
             >
@@ -189,8 +189,8 @@ export const ProviderBookings = () => {
               onClick={() => setViewMode('agenda')}
               className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-colors ${
                 viewMode === 'agenda'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white text-darkgreen shadow-xs'
+                  : 'text-darkgreen-muted hover:text-darkgreen'
               }`}
               title="Agenda / Calendar View"
             >
@@ -219,8 +219,8 @@ export const ProviderBookings = () => {
       )}
 
       {/* Status Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 text-sm">
-        <Filter className="h-4 w-4 text-slate-400 mr-1" />
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-themeborder text-sm">
+        <Filter className="h-4 w-4 text-darkgreen-muted mr-1" />
         {[
           { label: 'All Jobs', value: '' },
           { label: 'Confirmed', value: 'CONFIRMED' },
@@ -233,8 +233,8 @@ export const ProviderBookings = () => {
             onClick={() => setStatusFilter(tab.value)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
               statusFilter === tab.value
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-forest text-white shadow-xs'
+                : 'bg-palesage/60 text-darkgreen hover:bg-palesage'
             }`}
           >
             {tab.label}
@@ -273,7 +273,7 @@ export const ProviderBookings = () => {
         <Card>
           <CardHeader className="pb-0">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-darkgreen-muted uppercase tracking-wider">
                 {pagination.total} Total {pagination.total === 1 ? 'Job' : 'Jobs'}
               </span>
             </div>
@@ -297,31 +297,31 @@ export const ProviderBookings = () => {
                     <TableRow key={b._id}>
                       <TableCell>
                         <div className="space-y-0.5">
-                          <div className="font-semibold text-slate-900 text-sm">
+                          <div className="font-semibold text-darkgreen text-sm">
                             {b.serviceRequest?.title || 'Home Service'}
                           </div>
-                          <div className="text-xs text-slate-500 flex items-center gap-1">
-                            <User className="h-3 w-3 text-slate-400" />
+                          <div className="text-xs text-darkgreen-muted flex items-center gap-1">
+                            <User className="h-3 w-3 text-darkgreen-muted" />
                             {b.customer?.name || 'Customer'}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-xs text-slate-800 flex items-start gap-1">
-                          <MapPin className="h-3.5 w-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+                        <div className="text-xs text-darkgreen flex items-start gap-1">
+                          <MapPin className="h-3.5 w-3.5 text-darkgreen-muted flex-shrink-0 mt-0.5" />
                           <span>
                             {b.serviceRequest?.location?.address || b.serviceRequest?.location?.city || 'Location available in details'}
                           </span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-xs text-slate-700 flex items-center gap-1.5">
-                          <Calendar className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+                        <div className="text-xs text-darkgreen flex items-center gap-1.5">
+                          <Calendar className="h-3.5 w-3.5 text-forest flex-shrink-0" />
                           <span>{formatSchedule(b.scheduledStart, b.scheduledEnd)}</span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="font-semibold text-slate-900 text-sm">
+                        <div className="font-semibold text-darkgreen text-sm">
                           ₹{(b.price || 0).toLocaleString('en-IN')} INR
                         </div>
                       </TableCell>
@@ -341,7 +341,7 @@ export const ProviderBookings = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="text-rose-600 border-rose-200 hover:bg-rose-50"
+                              className="text-status-error border-status-error/30 hover:bg-status-error/10"
                               icon={XCircle}
                               onClick={() => handleOpenCancelModal(b)}
                             >
@@ -362,25 +362,25 @@ export const ProviderBookings = () => {
         <div className="space-y-6">
           {Object.entries(groupedAgenda).map(([dateLabel, dateBookings]) => (
             <div key={dateLabel} className="space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                <CalendarDays className="h-4 w-4 text-blue-600" />
+              <div className="flex items-center gap-2 text-xs font-bold text-darkgreen uppercase tracking-wider">
+                <CalendarDays className="h-4 w-4 text-forest" />
                 <span>{dateLabel}</span>
-                <span className="text-slate-400 font-normal">({dateBookings.length} {dateBookings.length === 1 ? 'appointment' : 'appointments'})</span>
+                <span className="text-darkgreen-muted font-normal">({dateBookings.length} {dateBookings.length === 1 ? 'appointment' : 'appointments'})</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {dateBookings.map((b) => {
                   const canCancel = b.status === 'CONFIRMED' || b.status === 'IN_PROGRESS';
                   return (
-                    <Card key={b._id} className="border-l-4 border-l-blue-600">
+                    <Card key={b._id} className="border-l-4 border-l-forest">
                       <CardContent className="p-4 space-y-3">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <div className="font-semibold text-slate-900 text-sm">
+                            <div className="font-semibold text-darkgreen text-sm">
                               {b.serviceRequest?.title || 'Service Job'}
                             </div>
-                            <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                              <User className="h-3 w-3 text-slate-400" />
+                            <div className="text-xs text-darkgreen-muted flex items-center gap-1 mt-0.5">
+                              <User className="h-3 w-3 text-darkgreen-muted" />
                               Client: {b.customer?.name}
                             </div>
                           </div>
@@ -389,13 +389,13 @@ export const ProviderBookings = () => {
                           </Badge>
                         </div>
 
-                        <div className="bg-slate-50 rounded-lg p-2.5 space-y-1.5 text-xs text-slate-700">
+                        <div className="bg-ivory/60 rounded-lg p-2.5 space-y-1.5 text-xs text-darkgreen border border-themeborder">
                           <div className="flex items-center gap-1.5">
-                            <Clock className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+                            <Clock className="h-3.5 w-3.5 text-forest flex-shrink-0" />
                             <span>{formatSchedule(b.scheduledStart, b.scheduledEnd)}</span>
                           </div>
                           <div className="flex items-start gap-1.5">
-                            <MapPin className="h-3.5 w-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+                            <MapPin className="h-3.5 w-3.5 text-darkgreen-muted flex-shrink-0 mt-0.5" />
                             <span>
                               {b.serviceRequest?.location?.address
                                 ? `${b.serviceRequest.location.address}, ${b.serviceRequest.location.city || ''}`
@@ -405,7 +405,7 @@ export const ProviderBookings = () => {
                         </div>
 
                         <div className="flex items-center justify-between pt-1 text-xs">
-                          <span className="font-bold text-slate-900 text-sm">
+                          <span className="font-bold text-darkgreen text-sm">
                             ₹{(b.price || 0).toLocaleString('en-IN')} INR
                           </span>
                           <div className="flex items-center gap-2">
@@ -418,7 +418,7 @@ export const ProviderBookings = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="text-rose-600 border-rose-200 hover:bg-rose-50"
+                                className="text-status-error border-status-error/30 hover:bg-status-error/10"
                                 onClick={() => handleOpenCancelModal(b)}
                               >
                                 Cancel
@@ -438,9 +438,9 @@ export const ProviderBookings = () => {
 
       {/* Pagination Controls */}
       {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between text-xs text-slate-600 pt-2">
+        <div className="flex items-center justify-between text-xs text-darkgreen-muted pt-2">
           <div>
-            Showing Page <strong>{pagination.page}</strong> of <strong>{pagination.totalPages}</strong>
+            Showing Page <strong className="text-darkgreen">{pagination.page}</strong> of <strong className="text-darkgreen">{pagination.totalPages}</strong>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -478,7 +478,6 @@ export const ProviderBookings = () => {
               variant="danger"
               onClick={handleConfirmCancel}
               isLoading={isCancelling}
-              className="bg-rose-600 hover:bg-rose-700 text-white"
             >
               Confirm Cancellation
             </Button>
@@ -488,13 +487,13 @@ export const ProviderBookings = () => {
         {cancellingBooking && (
           <div className="space-y-4 py-2">
             {cancelError && (
-              <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-start gap-2 text-xs text-rose-700">
-                <AlertCircle className="h-4 w-4 text-rose-500 flex-shrink-0 mt-0.5" />
+              <div className="bg-status-error/10 border border-status-error/20 rounded-xl p-3 flex items-start gap-2 text-xs text-status-error">
+                <AlertCircle className="h-4 w-4 text-status-error flex-shrink-0 mt-0.5" />
                 <span>{cancelError}</span>
               </div>
             )}
 
-            <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs space-y-1.5 text-slate-700">
+            <div className="bg-ivory/60 border border-themeborder rounded-xl p-3 text-xs space-y-1.5 text-darkgreen">
               <div>
                 <strong>Job:</strong> {cancellingBooking.serviceRequest?.title || 'Service Job'}
               </div>
@@ -507,12 +506,12 @@ export const ProviderBookings = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Reason for Cancellation <span className="text-rose-500">*</span>
+              <label className="block text-xs font-semibold text-darkgreen mb-1">
+                Reason for Cancellation <span className="text-status-error">*</span>
               </label>
               <textarea
                 rows="3"
-                className="w-full text-xs rounded-lg border border-slate-300 p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                className="w-full text-xs rounded-lg border border-themeborder p-2.5 text-darkgreen focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest"
                 placeholder="Explain why you cannot perform this service appointment (minimum 5 characters)..."
                 value={cancellationReason}
                 onChange={(e) => setCancellationReason(e.target.value)}
@@ -520,7 +519,7 @@ export const ProviderBookings = () => {
               />
             </div>
 
-            <p className="text-[11px] text-slate-500 leading-normal">
+            <p className="text-[11px] text-darkgreen-muted leading-normal">
               Cancelling releases this slot and allows the customer to reschedule or choose an alternative provider.
             </p>
           </div>

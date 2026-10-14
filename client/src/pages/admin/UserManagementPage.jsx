@@ -202,10 +202,10 @@ export const UserManagementPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
-            <Users className="h-6 w-6 text-blue-600" />
-            <h1 className="text-2xl font-bold text-slate-900">User Management</h1>
+            <Users className="h-6 w-6 text-forest" />
+            <h1 className="text-2xl font-bold text-darkgreen">User Management</h1>
           </div>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-darkgreen-muted mt-1">
             Browse, search, inspect, and manage platform user credentials and lifecycle statuses.
           </p>
         </div>
@@ -309,16 +309,16 @@ export const UserManagementPage = () => {
                       <TableRow key={u._id}>
                         <TableCell>
                           <div>
-                            <p className="font-semibold text-slate-900">{u.name || 'Unnamed User'}</p>
-                            <p className="text-xs text-slate-500">{u.email}</p>
+                            <p className="font-semibold text-darkgreen">{u.name || 'Unnamed User'}</p>
+                            <p className="text-xs text-darkgreen-muted">{u.email}</p>
                           </div>
                         </TableCell>
                         <TableCell>{getRoleBadge(u.role)}</TableCell>
                         <TableCell>{getStatusBadge(u.status)}</TableCell>
-                        <TableCell className="text-sm text-slate-600">
+                        <TableCell className="text-sm text-darkgreen-muted">
                           {u.phone || '—'}
                         </TableCell>
-                        <TableCell className="text-sm text-slate-600">
+                        <TableCell className="text-sm text-darkgreen-muted">
                           {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}
                         </TableCell>
                         <TableCell className="text-right">
@@ -355,10 +355,10 @@ export const UserManagementPage = () => {
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-              <p className="text-xs text-slate-500">
-                Showing <span className="font-semibold">{users.length}</span> of{' '}
-                <span className="font-semibold">{pagination.total || 0}</span> accounts
+            <div className="flex items-center justify-between px-6 py-4 border-t border-themeborder">
+              <p className="text-xs text-darkgreen-muted">
+                Showing <span className="font-semibold text-darkgreen">{users.length}</span> of{' '}
+                <span className="font-semibold text-darkgreen">{pagination.total || 0}</span> accounts
               </p>
               <div className="flex items-center space-x-2">
                 <Button
@@ -370,7 +370,7 @@ export const UserManagementPage = () => {
                 >
                   Previous
                 </Button>
-                <span className="text-xs text-slate-600 px-2 font-medium">
+                <span className="text-xs text-darkgreen-muted px-2 font-medium">
                   Page {currentPage} of {pagination.totalPages || 1}
                 </span>
                 <Button
@@ -397,40 +397,40 @@ export const UserManagementPage = () => {
       >
         {selectedUser && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="grid grid-cols-2 gap-4 text-sm bg-ivory p-4 rounded-xl border border-themeborder">
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">User ID</span>
-                <p className="font-mono text-xs text-slate-800 break-all">{selectedUser._id}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">User ID</span>
+                <p className="font-mono text-xs text-darkgreen break-all">{selectedUser._id}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Full Name</span>
-                <p className="font-semibold text-slate-900">{selectedUser.name}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Full Name</span>
+                <p className="font-semibold text-darkgreen">{selectedUser.name}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Email</span>
-                <p className="text-slate-800">{selectedUser.email}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Email</span>
+                <p className="text-darkgreen">{selectedUser.email}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Phone</span>
-                <p className="text-slate-800">{selectedUser.phone || '—'}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Phone</span>
+                <p className="text-darkgreen">{selectedUser.phone || '—'}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Platform Role</span>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Platform Role</span>
                 <div className="mt-1">{getRoleBadge(selectedUser.role)}</div>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Account Status</span>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Account Status</span>
                 <div className="mt-1">{getStatusBadge(selectedUser.status)}</div>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Registered Date</span>
-                <p className="text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Registered Date</span>
+                <p className="text-darkgreen">
                   {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleString() : '—'}
                 </p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Last Updated</span>
-                <p className="text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Last Updated</span>
+                <p className="text-darkgreen">
                   {selectedUser.updatedAt ? new Date(selectedUser.updatedAt).toLocaleString() : '—'}
                 </p>
               </div>
@@ -455,8 +455,8 @@ export const UserManagementPage = () => {
         {targetUser && (
           <form onSubmit={handleConfirmStatusUpdate} className="space-y-4">
             {isOpsManager && targetUser.role === ROLES.PLATFORM_ADMIN ? (
-              <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start space-x-2">
-                <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-status-warning text-sm flex items-start space-x-2">
+                <AlertTriangle className="h-5 w-5 text-status-warning shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold">Action Restricted</p>
                   <p className="text-xs mt-1">
@@ -466,13 +466,13 @@ export const UserManagementPage = () => {
               </div>
             ) : (
               <>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-darkgreen-muted">
                   Transition account status for{' '}
-                  <span className="font-semibold text-slate-900">{targetUser.name}</span> ({targetUser.email}).
+                  <span className="font-semibold text-darkgreen">{targetUser.name}</span> ({targetUser.email}).
                 </p>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-semibold text-darkgreen uppercase mb-1">
                     New Account Status
                   </label>
                   <Select
@@ -487,7 +487,7 @@ export const UserManagementPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-semibold text-darkgreen uppercase mb-1">
                     Reason / Notes (Optional)
                   </label>
                   <Input
@@ -498,7 +498,7 @@ export const UserManagementPage = () => {
                 </div>
 
                 {updateError && (
-                  <p className="text-xs font-semibold text-rose-600" role="alert">
+                  <p className="text-xs font-semibold text-status-error" role="alert">
                     {updateError}
                   </p>
                 )}

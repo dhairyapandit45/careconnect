@@ -14,9 +14,9 @@ export const LoadingSpinner = ({ size = 'md', className = '', label = 'Loading c
   return (
     <div className="flex flex-col items-center justify-center p-6 space-y-3" role="status">
       <div
-        className={`animate-spin rounded-full border-blue-600 border-t-transparent ${sizeMap[size] || sizeMap.md} ${className}`}
+        className={`animate-spin rounded-full border-forest border-t-transparent ${sizeMap[size] || sizeMap.md} ${className}`}
       />
-      {label && <span className="text-xs text-slate-500 font-medium">{label}</span>}
+      {label && <span className="text-xs text-darkgreen-muted font-medium">{label}</span>}
       <span className="sr-only">Loading</span>
     </div>
   );

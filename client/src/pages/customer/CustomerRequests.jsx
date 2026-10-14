@@ -82,8 +82,8 @@ export const CustomerRequests = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">My Service Requests</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-darkgreen">My Service Requests</h1>
+          <p className="text-sm text-darkgreen-muted mt-1">
             Track, review quotes, and monitor progress for all your home repair requests.
           </p>
         </div>
@@ -94,7 +94,7 @@ export const CustomerRequests = () => {
 
       {/* Filter Toolbar */}
       <div className="flex flex-wrap items-center gap-2 pb-2">
-        <span className="text-xs font-semibold uppercase text-slate-400 mr-2 flex items-center">
+        <span className="text-xs font-semibold uppercase text-darkgreen-muted mr-2 flex items-center">
           <Filter className="h-3.5 w-3.5 mr-1" /> Filter Status:
         </span>
         {[
@@ -111,8 +111,8 @@ export const CustomerRequests = () => {
             onClick={() => handleStatusFilterChange(tab.value)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               statusFilter === tab.value
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                ? 'bg-forest text-white shadow-xs'
+                : 'bg-white border border-themeborder text-darkgreen-muted hover:bg-ivory hover:text-darkgreen'
             }`}
           >
             {tab.label}
@@ -168,8 +168,8 @@ export const CustomerRequests = () => {
                 {requests.map((req) => (
                   <TableRow key={req._id}>
                     <TableCell>
-                      <div className="font-semibold text-slate-900">{req.title}</div>
-                      <div className="text-xs text-slate-500 mt-0.5">
+                      <div className="font-semibold text-darkgreen">{req.title}</div>
+                      <div className="text-xs text-darkgreen-muted mt-0.5">
                         {req.category?.name || 'General Service'}
                       </div>
                     </TableCell>
@@ -190,27 +190,27 @@ export const CustomerRequests = () => {
                     </TableCell>
 
                     <TableCell>
-                      <div className="text-xs text-slate-700 flex items-center">
-                        <Calendar className="h-3.5 w-3.5 mr-1 text-slate-400" />
+                      <div className="text-xs text-darkgreen flex items-center">
+                        <Calendar className="h-3.5 w-3.5 mr-1 text-darkgreen-muted" />
                         {new Date(req.preferredDate).toLocaleDateString()}
                       </div>
-                      <div className="text-xs text-slate-400 flex items-center mt-0.5">
-                        <Clock className="h-3 w-3 mr-1 text-slate-400" />
+                      <div className="text-xs text-darkgreen-muted flex items-center mt-0.5">
+                        <Clock className="h-3 w-3 mr-1 text-darkgreen-muted" />
                         {req.preferredTime?.start || '09:00'} – {req.preferredTime?.end || '12:00'}
                       </div>
                     </TableCell>
 
                     <TableCell>
-                      <div className="text-xs text-slate-700 flex items-center">
-                        <MapPin className="h-3.5 w-3.5 mr-1 text-slate-400" />
+                      <div className="text-xs text-darkgreen flex items-center">
+                        <MapPin className="h-3.5 w-3.5 mr-1 text-darkgreen-muted" />
                         {req.location?.city || 'Local Area'}
                       </div>
-                      <div className="text-xs text-slate-400">
+                      <div className="text-xs text-darkgreen-muted">
                         {req.location?.postalCode || ''}
                       </div>
                     </TableCell>
 
-                    <TableCell className="text-xs text-slate-500">
+                    <TableCell className="text-xs text-darkgreen-muted">
                       {new Date(req.createdAt).toLocaleDateString()}
                     </TableCell>
 
@@ -218,14 +218,14 @@ export const CustomerRequests = () => {
                       <div className="flex items-center justify-end gap-1.5">
                         {req.status === 'BOOKED' && (
                           <Link to="/customer/bookings">
-                            <Button size="sm" variant="outline" className="border-sky-300 text-sky-700 hover:bg-sky-50">
+                            <Button size="sm" variant="outline" className="border-[#BAE6FD] text-status-info hover:bg-[#E0F2FE]">
                               Booking
                             </Button>
                           </Link>
                         )}
                         {req.quoteCount > 0 && req.status !== 'CANCELLED' && (
                           <Link to={`/customer/requests/${req._id}/quotes`}>
-                            <Button size="sm" variant="outline" className="border-emerald-300 text-emerald-700 hover:bg-emerald-50">
+                            <Button size="sm" variant="outline" className="border-[#BCE2C9] text-emerald-700 hover:bg-[#EAF5EE]">
                               Quotes ({req.quoteCount})
                             </Button>
                           </Link>
@@ -245,7 +245,7 @@ export const CustomerRequests = () => {
 
           {/* Pagination Controls */}
           {pagination.totalPages > 1 && (
-            <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <div className="p-4 border-t border-themeborder flex items-center justify-between text-xs text-darkgreen-muted">
               <span>
                 Page {pagination.page} of {pagination.totalPages} ({pagination.total} total)
               </span>

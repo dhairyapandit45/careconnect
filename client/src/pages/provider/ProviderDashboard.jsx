@@ -87,8 +87,8 @@ export const ProviderDashboard = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Provider Operations Center</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-darkgreen">Provider Operations Center</h1>
+          <p className="text-sm text-darkgreen-muted mt-1">
             Welcome, {user?.name || 'Service Provider'}. Monitor verification status, job dispatches, and incoming requests.
           </p>
         </div>
@@ -99,18 +99,18 @@ export const ProviderDashboard = () => {
               onClick={handleToggleAvailability}
               className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                 profile.isAvailable
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
-                  : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-palesage border-sage text-forest-deep hover:bg-sage/40'
+                  : 'bg-ivory border-themeborder text-darkgreen-muted hover:bg-palesage/30'
               }`}
             >
               {profile.isAvailable ? (
                 <>
-                  <ToggleRight className="w-4 h-4 text-emerald-600" />
+                  <ToggleRight className="w-4 h-4 text-forest" />
                   <span>Available for Dispatch</span>
                 </>
               ) : (
                 <>
-                  <ToggleLeft className="w-4 h-4 text-slate-400" />
+                  <ToggleLeft className="w-4 h-4 text-darkgreen-muted" />
                   <span>Dispatch Offline</span>
                 </>
               )}
@@ -124,17 +124,17 @@ export const ProviderDashboard = () => {
 
       {/* Verification Status Alert Banner */}
       {isLoadingProfile ? (
-        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3">
+        <div className="p-4 rounded-xl bg-ivory border border-themeborder flex items-center gap-3">
           <LoadingSpinner size="sm" />
-          <span className="text-xs text-slate-600 font-medium">Checking provider verification status...</span>
+          <span className="text-xs text-darkgreen-muted font-medium">Checking provider verification status...</span>
         </div>
       ) : !profile ? (
-        <div className="p-5 rounded-xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-5 rounded-xl bg-palesage/40 border border-sage/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-forest shrink-0 mt-0.5" />
             <div>
-              <h4 className="text-sm font-bold text-blue-900">Onboarding Incomplete</h4>
-              <p className="text-xs text-blue-700 mt-0.5">
+              <h4 className="text-sm font-bold text-darkgreen">Onboarding Incomplete</h4>
+              <p className="text-xs text-darkgreen-muted mt-0.5">
                 Set up your business credentials, service areas, and license documents to qualify for home service bookings.
               </p>
             </div>
@@ -175,7 +175,7 @@ export const ProviderDashboard = () => {
         </div>
       ) : profile.verificationStatus === 'SUSPENDED' ? (
         <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+          <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div>
             <h4 className="text-sm font-bold text-red-900">Account Suspended</h4>
             <p className="text-xs text-red-700 mt-0.5">
@@ -234,18 +234,18 @@ export const ProviderDashboard = () => {
             <CardHeader title="Profile Status" subtitle="Readiness for customer dispatch" />
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-700">Completeness</span>
-                <span className="font-bold text-blue-600">{completeness}%</span>
+                <span className="font-semibold text-darkgreen">Completeness</span>
+                <span className="font-bold text-forest">{completeness}%</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="w-full bg-palesage/60 rounded-full h-2">
                 <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  className="bg-forest h-2 rounded-full transition-all duration-300"
                   style={{ width: `${completeness}%` }}
                 />
               </div>
-              <div className="pt-2 text-xs text-slate-500">
+              <div className="pt-2 text-xs text-darkgreen-muted">
                 {completeness === 100 ? (
-                  <span className="text-emerald-600 font-semibold">✓ All credential sections complete</span>
+                  <span className="text-emerald-700 font-semibold">✓ All credential sections complete</span>
                 ) : (
                   <span>Add remaining documents & license info to hit 100%</span>
                 )}
@@ -261,10 +261,10 @@ export const ProviderDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500 uppercase">New Leads</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">5</p>
+                <p className="text-xs font-medium text-darkgreen-muted uppercase">New Leads</p>
+                <p className="text-2xl font-bold text-darkgreen mt-1">5</p>
               </div>
-              <div className="p-2.5 rounded-lg bg-blue-50 text-blue-600">
+              <div className="p-2.5 rounded-lg bg-palesage text-forest">
                 <Briefcase className="h-5 w-5" />
               </div>
             </div>
@@ -275,8 +275,8 @@ export const ProviderDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500 uppercase">Active Jobs</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">2</p>
+                <p className="text-xs font-medium text-darkgreen-muted uppercase">Active Jobs</p>
+                <p className="text-2xl font-bold text-darkgreen mt-1">2</p>
               </div>
               <div className="p-2.5 rounded-lg bg-amber-50 text-amber-600">
                 <Clock className="h-5 w-5" />
@@ -289,10 +289,10 @@ export const ProviderDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500 uppercase">Earnings (M-T-D)</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">₹2,450</p>
+                <p className="text-xs font-medium text-darkgreen-muted uppercase">Earnings (M-T-D)</p>
+                <p className="text-2xl font-bold text-darkgreen mt-1">₹2,450</p>
               </div>
-              <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-600">
+              <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-700">
                 <IndianRupee className="h-5 w-5" />
               </div>
             </div>
@@ -303,12 +303,12 @@ export const ProviderDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-500 uppercase">Rating</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">
+                <p className="text-xs font-medium text-darkgreen-muted uppercase">Rating</p>
+                <p className="text-2xl font-bold text-darkgreen mt-1">
                   {profile && profile.rating > 0 ? `${profile.rating.toFixed(1)} / 5.0` : 'New'}
                 </p>
               </div>
-              <div className="p-2.5 rounded-lg bg-purple-50 text-purple-600">
+              <div className="p-2.5 rounded-lg bg-purple-50 text-purple-700">
                 <Star className="h-5 w-5" />
               </div>
             </div>
@@ -324,17 +324,17 @@ export const ProviderDashboard = () => {
         />
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3.5 rounded-lg bg-slate-50 border border-slate-100">
+            <div className="flex items-center justify-between p-3.5 rounded-lg bg-ivory/60 border border-themeborder">
               <div>
-                <p className="text-sm font-semibold text-slate-900">Electrical Panel Inspection</p>
-                <p className="text-xs text-slate-500 mt-0.5">Today at 2:00 PM • 124 Maple St</p>
+                <p className="text-sm font-semibold text-darkgreen">Electrical Panel Inspection</p>
+                <p className="text-xs text-darkgreen-muted mt-0.5">Today at 2:00 PM • 124 Maple St</p>
               </div>
               <Badge variant="primary">Dispatched</Badge>
             </div>
-            <div className="flex items-center justify-between p-3.5 rounded-lg bg-slate-50 border border-slate-100">
+            <div className="flex items-center justify-between p-3.5 rounded-lg bg-ivory/60 border border-themeborder">
               <div>
-                <p className="text-sm font-semibold text-slate-900">Commercial AC Maintenance</p>
-                <p className="text-xs text-slate-500 mt-0.5">Tomorrow at 9:00 AM • 450 Commerce Blvd</p>
+                <p className="text-sm font-semibold text-darkgreen">Commercial AC Maintenance</p>
+                <p className="text-xs text-darkgreen-muted mt-0.5">Tomorrow at 9:00 AM • 450 Commerce Blvd</p>
               </div>
               <Badge variant="success">Confirmed</Badge>
             </div>

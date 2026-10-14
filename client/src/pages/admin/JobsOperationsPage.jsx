@@ -136,10 +136,10 @@ export const JobsOperationsPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
-            <Briefcase className="h-6 w-6 text-sky-600" />
-            <h1 className="text-2xl font-bold text-slate-900">Jobs Oversight</h1>
+            <Briefcase className="h-6 w-6 text-forest" />
+            <h1 className="text-2xl font-bold text-darkgreen">Jobs Oversight</h1>
           </div>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-darkgreen-muted mt-1">
             Read-only operational tracking and performance inspection of on-ground service fulfillment.
           </p>
         </div>
@@ -159,7 +159,7 @@ export const JobsOperationsPage = () => {
 
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
               <div className="flex items-center space-x-2">
-                <label htmlFor="startDate" className="text-xs text-slate-500 font-medium">From:</label>
+                <label htmlFor="startDate" className="text-xs text-darkgreen-muted font-medium">From:</label>
                 <input
                   id="startDate"
                   type="date"
@@ -168,12 +168,12 @@ export const JobsOperationsPage = () => {
                     setStartDate(e.target.value);
                     setDateError('');
                   }}
-                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-700 focus:border-sky-500 focus:outline-hidden"
+                  className="rounded-lg border border-themeborder px-3 py-1.5 text-xs text-darkgreen focus:border-forest focus:outline-hidden bg-white"
                 />
               </div>
 
               <div className="flex items-center space-x-2">
-                <label htmlFor="endDate" className="text-xs text-slate-500 font-medium">To:</label>
+                <label htmlFor="endDate" className="text-xs text-darkgreen-muted font-medium">To:</label>
                 <input
                   id="endDate"
                   type="date"
@@ -182,7 +182,7 @@ export const JobsOperationsPage = () => {
                     setEndDate(e.target.value);
                     setDateError('');
                   }}
-                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-700 focus:border-sky-500 focus:outline-hidden"
+                  className="rounded-lg border border-themeborder px-3 py-1.5 text-xs text-darkgreen focus:border-forest focus:outline-hidden bg-white"
                 />
               </div>
 
@@ -199,7 +199,7 @@ export const JobsOperationsPage = () => {
           </form>
 
           {dateError && (
-            <p className="text-xs font-semibold text-rose-600 mt-2" role="alert">
+            <p className="text-xs font-semibold text-status-error mt-2" role="alert">
               {dateError}
             </p>
           )}
@@ -258,12 +258,12 @@ export const JobsOperationsPage = () => {
                   {jobs.map((j) => (
                     <TableRow key={j._id}>
                       <TableCell>
-                        <span className="font-mono text-xs font-semibold text-slate-900">
+                        <span className="font-mono text-xs font-semibold text-darkgreen">
                           {j.jobNumber || j._id.substring(j._id.length - 8).toUpperCase()}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span className="font-mono text-xs text-slate-600">
+                        <span className="font-mono text-xs text-darkgreen-muted">
                           {j.booking?._id
                             ? j.booking._id.substring(j.booking._id.length - 8).toUpperCase()
                             : j.booking
@@ -273,18 +273,18 @@ export const JobsOperationsPage = () => {
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium text-slate-900">{j.customer?.name || 'Customer'}</p>
-                          <p className="text-xs text-slate-500">{j.customer?.email || '—'}</p>
+                          <p className="font-medium text-darkgreen">{j.customer?.name || 'Customer'}</p>
+                          <p className="text-xs text-darkgreen-muted">{j.customer?.email || '—'}</p>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium text-slate-900">{j.provider?.name || 'Provider'}</p>
-                          <p className="text-xs text-slate-500">{j.provider?.email || '—'}</p>
+                          <p className="font-medium text-darkgreen">{j.provider?.name || 'Provider'}</p>
+                          <p className="text-xs text-darkgreen-muted">{j.provider?.email || '—'}</p>
                         </div>
                       </TableCell>
                       <TableCell>{getJobStatusBadge(j.status)}</TableCell>
-                      <TableCell className="text-sm text-slate-600">
+                      <TableCell className="text-sm text-darkgreen-muted">
                         {j.createdAt ? new Date(j.createdAt).toLocaleDateString() : '—'}
                       </TableCell>
                       <TableCell className="text-right">
@@ -304,10 +304,10 @@ export const JobsOperationsPage = () => {
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-              <p className="text-xs text-slate-500">
-                Showing <span className="font-semibold">{jobs.length}</span> of{' '}
-                <span className="font-semibold">{pagination.total || 0}</span> jobs
+            <div className="flex items-center justify-between px-6 py-4 border-t border-themeborder">
+              <p className="text-xs text-darkgreen-muted">
+                Showing <span className="font-semibold text-darkgreen">{jobs.length}</span> of{' '}
+                <span className="font-semibold text-darkgreen">{pagination.total || 0}</span> jobs
               </p>
               <div className="flex items-center space-x-2">
                 <Button
@@ -319,7 +319,7 @@ export const JobsOperationsPage = () => {
                 >
                   Previous
                 </Button>
-                <span className="text-xs text-slate-600 px-2 font-medium">
+                <span className="text-xs text-darkgreen-muted px-2 font-medium">
                   Page {currentPage} of {pagination.totalPages || 1}
                 </span>
                 <Button
@@ -346,46 +346,46 @@ export const JobsOperationsPage = () => {
       >
         {selectedJob && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="grid grid-cols-2 gap-4 text-sm bg-ivory p-4 rounded-xl border border-themeborder">
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Job ID</span>
-                <p className="font-mono text-xs text-slate-800 break-all">{selectedJob._id}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Job ID</span>
+                <p className="font-mono text-xs text-darkgreen break-all">{selectedJob._id}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Status</span>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Status</span>
                 <div className="mt-1">{getJobStatusBadge(selectedJob.status)}</div>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Customer</span>
-                <p className="font-semibold text-slate-900">{selectedJob.customer?.name || '—'}</p>
-                <p className="text-xs text-slate-500">{selectedJob.customer?.email || '—'}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Customer</span>
+                <p className="font-semibold text-darkgreen">{selectedJob.customer?.name || '—'}</p>
+                <p className="text-xs text-darkgreen-muted">{selectedJob.customer?.email || '—'}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Provider</span>
-                <p className="font-semibold text-slate-900">{selectedJob.provider?.name || '—'}</p>
-                <p className="text-xs text-slate-500">{selectedJob.provider?.email || '—'}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Provider</span>
+                <p className="font-semibold text-darkgreen">{selectedJob.provider?.name || '—'}</p>
+                <p className="text-xs text-darkgreen-muted">{selectedJob.provider?.email || '—'}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Linked Booking ID</span>
-                <p className="font-mono text-xs text-slate-800 break-all">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Linked Booking ID</span>
+                <p className="font-mono text-xs text-darkgreen break-all">
                   {selectedJob.booking?._id || selectedJob.booking || '—'}
                 </p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Started At</span>
-                <p className="text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Started At</span>
+                <p className="text-darkgreen">
                   {selectedJob.startedAt ? new Date(selectedJob.startedAt).toLocaleString() : '—'}
                 </p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Completed At</span>
-                <p className="text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Completed At</span>
+                <p className="text-darkgreen">
                   {selectedJob.completedAt ? new Date(selectedJob.completedAt).toLocaleString() : '—'}
                 </p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Created Date</span>
-                <p className="text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Created Date</span>
+                <p className="text-darkgreen">
                   {selectedJob.createdAt ? new Date(selectedJob.createdAt).toLocaleString() : '—'}
                 </p>
               </div>

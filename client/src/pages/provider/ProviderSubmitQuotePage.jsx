@@ -142,7 +142,7 @@ export const ProviderSubmitQuotePage = () => {
   if (loadError || !request) {
     return (
       <div className="space-y-4">
-        <Link to="/provider/requests" className="inline-flex items-center text-xs text-slate-500 hover:text-slate-800">
+        <Link to="/provider/requests" className="inline-flex items-center text-xs text-darkgreen-muted hover:text-darkgreen">
           <ArrowLeft className="h-4 w-4 mr-1" /> Back to Available Requests
         </Link>
         <ErrorState
@@ -160,7 +160,7 @@ export const ProviderSubmitQuotePage = () => {
       <div>
         <Link
           to="/provider/requests"
-          className="inline-flex items-center text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors"
+          className="inline-flex items-center text-xs font-medium text-darkgreen-muted hover:text-darkgreen transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-1" /> Back to Available Requests
         </Link>
@@ -168,8 +168,8 @@ export const ProviderSubmitQuotePage = () => {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Prepare & Submit Quote</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <h1 className="text-2xl font-bold text-darkgreen">Prepare & Submit Quote</h1>
+        <p className="text-sm text-darkgreen-muted mt-1">
           Provide a transparent, competitive estimate. Customers evaluate price, duration, and scope.
         </p>
       </div>
@@ -195,26 +195,26 @@ export const ProviderSubmitQuotePage = () => {
                 <Badge variant="primary" size="sm" className="mb-2">
                   {request.category?.name || 'Category'}
                 </Badge>
-                <h3 className="font-semibold text-slate-900 text-sm">
+                <h3 className="font-semibold text-darkgreen text-sm">
                   {request.title}
                 </h3>
               </div>
 
-              <div className="bg-slate-50 rounded-xl p-3 text-slate-600 leading-relaxed border border-slate-100">
+              <div className="bg-ivory/60 rounded-xl p-3 text-darkgreen leading-relaxed border border-themeborder">
                 {request.description}
               </div>
 
-              <div className="space-y-2 pt-2 border-t border-slate-100 text-slate-600">
+              <div className="space-y-2 pt-2 border-t border-themeborder text-darkgreen-muted">
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-slate-400" />
+                  <MapPin className="h-4 w-4 text-darkgreen-muted" />
                   <span>{request.location?.city}, {request.location?.state} ({request.location?.postalCode})</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-slate-400" />
+                  <Calendar className="h-4 w-4 text-darkgreen-muted" />
                   <span>Target Date: {new Date(request.preferredDate).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-slate-400" />
+                  <Clock className="h-4 w-4 text-darkgreen-muted" />
                   <span>
                     Timing: {request.preferredTime?.start || '09:00'} – {request.preferredTime?.end || '17:00'}
                   </span>
@@ -222,17 +222,17 @@ export const ProviderSubmitQuotePage = () => {
               </div>
 
               {request.requiredSkills && request.requiredSkills.length > 0 && (
-                <div className="pt-2 border-t border-slate-100">
-                  <span className="text-[11px] font-semibold text-slate-500 uppercase block mb-1.5">
+                <div className="pt-2 border-t border-themeborder">
+                  <span className="text-[11px] font-semibold text-darkgreen-muted uppercase block mb-1.5">
                     Required Skills
                   </span>
                   <div className="flex flex-wrap gap-1">
                     {request.requiredSkills.map((sk, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700"
+                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-palesage/60 text-darkgreen border border-sage/30"
                       >
-                        <Tag className="h-2.5 w-2.5 mr-1" />
+                        <Tag className="h-2.5 w-2.5 mr-1 text-darkgreen-muted" />
                         {sk}
                       </span>
                     ))}
@@ -260,8 +260,8 @@ export const ProviderSubmitQuotePage = () => {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-5">
                 {formError && (
-                  <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-start gap-3 text-xs text-rose-800">
-                    <AlertCircle className="h-5 w-5 text-rose-600 flex-shrink-0 mt-0.5" />
+                  <div className="bg-status-error/10 border border-status-error/20 rounded-xl p-4 flex items-start gap-3 text-xs text-status-error">
+                    <AlertCircle className="h-5 w-5 text-status-error flex-shrink-0 mt-0.5" />
                     <div>{formError}</div>
                   </div>
                 )}
@@ -269,8 +269,8 @@ export const ProviderSubmitQuotePage = () => {
                 {/* Amount and Duration Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Estimated Cost (₹ INR) <span className="text-rose-500">*</span>
+                    <label className="block text-xs font-semibold text-darkgreen mb-1.5">
+                      Estimated Cost (₹ INR) <span className="text-status-error">*</span>
                     </label>
                     <div className="relative">
                       <Input
@@ -284,18 +284,18 @@ export const ProviderSubmitQuotePage = () => {
                         className="pl-8"
                         required
                       />
-                      <span className="absolute left-3 top-2.5 text-xs font-bold text-slate-400 pointer-events-none">
+                      <span className="absolute left-3 top-2.5 text-xs font-bold text-darkgreen-muted pointer-events-none">
                         ₹
                       </span>
                     </div>
-                    <span className="text-[11px] text-slate-400 mt-1 block">
+                    <span className="text-[11px] text-darkgreen-muted mt-1 block">
                       Platform standard currency: INR
                     </span>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Estimated Duration (Hours) <span className="text-rose-500">*</span>
+                    <label className="block text-xs font-semibold text-darkgreen mb-1.5">
+                      Estimated Duration (Hours) <span className="text-status-error">*</span>
                     </label>
                     <div className="relative">
                       <Input
@@ -309,9 +309,9 @@ export const ProviderSubmitQuotePage = () => {
                         className="pl-8"
                         required
                       />
-                      <Clock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400 pointer-events-none" />
+                      <Clock className="absolute left-3 top-2.5 h-4 w-4 text-darkgreen-muted pointer-events-none" />
                     </div>
-                    <span className="text-[11px] text-slate-400 mt-1 block">
+                    <span className="text-[11px] text-darkgreen-muted mt-1 block">
                       Estimated time on-site to finish job
                     </span>
                   </div>
@@ -319,8 +319,8 @@ export const ProviderSubmitQuotePage = () => {
 
                 {/* Scope & Description */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                    Proposal Scope & Description <span className="text-rose-500">*</span>
+                  <label className="block text-xs font-semibold text-darkgreen mb-1.5">
+                    Proposal Scope & Description <span className="text-status-error">*</span>
                   </label>
                   <textarea
                     name="description"
@@ -329,17 +329,17 @@ export const ProviderSubmitQuotePage = () => {
                     value={formData.description}
                     onChange={handleChange}
                     required
-                    className="w-full rounded-xl border border-slate-300 p-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    className="w-full rounded-xl border border-themeborder p-3 text-xs text-darkgreen placeholder-darkgreen-muted/60 focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest transition-all"
                   />
-                  <span className="text-[11px] text-slate-400 mt-1 block">
+                  <span className="text-[11px] text-darkgreen-muted mt-1 block">
                     Minimum 10 characters. A thorough proposal increases acceptance rates.
                   </span>
                 </div>
 
                 {/* Validity Date */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                    Quote Valid Until <span className="text-rose-500">*</span>
+                  <label className="block text-xs font-semibold text-darkgreen mb-1.5">
+                    Quote Valid Until <span className="text-status-error">*</span>
                   </label>
                   <Input
                     type="date"
@@ -349,13 +349,13 @@ export const ProviderSubmitQuotePage = () => {
                     min={new Date().toISOString().split('T')[0]}
                     required
                   />
-                  <span className="text-[11px] text-slate-400 mt-1 block">
+                  <span className="text-[11px] text-darkgreen-muted mt-1 block">
                     After this date, the quote will automatically expire if not accepted.
                   </span>
                 </div>
 
                 {/* Submit Action */}
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                <div className="pt-4 border-t border-themeborder flex items-center justify-end gap-3">
                   <Link to="/provider/requests">
                     <Button variant="outline" type="button" disabled={isSubmitting}>
                       Cancel

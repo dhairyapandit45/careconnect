@@ -15,7 +15,7 @@ export const ProtectedRoute = ({ allowedRoles = [], children }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-ivory">
         <LoadingSpinner size="lg" label="Checking credentials..." />
       </div>
     );

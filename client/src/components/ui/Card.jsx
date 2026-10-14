@@ -7,7 +7,7 @@ import React from 'react';
 export const Card = ({ children, className = '', ...props }) => {
   return (
     <div
-      className={`bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden ${className}`}
+      className={`bg-white rounded-xl border border-themeborder shadow-xs overflow-hidden ${className}`}
       {...props}
     >
       {children}
@@ -17,12 +17,12 @@ export const Card = ({ children, className = '', ...props }) => {
 
 export const CardHeader = ({ title, subtitle, action, children, className = '' }) => {
   return (
-    <div className={`p-5 border-b border-slate-100 flex items-center justify-between ${className}`}>
+    <div className={`p-5 border-b border-themeborder/60 flex items-center justify-between ${className}`}>
       {children || (
         <>
           <div>
-            {title && <h3 className="text-base font-semibold text-slate-900">{title}</h3>}
-            {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+            {title && <h3 className="text-base font-semibold text-darkgreen">{title}</h3>}
+            {subtitle && <p className="text-xs text-darkgreen-muted mt-0.5">{subtitle}</p>}
           </div>
           {action && <div>{action}</div>}
         </>
@@ -37,7 +37,7 @@ export const CardContent = ({ children, className = '' }) => {
 
 export const CardFooter = ({ children, className = '' }) => {
   return (
-    <div className={`p-4 bg-slate-50/50 border-t border-slate-100 flex items-center justify-end ${className}`}>
+    <div className={`p-4 bg-ivory/60 border-t border-themeborder/60 flex items-center justify-end ${className}`}>
       {children}
     </div>
   );

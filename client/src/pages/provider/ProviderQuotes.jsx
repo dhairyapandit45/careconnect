@@ -96,8 +96,8 @@ export const ProviderQuotes = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Submitted Quotes</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-darkgreen">Submitted Quotes</h1>
+          <p className="text-sm text-darkgreen-muted mt-1">
             Monitor proposal progress, customer views, awards, and quote lifecycle statuses.
           </p>
         </div>
@@ -133,7 +133,7 @@ export const ProviderQuotes = () => {
 
       {/* Status Filter Tabs */}
       <div className="flex flex-wrap items-center gap-2 pb-2">
-        <span className="text-xs font-semibold uppercase text-slate-400 mr-2 flex items-center">
+        <span className="text-xs font-semibold uppercase text-darkgreen-muted mr-2 flex items-center">
           <Filter className="h-3.5 w-3.5 mr-1" /> Filter Status:
         </span>
         {[
@@ -149,8 +149,8 @@ export const ProviderQuotes = () => {
             onClick={() => setStatusFilter(tab.value)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               statusFilter === tab.value
-                ? 'bg-primary-600 text-white shadow-sm'
-                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                ? 'bg-forest text-white shadow-xs'
+                : 'bg-white text-darkgreen border border-themeborder hover:bg-palesage/30'
             }`}
           >
             {tab.label}
@@ -205,24 +205,24 @@ export const ProviderQuotes = () => {
                   return (
                     <TableRow key={quote._id}>
                       <TableCell>
-                        <div className="font-semibold text-slate-900">
+                        <div className="font-semibold text-darkgreen">
                           {quote.serviceRequest?.title || 'Home Service Request'}
                         </div>
-                        <div className="text-xs text-slate-500 mt-0.5 line-clamp-1">
+                        <div className="text-xs text-darkgreen-muted mt-0.5 line-clamp-1">
                           {quote.description}
                         </div>
                       </TableCell>
 
                       <TableCell>
-                        <div className="font-bold text-slate-900">
+                        <div className="font-bold text-darkgreen">
                           ₹{quote.amount?.toLocaleString('en-IN') || quote.pricing?.totalAmount}
                         </div>
-                        <span className="text-[10px] text-slate-400">INR</span>
+                        <span className="text-[10px] text-darkgreen-muted">INR</span>
                       </TableCell>
 
                       <TableCell>
-                        <div className="text-xs text-slate-700 flex items-center">
-                          <Clock className="h-3.5 w-3.5 mr-1 text-slate-400" />
+                        <div className="text-xs text-darkgreen flex items-center">
+                          <Clock className="h-3.5 w-3.5 mr-1 text-darkgreen-muted" />
                           {quote.estimatedDuration || quote.estimatedHours || '—'} hrs
                         </div>
                       </TableCell>
@@ -234,15 +234,15 @@ export const ProviderQuotes = () => {
                       </TableCell>
 
                       <TableCell>
-                        <div className="text-xs text-slate-600 flex items-center">
-                          <Calendar className="h-3.5 w-3.5 mr-1 text-slate-400" />
+                        <div className="text-xs text-darkgreen-muted flex items-center">
+                          <Calendar className="h-3.5 w-3.5 mr-1 text-darkgreen-muted" />
                           {quote.validUntil
                             ? new Date(quote.validUntil).toLocaleDateString()
                             : 'N/A'}
                         </div>
                       </TableCell>
 
-                      <TableCell className="text-xs text-slate-500">
+                      <TableCell className="text-xs text-darkgreen-muted">
                         {new Date(quote.createdAt).toLocaleDateString()}
                       </TableCell>
 
@@ -254,12 +254,12 @@ export const ProviderQuotes = () => {
                             icon={XCircle}
                             onClick={() => handleWithdraw(quote._id)}
                             isLoading={withdrawingId === quote._id}
-                            className="text-rose-600 hover:text-rose-700 hover:border-rose-300"
+                            className="text-status-error hover:text-status-error border-status-error/30 hover:border-status-error/50"
                           >
                             Withdraw
                           </Button>
                         ) : (
-                          <span className="text-xs text-slate-400 italic">No action</span>
+                          <span className="text-xs text-darkgreen-muted italic">No action</span>
                         )}
                       </TableCell>
                     </TableRow>
@@ -270,8 +270,8 @@ export const ProviderQuotes = () => {
           </CardContent>
 
           {pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-slate-200 p-4">
-              <span className="text-xs text-slate-500">
+            <div className="flex items-center justify-between border-t border-themeborder p-4">
+              <span className="text-xs text-darkgreen-muted">
                 Page {pagination.page} of {pagination.totalPages}
               </span>
               <div className="flex gap-2">

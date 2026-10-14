@@ -3,7 +3,31 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-forest: #285943;
+    --color-forest-deep: #204735;
+    --color-sage: #A8C69F;
+    --color-warm-ivory: #F5F5EF;
+    --color-white: #FFFFFF;
+    --color-dark-green: #24352B;
+    --color-muted-green: #617267;
+    --color-pale-sage: #E7EFE4;
+    --color-border: #DCE3D8;
+    --color-success: #276749;
+    --color-warning: #92400E;
+    --color-error: #B42318;
+    --color-info: #245B75;
+  }
+
   body {
-    @apply bg-slate-50 text-slate-800 antialiased font-sans;
+    background-color: #F5F5EF;
+    color: #24352B;
+    @apply antialiased font-sans;
+  }
+
+  /* Accessible focus indicators across the application */
+  :focus-visible {
+    outline: 2px solid var(--color-forest);
+    outline-offset: 2px;
   }
 }

@@ -143,8 +143,8 @@ export const CustomerBookings = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">My Bookings</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-darkgreen">My Bookings</h1>
+          <p className="text-sm text-darkgreen-muted">
             Manage your confirmed home service appointments and scheduled visits
           </p>
         </div>
@@ -168,8 +168,8 @@ export const CustomerBookings = () => {
       )}
 
       {/* Status Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 text-sm">
-        <Filter className="h-4 w-4 text-slate-400 mr-1" />
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-themeborder text-sm">
+        <Filter className="h-4 w-4 text-darkgreen-muted mr-1" />
         {[
           { label: 'All Bookings', value: '' },
           { label: 'Confirmed', value: 'CONFIRMED' },
@@ -182,8 +182,8 @@ export const CustomerBookings = () => {
             onClick={() => setStatusFilter(tab.value)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
               statusFilter === tab.value
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-forest text-white shadow-xs'
+                : 'bg-palesage/60 text-darkgreen hover:bg-palesage'
             }`}
           >
             {tab.label}
@@ -221,7 +221,7 @@ export const CustomerBookings = () => {
         <Card>
           <CardHeader className="pb-0">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-darkgreen-muted uppercase tracking-wider">
                 {pagination.total} Total {pagination.total === 1 ? 'Booking' : 'Bookings'}
               </span>
             </div>
@@ -245,31 +245,31 @@ export const CustomerBookings = () => {
                     <TableRow key={b._id}>
                       <TableCell>
                         <div className="space-y-0.5">
-                          <div className="font-medium text-slate-900 text-sm">
+                          <div className="font-medium text-darkgreen text-sm">
                             {b.serviceRequest?.title || 'Service Request'}
                           </div>
-                          <div className="text-xs text-slate-500 flex items-center gap-1">
-                            <MapPin className="h-3 w-3 text-slate-400" />
+                          <div className="text-xs text-darkgreen-muted flex items-center gap-1">
+                            <MapPin className="h-3 w-3 text-darkgreen-muted" />
                             {b.serviceRequest?.location?.city || 'Scheduled Visit'}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-sm font-medium text-slate-800">
+                        <div className="text-sm font-medium text-darkgreen">
                           {b.providerProfile?.businessName || b.provider?.name || 'Verified Provider'}
                         </div>
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-darkgreen-muted">
                           {b.provider?.phone || b.provider?.email || ''}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-xs text-slate-700 flex items-center gap-1.5">
-                          <Calendar className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+                        <div className="text-xs text-darkgreen flex items-center gap-1.5">
+                          <Calendar className="h-3.5 w-3.5 text-forest flex-shrink-0" />
                           <span>{formatSchedule(b.scheduledStart, b.scheduledEnd)}</span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="font-semibold text-slate-900 text-sm">
+                        <div className="font-semibold text-darkgreen text-sm">
                           ₹{(b.price || 0).toLocaleString('en-IN')} INR
                         </div>
                       </TableCell>
@@ -289,7 +289,7 @@ export const CustomerBookings = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="text-rose-600 border-rose-200 hover:bg-rose-50"
+                              className="text-status-error border-status-error/30 hover:bg-status-error/10"
                               icon={XCircle}
                               onClick={() => handleOpenCancelModal(b)}
                             >
@@ -309,9 +309,9 @@ export const CustomerBookings = () => {
 
       {/* Pagination Controls */}
       {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between text-xs text-slate-600 pt-2">
+        <div className="flex items-center justify-between text-xs text-darkgreen-muted pt-2">
           <div>
-            Showing Page <strong>{pagination.page}</strong> of <strong>{pagination.totalPages}</strong>
+            Showing Page <strong className="text-darkgreen">{pagination.page}</strong> of <strong className="text-darkgreen">{pagination.totalPages}</strong>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -349,7 +349,6 @@ export const CustomerBookings = () => {
               variant="danger"
               onClick={handleConfirmCancel}
               isLoading={isCancelling}
-              className="bg-rose-600 hover:bg-rose-700 text-white"
             >
               Confirm Cancellation
             </Button>
@@ -359,13 +358,13 @@ export const CustomerBookings = () => {
         {cancellingBooking && (
           <div className="space-y-4 py-2">
             {cancelError && (
-              <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-start gap-2 text-xs text-rose-700">
-                <AlertCircle className="h-4 w-4 text-rose-500 flex-shrink-0 mt-0.5" />
+              <div className="bg-status-error/10 border border-status-error/20 rounded-xl p-3 flex items-start gap-2 text-xs text-status-error">
+                <AlertCircle className="h-4 w-4 text-status-error flex-shrink-0 mt-0.5" />
                 <span>{cancelError}</span>
               </div>
             )}
 
-            <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs space-y-1.5 text-slate-700">
+            <div className="bg-ivory/60 border border-themeborder rounded-xl p-3 text-xs space-y-1.5 text-darkgreen">
               <div>
                 <strong>Service:</strong> {cancellingBooking.serviceRequest?.title || 'Home Service'}
               </div>
@@ -378,12 +377,12 @@ export const CustomerBookings = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Cancellation Reason <span className="text-rose-500">*</span>
+              <label className="block text-xs font-semibold text-darkgreen mb-1">
+                Cancellation Reason <span className="text-status-error">*</span>
               </label>
               <textarea
                 rows="3"
-                className="w-full text-xs rounded-lg border border-slate-300 p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                className="w-full text-xs rounded-lg border border-themeborder p-2.5 text-darkgreen focus:outline-none focus:ring-2 focus:ring-forest focus:border-forest"
                 placeholder="Explain why you need to cancel this appointment (minimum 5 characters)..."
                 value={cancellationReason}
                 onChange={(e) => setCancellationReason(e.target.value)}
@@ -391,7 +390,7 @@ export const CustomerBookings = () => {
               />
             </div>
 
-            <p className="text-[11px] text-slate-500 leading-normal">
+            <p className="text-[11px] text-darkgreen-muted leading-normal">
               Cancelling will immediately release this time slot on the provider’s calendar.
             </p>
           </div>

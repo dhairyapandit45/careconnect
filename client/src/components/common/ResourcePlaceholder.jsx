@@ -15,8 +15,8 @@ export const ResourcePlaceholder = ({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
-        {subtitle && <p className="text-sm text-slate-500 mt-1">{subtitle}</p>}
+        <h1 className="text-2xl font-bold text-darkgreen">{title}</h1>
+        {subtitle && <p className="text-sm text-darkgreen-muted mt-1">{subtitle}</p>}
       </div>
 
       <Card>

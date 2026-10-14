@@ -119,10 +119,10 @@ export const DisputesOperationsPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
-            <AlertTriangle className="h-6 w-6 text-amber-600" />
-            <h1 className="text-2xl font-bold text-slate-900">Disputes Queue</h1>
+            <AlertTriangle className="h-6 w-6 text-status-warning" />
+            <h1 className="text-2xl font-bold text-darkgreen">Disputes Queue</h1>
           </div>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-darkgreen-muted mt-1">
             Operational auditing and governance of marketplace disputes and escalation resolutions.
           </p>
         </div>
@@ -208,29 +208,29 @@ export const DisputesOperationsPage = () => {
                   {disputes.map((d) => (
                     <TableRow key={d._id}>
                       <TableCell>
-                        <span className="font-mono text-xs font-semibold text-slate-900">
+                        <span className="font-mono text-xs font-semibold text-darkgreen">
                           {d.disputeNumber || d._id.substring(d._id.length - 8).toUpperCase()}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <p className="font-medium text-slate-800 text-sm">
+                        <p className="font-medium text-darkgreen text-sm">
                           {d.reason || d.category || 'General Dispute'}
                         </p>
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="text-sm font-medium text-slate-900">{d.raisedBy?.name || 'User'}</p>
-                          <p className="text-xs text-slate-400">{d.raisedBy?.role || '—'}</p>
+                          <p className="text-sm font-medium text-darkgreen">{d.raisedBy?.name || 'User'}</p>
+                          <p className="text-xs text-darkgreen-muted">{d.raisedBy?.role || '—'}</p>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <p className="text-sm text-slate-700">{d.customer?.name || '—'}</p>
+                        <p className="text-sm text-darkgreen">{d.customer?.name || '—'}</p>
                       </TableCell>
                       <TableCell>
-                        <p className="text-sm text-slate-700">{d.provider?.name || '—'}</p>
+                        <p className="text-sm text-darkgreen">{d.provider?.name || '—'}</p>
                       </TableCell>
                       <TableCell>{getDisputeStatusBadge(d.status)}</TableCell>
-                      <TableCell className="text-sm text-slate-600">
+                      <TableCell className="text-sm text-darkgreen-muted">
                         {d.createdAt ? new Date(d.createdAt).toLocaleDateString() : '—'}
                       </TableCell>
                       <TableCell className="text-right">
@@ -250,10 +250,10 @@ export const DisputesOperationsPage = () => {
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-              <p className="text-xs text-slate-500">
-                Showing <span className="font-semibold">{disputes.length}</span> of{' '}
-                <span className="font-semibold">{pagination.total || 0}</span> disputes
+            <div className="flex items-center justify-between px-6 py-4 border-t border-themeborder">
+              <p className="text-xs text-darkgreen-muted">
+                Showing <span className="font-semibold text-darkgreen">{disputes.length}</span> of{' '}
+                <span className="font-semibold text-darkgreen">{pagination.total || 0}</span> disputes
               </p>
               <div className="flex items-center space-x-2">
                 <Button
@@ -265,7 +265,7 @@ export const DisputesOperationsPage = () => {
                 >
                   Previous
                 </Button>
-                <span className="text-xs text-slate-600 px-2 font-medium">
+                <span className="text-xs text-darkgreen-muted px-2 font-medium">
                   Page {currentPage} of {pagination.totalPages || 1}
                 </span>
                 <Button
@@ -292,57 +292,57 @@ export const DisputesOperationsPage = () => {
       >
         {selectedDispute && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="grid grid-cols-2 gap-4 text-sm bg-ivory p-4 rounded-xl border border-themeborder">
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Dispute ID</span>
-                <p className="font-mono text-xs text-slate-800 break-all">{selectedDispute._id}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Dispute ID</span>
+                <p className="font-mono text-xs text-darkgreen break-all">{selectedDispute._id}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Status</span>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Status</span>
                 <div className="mt-1">{getDisputeStatusBadge(selectedDispute.status)}</div>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Raised By</span>
-                <p className="font-semibold text-slate-900">{selectedDispute.raisedBy?.name || '—'}</p>
-                <p className="text-xs text-slate-500">{selectedDispute.raisedBy?.email || '—'}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Raised By</span>
+                <p className="font-semibold text-darkgreen">{selectedDispute.raisedBy?.name || '—'}</p>
+                <p className="text-xs text-darkgreen-muted">{selectedDispute.raisedBy?.email || '—'}</p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Reason</span>
-                <p className="font-semibold text-slate-800">{selectedDispute.reason || selectedDispute.category || '—'}</p>
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Reason</span>
+                <p className="font-semibold text-darkgreen">{selectedDispute.reason || selectedDispute.category || '—'}</p>
               </div>
               <div className="col-span-2">
-                <span className="text-xs font-medium text-slate-400 uppercase">Description</span>
-                <p className="text-slate-800 mt-1 whitespace-pre-wrap">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Description</span>
+                <p className="text-darkgreen mt-1 whitespace-pre-wrap">
                   {selectedDispute.description || 'No detailed statement provided.'}
                 </p>
               </div>
               {selectedDispute.resolution && (
-                <div className="col-span-2 bg-emerald-50 p-3 rounded-lg border border-emerald-100">
-                  <span className="text-xs font-medium text-emerald-800 uppercase">Resolution Details</span>
-                  <p className="text-xs text-emerald-900 mt-1 whitespace-pre-wrap">{selectedDispute.resolution}</p>
+                <div className="col-span-2 bg-palesage p-3 rounded-lg border border-sage/40">
+                  <span className="text-xs font-medium text-forest-deep uppercase">Resolution Details</span>
+                  <p className="text-xs text-forest-deep mt-1 whitespace-pre-wrap">{selectedDispute.resolution}</p>
                 </div>
               )}
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Linked Booking</span>
-                <p className="font-mono text-xs text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Linked Booking</span>
+                <p className="font-mono text-xs text-darkgreen">
                   {selectedDispute.booking?._id || selectedDispute.booking || '—'}
                 </p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Linked Job</span>
-                <p className="font-mono text-xs text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Linked Job</span>
+                <p className="font-mono text-xs text-darkgreen">
                   {selectedDispute.job?._id || selectedDispute.job || '—'}
                 </p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Created Date</span>
-                <p className="text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Created Date</span>
+                <p className="text-darkgreen">
                   {selectedDispute.createdAt ? new Date(selectedDispute.createdAt).toLocaleString() : '—'}
                 </p>
               </div>
               <div>
-                <span className="text-xs font-medium text-slate-400 uppercase">Resolved At</span>
-                <p className="text-slate-800">
+                <span className="text-xs font-medium text-darkgreen-muted uppercase">Resolved At</span>
+                <p className="text-darkgreen">
                   {selectedDispute.resolvedAt ? new Date(selectedDispute.resolvedAt).toLocaleString() : '—'}
                 </p>
               </div>

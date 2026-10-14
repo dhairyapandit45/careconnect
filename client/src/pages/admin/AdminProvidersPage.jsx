@@ -231,8 +231,8 @@ export const AdminProvidersPage = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Provider Verification Console</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-darkgreen">Provider Verification Console</h1>
+          <p className="text-sm text-darkgreen-muted mt-1">
             Audit trade licenses, manage compliance reviews, and control marketplace onboarding status.
           </p>
         </div>
@@ -291,10 +291,10 @@ export const AdminProvidersPage = () => {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center p-12 space-y-3">
               <LoadingSpinner size="lg" />
-              <p className="text-sm text-slate-500">Loading service providers...</p>
+              <p className="text-sm text-darkgreen-muted">Loading service providers...</p>
             </div>
           ) : error ? (
-            <div className="p-8 text-center text-red-600">
+            <div className="p-8 text-center text-status-error">
               <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
               <p className="text-sm font-semibold">{error}</p>
             </div>
@@ -324,27 +324,27 @@ export const AdminProvidersPage = () => {
                     <TableRow key={p._id}>
                       <TableCell>
                         <div>
-                          <p className="font-semibold text-slate-900 text-sm">{p.businessName || 'Unnamed Business'}</p>
-                          <p className="text-xs text-slate-500">{p.user?.name} • {p.user?.email}</p>
+                          <p className="font-semibold text-darkgreen text-sm">{p.businessName || 'Unnamed Business'}</p>
+                          <p className="text-xs text-darkgreen-muted">{p.user?.name} • {p.user?.email}</p>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1 max-w-[200px]">
                           {(p.serviceCategories || []).slice(0, 2).map((cat) => (
-                            <span key={typeof cat === 'object' ? cat._id : cat} className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium">
+                            <span key={typeof cat === 'object' ? cat._id : cat} className="text-[11px] bg-palesage text-forest-deep px-2 py-0.5 rounded font-medium border border-sage/40">
                               {typeof cat === 'object' ? cat.name : cat}
                             </span>
                           ))}
                           {(p.serviceCategories || []).length > 2 && (
-                            <span className="text-[11px] text-slate-400">+{p.serviceCategories.length - 2}</span>
+                            <span className="text-[11px] text-darkgreen-muted">+{p.serviceCategories.length - 2}</span>
                           )}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="text-xs text-slate-700 font-medium">{p.experienceYears} Years</span>
+                        <span className="text-xs text-darkgreen font-medium">{p.experienceYears} Years</span>
                       </TableCell>
                       <TableCell>
-                        <span className="text-xs text-slate-700 font-semibold">
+                        <span className="text-xs text-forest-deep font-semibold">
                           ₹{p.pricing?.hourlyRate || p.hourlyRate || 0}/hr
                         </span>
                       </TableCell>
@@ -373,8 +373,8 @@ export const AdminProvidersPage = () => {
 
           {/* Pagination Footer */}
           {pagination.pages > 1 && (
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200">
-              <p className="text-xs text-slate-500">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-themeborder">
+              <p className="text-xs text-darkgreen-muted">
                 Showing page <strong>{pagination.page}</strong> of <strong>{pagination.pages}</strong> ({pagination.total} providers)
               </p>
               <div className="flex items-center gap-2">
@@ -410,22 +410,22 @@ export const AdminProvidersPage = () => {
         {modalLoading ? (
           <div className="flex flex-col items-center justify-center p-8 space-y-3">
             <LoadingSpinner size="lg" />
-            <p className="text-xs text-slate-500">Loading provider credentials and audit history...</p>
+            <p className="text-xs text-darkgreen-muted">Loading provider credentials and audit history...</p>
           </div>
         ) : selectedProvider ? (
           <div className="space-y-6">
             {/* Action Alert Banner */}
             {actionError && (
-              <div className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs text-status-error flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-status-error shrink-0 mt-0.5" />
                 <span>{actionError}</span>
               </div>
             )}
 
             {/* Header info */}
-            <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-ivory border border-themeborder">
               <div>
-                <span className="text-xs font-bold text-slate-500 uppercase">Current Verification Status</span>
+                <span className="text-xs font-bold text-darkgreen-muted uppercase">Current Verification Status</span>
                 <div className="mt-1">
                   {(() => {
                     const cfg = STATUS_CONFIGS[selectedProvider.verificationStatus] || STATUS_CONFIGS.PENDING;
@@ -439,17 +439,17 @@ export const AdminProvidersPage = () => {
                   })()}
                 </div>
               </div>
-              <div className="text-right text-xs text-slate-500">
-                <p>Owner: <strong className="text-slate-900">{selectedProvider.user?.name}</strong></p>
+              <div className="text-right text-xs text-darkgreen-muted">
+                <p>Owner: <strong className="text-darkgreen">{selectedProvider.user?.name}</strong></p>
                 <p>Email: {selectedProvider.user?.email}</p>
-                <p>Experience: <strong>{selectedProvider.experienceYears} Years</strong></p>
+                <p>Experience: <strong className="text-darkgreen">{selectedProvider.experienceYears} Years</strong></p>
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <h4 className="text-xs font-bold text-slate-600 uppercase mb-1">Company Description</h4>
-              <p className="text-xs text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 whitespace-pre-line">
+              <h4 className="text-xs font-bold text-darkgreen uppercase mb-1">Company Description</h4>
+              <p className="text-xs text-darkgreen bg-ivory p-3 rounded-lg border border-themeborder whitespace-pre-line">
                 {selectedProvider.description || 'No description provided.'}
               </p>
             </div>
@@ -457,8 +457,8 @@ export const AdminProvidersPage = () => {
             {/* Categories & Skills */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <h4 className="text-xs font-bold text-slate-600 uppercase mb-2 flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-blue-600" /> Service Categories
+                <h4 className="text-xs font-bold text-darkgreen uppercase mb-2 flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-forest" /> Service Categories
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
                   {(selectedProvider.serviceCategories || []).map((cat) => (
@@ -470,8 +470,8 @@ export const AdminProvidersPage = () => {
               </div>
 
               <div>
-                <h4 className="text-xs font-bold text-slate-600 uppercase mb-2 flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5 text-indigo-600" /> Skills & Disciplines
+                <h4 className="text-xs font-bold text-darkgreen uppercase mb-2 flex items-center gap-1.5">
+                  <Award className="w-3.5 h-3.5 text-forest" /> Skills & Disciplines
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
                   {(selectedProvider.skills || []).map((sk) => (
@@ -485,12 +485,12 @@ export const AdminProvidersPage = () => {
 
             {/* Coverage Areas */}
             <div>
-              <h4 className="text-xs font-bold text-slate-600 uppercase mb-2 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-emerald-600" /> Coverage Cities & Sub-areas
+              <h4 className="text-xs font-bold text-darkgreen uppercase mb-2 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-forest" /> Coverage Cities & Sub-areas
               </h4>
               <div className="flex flex-wrap gap-2">
                 {(selectedProvider.serviceAreas || []).map((sa, i) => (
-                  <span key={i} className="text-xs px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg text-slate-800">
+                  <span key={i} className="text-xs px-2.5 py-1 bg-ivory border border-themeborder rounded-lg text-darkgreen">
                     📍 <strong>{sa.city}</strong> {sa.areas?.length > 0 ? `(${sa.areas.join(', ')})` : ''}
                   </span>
                 ))}
@@ -499,32 +499,32 @@ export const AdminProvidersPage = () => {
 
             {/* Verification Documents Audit List */}
             <div>
-              <h4 className="text-xs font-bold text-slate-600 uppercase mb-2 flex items-center gap-1.5">
-                <FileCheck className="w-3.5 h-3.5 text-blue-600" /> Attached Documents & Licenses ({selectedProvider.documents?.length || 0})
+              <h4 className="text-xs font-bold text-darkgreen uppercase mb-2 flex items-center gap-1.5">
+                <FileCheck className="w-3.5 h-3.5 text-forest" /> Attached Documents & Licenses ({selectedProvider.documents?.length || 0})
               </h4>
               {(!selectedProvider.documents || selectedProvider.documents.length === 0) ? (
-                <p className="text-xs text-slate-400 italic">No verification documents provided by this provider.</p>
+                <p className="text-xs text-darkgreen-muted italic">No verification documents provided by this provider.</p>
               ) : (
                 <div className="space-y-2">
                   {selectedProvider.documents.map((doc, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3 rounded-lg border border-slate-200 bg-white">
+                    <div key={idx} className="flex items-center justify-between p-3 rounded-lg border border-themeborder bg-white">
                       <div>
-                        <span className="text-[10px] uppercase font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] uppercase font-bold text-forest-deep bg-palesage px-1.5 py-0.5 rounded border border-sage/40">
                           {doc.type}
                         </span>
-                        <p className="text-xs font-semibold text-slate-900 mt-1">{doc.name}</p>
+                        <p className="text-xs font-semibold text-darkgreen mt-1">{doc.name}</p>
                       </div>
                       {doc.url ? (
                         <a
                           href={doc.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                          className="inline-flex items-center gap-1 text-xs text-forest hover:text-forest-deep font-medium"
                         >
                           Audit Document <ExternalLink className="w-3 h-3" />
                         </a>
                       ) : (
-                        <span className="text-xs text-slate-400">No link</span>
+                        <span className="text-xs text-darkgreen-muted">No link</span>
                       )}
                     </div>
                   ))}
@@ -535,14 +535,14 @@ export const AdminProvidersPage = () => {
             {/* Existing Verification Notes */}
             {selectedProvider.verificationNotes && (
               <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs">
-                <span className="font-bold text-amber-900 uppercase">Existing Audit Notes</span>
+                <span className="font-bold text-status-warning uppercase">Existing Audit Notes</span>
                 <p className="text-amber-800 mt-0.5 whitespace-pre-line">{selectedProvider.verificationNotes}</p>
               </div>
             )}
 
             {/* State-Machine Verification Action Panel */}
-            <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/40 space-y-4">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <div className="p-4 rounded-xl border border-sage bg-palesage/40 space-y-4">
+              <h4 className="text-xs font-bold text-darkgreen uppercase tracking-wider">
                 Audit Decision & Status Transition
               </h4>
 
@@ -555,7 +555,7 @@ export const AdminProvidersPage = () => {
                       key={idx}
                       size="sm"
                       variant={isSelected ? btn.variant : 'outline'}
-                      className={isSelected ? 'ring-2 ring-blue-500 font-semibold' : ''}
+                      className={isSelected ? 'ring-2 ring-forest font-semibold' : ''}
                       onClick={() => {
                         setAuditAction(btn);
                         setActionError(null);
@@ -571,12 +571,12 @@ export const AdminProvidersPage = () => {
               {auditAction && (
                 <div className="space-y-3 pt-2">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Verification Notes / Reason {auditAction.requiresNotes ? <span className="text-red-500">* (Mandatory)</span> : '(Optional)'}
+                    <label className="block text-xs font-semibold text-darkgreen mb-1">
+                      Verification Notes / Reason {auditAction.requiresNotes ? <span className="text-status-error">* (Mandatory)</span> : '(Optional)'}
                     </label>
                     <textarea
                       rows={3}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full px-3 py-2 border border-themeborder rounded-lg text-xs focus:ring-2 focus:ring-forest bg-white text-darkgreen"
                       placeholder={`Provide detailed feedback or reason for this audit action (${auditAction.label})...`}
                       value={actionNotes}
                       onChange={(e) => setActionNotes(e.target.value)}

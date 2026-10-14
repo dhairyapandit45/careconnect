@@ -62,22 +62,22 @@ export const RegisterPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-ivory flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-500/30">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-forest text-white shadow-sm shadow-forest/20">
             <Wrench className="h-6 w-6" />
           </div>
         </div>
-        <h2 className="mt-4 text-center text-2xl font-bold tracking-tight text-slate-900">
+        <h2 className="mt-4 text-center text-2xl font-bold tracking-tight text-darkgreen">
           Create an Account
         </h2>
-        <p className="mt-1 text-center text-sm text-slate-500">
+        <p className="mt-1 text-center text-sm text-darkgreen-muted">
           Join CareConnect Home Services Platform
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
+      <div className="mt-8 w-full max-w-md mx-auto px-4">
         <Card>
           <CardContent>
             {(formError || error) && (
@@ -143,9 +143,9 @@ export const RegisterPage = () => {
               </Button>
             </form>
 
-            <p className="mt-6 text-center text-xs text-slate-500">
+            <p className="mt-6 text-center text-xs text-darkgreen-muted">
               Already have an account?{' '}
-              <Link to="/login" className="font-medium text-blue-600 hover:underline">
+              <Link to="/login" className="font-medium text-forest hover:text-forest-deep hover:underline">
                 Sign in
               </Link>
             </p>

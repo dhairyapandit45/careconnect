@@ -70,8 +70,8 @@ export const ProviderRequests = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Available Service Requests</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-darkgreen">Available Service Requests</h1>
+          <p className="text-sm text-darkgreen-muted mt-1">
             Open jobs matched directly to your verified trade categories and service cities.
           </p>
         </div>
@@ -88,9 +88,9 @@ export const ProviderRequests = () => {
       </div>
 
       {/* Trust & Privacy Notice */}
-      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start gap-3">
-        <ShieldCheck className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-        <div className="text-xs text-emerald-900 leading-relaxed">
+      <div className="bg-palesage/50 border border-sage/40 rounded-xl p-4 flex items-start gap-3">
+        <ShieldCheck className="h-5 w-5 text-forest flex-shrink-0 mt-0.5" />
+        <div className="text-xs text-forest-deep leading-relaxed">
           <strong>Privacy Protected Job Feed:</strong> Customer street addresses and contact information
           are withheld during discovery. Exact location details and access instructions are securely
           released only after a customer accepts your submitted quote.
@@ -106,9 +106,9 @@ export const ProviderRequests = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
           />
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400 pointer-events-none" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-darkgreen-muted pointer-events-none" />
         </div>
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-darkgreen-muted">
           Showing {filteredRequests.length} of {pagination.total} opportunities
         </span>
       </div>
@@ -142,7 +142,7 @@ export const ProviderRequests = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredRequests.map((req) => (
-            <Card key={req._id} className="hover:border-primary-200 transition-all flex flex-col justify-between">
+            <Card key={req._id} className="hover:border-sage transition-all flex flex-col justify-between">
               <CardContent className="p-5 space-y-4">
                 {/* Header Row */}
                 <div className="flex items-start justify-between gap-2">
@@ -150,7 +150,7 @@ export const ProviderRequests = () => {
                     <Badge variant="primary" size="sm" className="mb-2">
                       {req.category?.name || 'Home Service'}
                     </Badge>
-                    <h3 className="font-semibold text-slate-900 text-base leading-snug line-clamp-1">
+                    <h3 className="font-semibold text-darkgreen text-base leading-snug line-clamp-1">
                       {req.title}
                     </h3>
                   </div>
@@ -160,31 +160,31 @@ export const ProviderRequests = () => {
                 </div>
 
                 {/* Description */}
-                <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+                <p className="text-xs text-darkgreen/85 line-clamp-3 leading-relaxed">
                   {req.description}
                 </p>
 
                 {/* Logistics details */}
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs text-slate-600">
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-themeborder text-xs text-darkgreen-muted">
                   <div className="flex items-center gap-1.5">
-                    <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                    <MapPin className="h-3.5 w-3.5 text-darkgreen-muted" />
                     <span>{req.location?.city || 'Local City'}, {req.location?.state || 'CA'}</span>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                    <Calendar className="h-3.5 w-3.5 text-darkgreen-muted" />
                     <span>{new Date(req.preferredDate).toLocaleDateString()}</span>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-slate-400" />
+                    <Clock className="h-3.5 w-3.5 text-darkgreen-muted" />
                     <span>
                       {req.preferredTime?.start || '09:00'} – {req.preferredTime?.end || '17:00'}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <FileText className="h-3.5 w-3.5 text-slate-400" />
+                    <FileText className="h-3.5 w-3.5 text-darkgreen-muted" />
                     <span>
                       {req.quoteCount || 0} {req.quoteCount === 1 ? 'quote received' : 'quotes received'}
                     </span>
@@ -197,9 +197,9 @@ export const ProviderRequests = () => {
                     {req.requiredSkills.map((skill, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600"
+                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-palesage/60 text-darkgreen border border-sage/30"
                       >
-                        <Tag className="h-2.5 w-2.5 mr-1" />
+                        <Tag className="h-2.5 w-2.5 mr-1 text-darkgreen-muted" />
                         {skill}
                       </span>
                     ))}
@@ -208,8 +208,8 @@ export const ProviderRequests = () => {
               </CardContent>
 
               {/* Action Footer */}
-              <div className="p-4 bg-slate-50/60 border-t border-slate-100 rounded-b-2xl flex items-center justify-between">
-                <span className="text-xs text-slate-400">
+              <div className="p-4 bg-ivory/60 border-t border-themeborder rounded-b-2xl flex items-center justify-between">
+                <span className="text-xs text-darkgreen-muted">
                   Posted {new Date(req.createdAt).toLocaleDateString()}
                 </span>
                 <Link to={`/provider/requests/${req._id}/quote`}>
@@ -225,8 +225,8 @@ export const ProviderRequests = () => {
 
       {/* Pagination Footer */}
       {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-slate-200 pt-4">
-          <span className="text-xs text-slate-500">
+        <div className="flex items-center justify-between border-t border-themeborder pt-4">
+          <span className="text-xs text-darkgreen-muted">
             Page {pagination.page} of {pagination.totalPages}
           </span>
           <div className="flex gap-2">

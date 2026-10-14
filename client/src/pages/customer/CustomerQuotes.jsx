@@ -73,8 +73,8 @@ export const CustomerQuotes = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Received Quotes & Estimates</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-darkgreen">Received Quotes & Estimates</h1>
+          <p className="text-sm text-darkgreen-muted mt-1">
             Compare proposals submitted by verified local service professionals for your requests.
           </p>
         </div>
@@ -124,7 +124,7 @@ export const CustomerQuotes = () => {
             />
             <CardContent className="p-0">
               {requestsWithQuotes.length === 0 ? (
-                <div className="p-8 text-center text-slate-500 text-xs">
+                <div className="p-8 text-center text-darkgreen-muted text-xs">
                   No quotes received yet for your active requests. Providers are notified and will quote soon.
                 </div>
               ) : (
@@ -142,8 +142,8 @@ export const CustomerQuotes = () => {
                     {requestsWithQuotes.map((req) => (
                       <TableRow key={req._id}>
                         <TableCell>
-                          <div className="font-semibold text-slate-900">{req.title}</div>
-                          <div className="text-xs text-slate-500">
+                          <div className="font-semibold text-darkgreen">{req.title}</div>
+                          <div className="text-xs text-darkgreen-muted">
                             {req.category?.name || 'General Service'} • {req.location?.city}
                           </div>
                         </TableCell>
@@ -160,7 +160,7 @@ export const CustomerQuotes = () => {
                           </Badge>
                         </TableCell>
 
-                        <TableCell className="text-xs text-slate-600">
+                        <TableCell className="text-xs text-darkgreen-muted">
                           {new Date(req.preferredDate).toLocaleDateString()}
                         </TableCell>
 
@@ -201,18 +201,18 @@ export const CustomerQuotes = () => {
                     {otherRequests.map((req) => (
                       <TableRow key={req._id}>
                         <TableCell>
-                          <div className="font-semibold text-slate-900">{req.title}</div>
-                          <div className="text-xs text-slate-500">{req.category?.name}</div>
+                          <div className="font-semibold text-darkgreen">{req.title}</div>
+                          <div className="text-xs text-darkgreen-muted">{req.category?.name}</div>
                         </TableCell>
                         <TableCell>
                           <Badge variant={statusBadgeVariants[req.status] || 'default'}>
                             {req.status}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-xs text-slate-600">
+                        <TableCell className="text-xs text-darkgreen-muted">
                           {req.location?.city}
                         </TableCell>
-                        <TableCell className="text-xs text-slate-500">
+                        <TableCell className="text-xs text-darkgreen-muted">
                           {new Date(req.createdAt).toLocaleDateString()}
                         </TableCell>
                         <TableCell className="text-right">

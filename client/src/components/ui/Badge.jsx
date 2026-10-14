@@ -5,12 +5,16 @@
 import React from 'react';
 
 const badgeVariants = {
-  default: 'bg-slate-100 text-slate-700 border-slate-200',
-  primary: 'bg-blue-50 text-blue-700 border-blue-200',
-  success: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  warning: 'bg-amber-50 text-amber-700 border-amber-200',
-  danger: 'bg-rose-50 text-rose-700 border-rose-200',
-  purple: 'bg-purple-50 text-purple-700 border-purple-200',
+  default: 'bg-ivory text-darkgreen-muted border-themeborder',
+  primary: 'bg-palesage text-forest-deep border-sage',
+  success: 'bg-[#EAF5EE] text-emerald-700 border-[#BCE2C9]',
+  warning: 'bg-[#FEF3C7] text-status-warning border-[#FDE68A]',
+  danger: 'bg-[#FEE4E2] text-status-error border-[#FECDCA]',
+  info: 'bg-[#E0F2FE] text-status-info border-[#BAE6FD]',
+  purple: 'bg-[#F3E8FF] text-purple-700 border-purple-200',
+  indigo: 'bg-palesage text-forest-deep border-sage',
+  secondary: 'bg-ivory text-darkgreen border-themeborder',
+  outline: 'bg-white text-darkgreen border-themeborder',
 };
 
 export const Badge = ({ children, variant = 'default', size = 'md', className = '' }) => {

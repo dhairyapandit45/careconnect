@@ -5,11 +5,11 @@
 import React from 'react';
 
 const variants = {
-  primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500 shadow-sm',
-  secondary: 'bg-slate-800 hover:bg-slate-900 text-white focus:ring-slate-700 shadow-sm',
-  outline: 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-blue-500',
-  danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 shadow-sm',
-  ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus:ring-slate-400',
+  primary: 'bg-forest hover:bg-forest-deep text-white focus:ring-forest shadow-xs active:bg-forest-deep',
+  secondary: 'bg-darkgreen hover:bg-[#173025] text-white focus:ring-darkgreen shadow-xs',
+  outline: 'border border-themeborder bg-white text-darkgreen hover:bg-ivory focus:ring-forest',
+  danger: 'bg-status-error hover:bg-[#911b12] text-white focus:ring-status-error shadow-xs',
+  ghost: 'text-darkgreen-muted hover:bg-palesage hover:text-darkgreen focus:ring-sage',
 };
 
 const sizes = {

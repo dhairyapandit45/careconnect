@@ -219,7 +219,7 @@ export const ProviderProfile = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
         <LoadingSpinner size="lg" />
-        <p className="text-sm font-medium text-slate-600">Loading business profile...</p>
+        <p className="text-sm font-medium text-darkgreen-muted">Loading business profile...</p>
       </div>
     );
   }
@@ -228,12 +228,12 @@ export const ProviderProfile = () => {
   if (!profile) {
     return (
       <div className="max-w-2xl mx-auto py-12 text-center space-y-6">
-        <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+        <div className="w-16 h-16 bg-palesage text-forest rounded-2xl flex items-center justify-center mx-auto shadow-sm">
           <Building2 className="w-8 h-8" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Complete Your Provider Onboarding</h2>
-          <p className="text-slate-500 mt-2 text-sm max-w-md mx-auto">
+          <h2 className="text-2xl font-bold text-darkgreen">Complete Your Provider Onboarding</h2>
+          <p className="text-darkgreen-muted mt-2 text-sm max-w-md mx-auto">
             You haven&apos;t set up your service business profile yet. Complete the onboarding wizard to list your categories, skills, and verification documents.
           </p>
         </div>
@@ -254,26 +254,26 @@ export const ProviderProfile = () => {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Feedback Banner */}
       {feedback.error && (
-        <div className="p-4 rounded-lg bg-red-50 border border-red-200 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-lg bg-[#FDF2F2] border border-[#F8D0D0] flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-[#B42318] shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h4 className="text-sm font-semibold text-red-900">Error</h4>
-            <p className="text-xs text-red-700 mt-0.5">{feedback.error}</p>
+            <h4 className="text-sm font-semibold text-[#B42318]">Error</h4>
+            <p className="text-xs text-[#B42318] mt-0.5">{feedback.error}</p>
           </div>
           <button type="button" onClick={() => setFeedback({ ...feedback, error: null })}>
-            <X className="w-4 h-4 text-red-600 hover:text-red-800" />
+            <X className="w-4 h-4 text-[#B42318] hover:opacity-80" />
           </button>
         </div>
       )}
 
       {feedback.success && (
-        <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 flex items-start gap-3">
-          <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-lg bg-[#EAF5EE] border border-[#BCE2C9] flex items-start gap-3">
+          <CheckCircle className="w-5 h-5 text-[#276749] shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-xs font-semibold text-emerald-900">{feedback.success}</p>
+            <p className="text-xs font-semibold text-[#276749]">{feedback.success}</p>
           </div>
           <button type="button" onClick={() => setFeedback({ ...feedback, success: null })}>
-            <X className="w-4 h-4 text-emerald-600 hover:text-emerald-800" />
+            <X className="w-4 h-4 text-[#276749] hover:opacity-80" />
           </button>
         </div>
       )}
@@ -282,23 +282,23 @@ export const ProviderProfile = () => {
       {profile.verificationNotes && (
         <div className={`p-4 rounded-xl border flex items-start gap-3.5 ${
           profile.verificationStatus === 'REJECTED'
-            ? 'bg-red-50 border-red-200'
+            ? 'bg-[#FDF2F2] border-[#F8D0D0]'
             : profile.verificationStatus === 'UNDER_REVIEW'
-            ? 'bg-amber-50 border-amber-200'
-            : 'bg-slate-50 border-slate-200'
+            ? 'bg-[#FFFBEB] border-[#FEE685]'
+            : 'bg-ivory border-themeborder'
         }`}>
           <AlertTriangle className={`w-5 h-5 shrink-0 mt-0.5 ${
-            profile.verificationStatus === 'REJECTED' ? 'text-red-600' : 'text-amber-600'
+            profile.verificationStatus === 'REJECTED' ? 'text-[#B42318]' : 'text-[#92400E]'
           }`} />
           <div>
-            <h4 className="text-sm font-bold text-slate-900">
+            <h4 className="text-sm font-bold text-darkgreen">
               Platform Admin Feedback / Notes
             </h4>
-            <p className="text-xs text-slate-700 mt-1 whitespace-pre-line">
+            <p className="text-xs text-darkgreen-muted mt-1 whitespace-pre-line">
               {profile.verificationNotes}
             </p>
             {profile.verificationStatus === 'REJECTED' && (
-              <p className="text-xs font-medium text-red-700 mt-2">
+              <p className="text-xs font-medium text-[#B42318] mt-2">
                 Please update the required credentials below or via the onboarding wizard to request a re-review.
               </p>
             )}
@@ -311,12 +311,12 @@ export const ProviderProfile = () => {
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-bold text-2xl shadow-md shrink-0">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-forest to-forest-deep text-white flex items-center justify-center font-bold text-2xl shadow-md shrink-0">
                 {(profile.businessName || profile.user?.name || 'P').charAt(0).toUpperCase()}
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <h1 className="text-2xl font-bold text-slate-900">
+                  <h1 className="text-2xl font-bold text-darkgreen">
                     {profile.businessName || 'Business Profile'}
                   </h1>
                   <Badge variant={badgeConfig.variant} size="md" className="flex items-center gap-1.5 py-1 px-2.5">
@@ -324,13 +324,13 @@ export const ProviderProfile = () => {
                     {badgeConfig.text}
                   </Badge>
                 </div>
-                <p className="text-sm text-slate-500 mt-1">
-                  Owner: <span className="text-slate-800 font-medium">{profile.user?.name}</span> ({profile.user?.email})
+                <p className="text-sm text-darkgreen-muted mt-1">
+                  Owner: <span className="text-darkgreen font-semibold">{profile.user?.name}</span> ({profile.user?.email})
                 </p>
-                <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
-                  <span>Rating: <strong className="text-slate-700">{profile.rating > 0 ? profile.rating.toFixed(1) : 'New'}</strong> ({profile.reviewCount} reviews)</span>
+                <div className="flex items-center gap-4 mt-2 text-xs text-darkgreen-muted">
+                  <span>Rating: <strong className="text-darkgreen">{profile.rating > 0 ? profile.rating.toFixed(1) : 'New'}</strong> ({profile.reviewCount} reviews)</span>
                   <span>•</span>
-                  <span>Experience: <strong className="text-slate-700">{profile.experienceYears} Years</strong></span>
+                  <span>Experience: <strong className="text-darkgreen">{profile.experienceYears} Years</strong></span>
                 </div>
               </div>
             </div>
@@ -342,19 +342,19 @@ export const ProviderProfile = () => {
                 onClick={handleToggleAvailability}
                 className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                   profile.isAvailable
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
-                    : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'
+                    ? 'bg-[#EAF5EE] border-[#BCE2C9] text-[#276749] hover:bg-[#DDF0E3]'
+                    : 'bg-ivory border-themeborder text-darkgreen-muted hover:bg-palesage/40'
                 }`}
                 title="Toggle dispatch availability"
               >
                 {profile.isAvailable ? (
                   <>
-                    <ToggleRight className="w-4 h-4 text-emerald-600" />
+                    <ToggleRight className="w-4 h-4 text-[#276749]" />
                     <span>Available for Jobs</span>
                   </>
                 ) : (
                   <>
-                    <ToggleLeft className="w-4 h-4 text-slate-400" />
+                    <ToggleLeft className="w-4 h-4 text-darkgreen-muted/60" />
                     <span>Offline / Unavailable</span>
                   </>
                 )}
@@ -384,15 +384,15 @@ export const ProviderProfile = () => {
           </div>
 
           {/* Profile completeness progress */}
-          <div className="mt-6 pt-5 border-t border-slate-100">
+          <div className="mt-6 pt-5 border-t border-themeborder">
             <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="font-semibold text-slate-700">Profile Completeness</span>
-              <span className="font-bold text-blue-600">{completeness}%</span>
+              <span className="font-semibold text-darkgreen">Profile Completeness</span>
+              <span className="font-bold text-forest">{completeness}%</span>
             </div>
-            <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-palesage/50 rounded-full h-2 overflow-hidden">
               <div
                 className={`h-2 rounded-full transition-all duration-500 ${
-                  completeness >= 80 ? 'bg-emerald-500' : completeness >= 50 ? 'bg-blue-600' : 'bg-amber-500'
+                  completeness >= 80 ? 'bg-forest' : completeness >= 50 ? 'bg-sage' : 'bg-[#92400E]'
                 }`}
                 style={{ width: `${completeness}%` }}
               />
@@ -427,21 +427,21 @@ export const ProviderProfile = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Business Description</label>
+              <label className="block text-sm font-medium text-darkgreen mb-1">Business Description</label>
               <textarea
                 rows={4}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-themeborder rounded-lg text-sm bg-white text-darkgreen focus:ring-2 focus:ring-forest focus:border-forest"
                 value={editForm.description}
                 onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
               />
             </div>
 
             {/* Pricing */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-ivory border border-themeborder">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Pricing Model</label>
+                <label className="block text-xs font-semibold text-darkgreen mb-1">Pricing Model</label>
                 <select
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs bg-white"
+                  className="w-full px-3 py-2 border border-themeborder rounded-lg text-xs bg-white text-darkgreen focus:ring-2 focus:ring-forest focus:border-forest"
                   value={editForm.pricing.model}
                   onChange={(e) =>
                     setEditForm({
@@ -482,12 +482,12 @@ export const ProviderProfile = () => {
 
             {/* Skills Edit */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Trade Skills</label>
+              <label className="block text-sm font-semibold text-darkgreen mb-1.5">Trade Skills</label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {editForm.skills.map((skill) => (
                   <Badge key={skill} variant="primary" className="flex items-center gap-1.5">
                     {skill}
-                    <button type="button" onClick={() => handleRemoveSkill(skill)} className="hover:text-red-700 ml-1">
+                    <button type="button" onClick={() => handleRemoveSkill(skill)} className="hover:text-[#B42318] ml-1">
                       ×
                     </button>
                   </Badge>
@@ -513,12 +513,12 @@ export const ProviderProfile = () => {
 
             {/* Service Areas Edit */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Service Coverage Cities</label>
+              <label className="block text-sm font-semibold text-darkgreen mb-1.5">Service Coverage Cities</label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {editForm.serviceAreas.map((sa, idx) => (
                   <Badge key={idx} variant="secondary" className="flex items-center gap-1.5">
                     📍 {sa.city}
-                    <button type="button" onClick={() => handleRemoveCity(idx)} className="hover:text-red-700 ml-1">
+                    <button type="button" onClick={() => handleRemoveCity(idx)} className="hover:text-[#B42318] ml-1">
                       ×
                     </button>
                   </Badge>
@@ -551,7 +551,7 @@ export const ProviderProfile = () => {
             <Card>
               <CardHeader title="About the Business" />
               <CardContent>
-                <p className="text-sm text-slate-700 whitespace-pre-line leading-relaxed">
+                <p className="text-sm text-darkgreen whitespace-pre-line leading-relaxed">
                   {profile.description || 'No business description provided yet.'}
                 </p>
               </CardContent>
@@ -562,8 +562,8 @@ export const ProviderProfile = () => {
               <CardHeader title="Services & Capabilities" />
               <CardContent className="space-y-5">
                 <div>
-                  <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    <Layers className="w-4 h-4 text-blue-600" />
+                  <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-darkgreen-muted uppercase tracking-wider">
+                    <Layers className="w-4 h-4 text-forest" />
                     <span>Active Categories ({profile.serviceCategories?.length || 0})</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -579,8 +579,8 @@ export const ProviderProfile = () => {
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    <Wrench className="w-4 h-4 text-indigo-600" />
+                  <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-darkgreen-muted uppercase tracking-wider">
+                    <Wrench className="w-4 h-4 text-forest" />
                     <span>Skills & Trade Disciplines ({profile.skills?.length || 0})</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -602,21 +602,21 @@ export const ProviderProfile = () => {
               />
               <CardContent>
                 {(!profile.documents || profile.documents.length === 0) ? (
-                  <p className="text-xs text-slate-500">No credentials or documents attached.</p>
+                  <p className="text-xs text-darkgreen-muted">No credentials or documents attached.</p>
                 ) : (
                   <div className="space-y-3">
                     {profile.documents.map((doc, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-3.5 rounded-lg border border-slate-200 bg-slate-50/50"
+                        className="flex items-center justify-between p-3.5 rounded-lg border border-themeborder bg-ivory/50"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                          <div className="p-2 bg-palesage text-forest rounded-lg">
                             <Award className="w-4 h-4" />
                           </div>
                           <div>
-                            <p className="text-xs font-semibold text-slate-900">{doc.name}</p>
-                            <p className="text-[11px] text-slate-500 uppercase mt-0.5">{doc.type}</p>
+                            <p className="text-xs font-semibold text-darkgreen">{doc.name}</p>
+                            <p className="text-[11px] text-darkgreen-muted uppercase mt-0.5">{doc.type}</p>
                           </div>
                         </div>
                         {doc.url && (
@@ -624,7 +624,7 @@ export const ProviderProfile = () => {
                             href={doc.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                            className="inline-flex items-center gap-1 text-xs text-forest hover:text-forest-deep font-medium"
                           >
                             View Link <ExternalLink className="w-3 h-3" />
                           </a>
@@ -643,17 +643,17 @@ export const ProviderProfile = () => {
             <Card>
               <CardHeader title="Pricing Rates" />
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                  <span className="text-xs text-slate-500">Billing Model</span>
+                <div className="flex items-center justify-between pb-2 border-b border-themeborder">
+                  <span className="text-xs text-darkgreen-muted">Billing Model</span>
                   <Badge variant="outline">{profile.pricing?.model || 'HOURLY'}</Badge>
                 </div>
-                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                  <span className="text-xs text-slate-500">Hourly Rate</span>
-                  <span className="text-sm font-bold text-slate-900">₹{profile.pricing?.hourlyRate || profile.hourlyRate || 0}/hr</span>
+                <div className="flex items-center justify-between pb-2 border-b border-themeborder">
+                  <span className="text-xs text-darkgreen-muted">Hourly Rate</span>
+                  <span className="text-sm font-bold text-darkgreen">₹{profile.pricing?.hourlyRate || profile.hourlyRate || 0}/hr</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500">Minimum Visit Fee</span>
-                  <span className="text-sm font-bold text-slate-900">₹{profile.pricing?.minimumCharge || 0}</span>
+                  <span className="text-xs text-darkgreen-muted">Minimum Visit Fee</span>
+                  <span className="text-sm font-bold text-darkgreen">₹{profile.pricing?.minimumCharge || 0}</span>
                 </div>
               </CardContent>
             </Card>
@@ -663,18 +663,18 @@ export const ProviderProfile = () => {
               <CardHeader title="Coverage Areas" />
               <CardContent className="space-y-3">
                 {(!profile.serviceAreas || profile.serviceAreas.length === 0) ? (
-                  <p className="text-xs text-slate-500">No coverage cities listed.</p>
+                  <p className="text-xs text-darkgreen-muted">No coverage cities listed.</p>
                 ) : (
                   profile.serviceAreas.map((sa, idx) => (
-                    <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-100">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
-                        <MapPin className="w-3.5 h-3.5 text-blue-600" />
+                    <div key={idx} className="p-3 rounded-lg bg-ivory border border-themeborder">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-darkgreen">
+                        <MapPin className="w-3.5 h-3.5 text-forest" />
                         <span>{sa.city}</span>
                       </div>
                       {sa.areas && sa.areas.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2">
                           {sa.areas.map((tag, tagIdx) => (
-                            <span key={tagIdx} className="text-[10px] bg-white border border-slate-200 px-1.5 py-0.5 rounded text-slate-600">
+                            <span key={tagIdx} className="text-[10px] bg-white border border-themeborder px-1.5 py-0.5 rounded text-darkgreen">
                               {tag}
                             </span>
                           ))}
@@ -687,9 +687,9 @@ export const ProviderProfile = () => {
             </Card>
 
             {/* Verification Security Note */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1.5">
-              <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-blue-600" />
+            <div className="p-4 rounded-xl bg-ivory border border-themeborder text-xs text-darkgreen-muted space-y-1.5">
+              <span className="font-bold text-darkgreen flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-forest" />
                 Trust & Verification Guard
               </span>
               <p>
