@@ -30,6 +30,7 @@ vi.mock('../services/serviceRequest.service', () => ({
     createServiceRequest: vi.fn(),
     getServiceRequests: vi.fn(),
     getServiceRequestById: vi.fn(),
+    cancelServiceRequest: vi.fn(),
   },
 }));
 
@@ -243,6 +244,71 @@ describe('Milestone 3: Service Categories & Customer Request Workflow Frontend',
       expect(screen.getByText('Springfield, IL')).toBeInTheDocument();
       expect(screen.getByText('Plumbing Services')).toBeInTheDocument();
       expect(screen.getByText(/request submitted/i)).toBeInTheDocument();
+    });
+  });
+
+  // 5. Cancel request modal and workflow
+  it('5. should open cancellation modal on RequestDetailPage and call cancelServiceRequest with reason', async () => {
+    serviceRequestService.getServiceRequestById.mockResolvedValue({
+      data: { request: mockServiceRequests[0] },
+    });
+    serviceRequestService.cancelServiceRequest.mockResolvedValue({
+      data: { request: { ...mockServiceRequests[0], status: 'CANCELLED' } },
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/customer/requests/req-12345678']}>
+        <Routes>
+          <Route path="/customer/requests/:id" element={<RequestDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /cancel request/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /cancel request/i }));
+
+    expect(screen.getByText('Cancel Service Request')).toBeInTheDocument();
+
+    const reasonInput = screen.getByPlaceholderText(/please explain why you need to cancel/i);
+    fireEvent.change(reasonInput, { target: { value: 'Resolved by another local contractor' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /confirm cancellation/i }));
+
+    await waitFor(() => {
+      expect(serviceRequestService.cancelServiceRequest).toHaveBeenCalledWith(
+        'req-12345678',
+        { reason: 'Resolved by another local contractor' }
+      );
+    });
+  });
+
+  // 6. Cancelled filter tab on CustomerRequests
+  it('6. should render Cancelled filter tab and filter cancelled requests on CustomerRequests', async () => {
+    serviceRequestService.getServiceRequests.mockResolvedValue({
+      data: {
+        items: [{ ...mockServiceRequests[0], status: 'CANCELLED' }],
+        pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+      },
+    });
+
+    render(
+      <MemoryRouter>
+        <CustomerRequests />
+      </MemoryRouter>
+    );
+
+    const cancelledTab = screen.getByRole('button', { name: /cancelled/i });
+    expect(cancelledTab).toBeInTheDocument();
+
+    fireEvent.click(cancelledTab);
+
+    await waitFor(() => {
+      expect(serviceRequestService.getServiceRequests).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'CANCELLED' })
+      );
     });
   });
 });

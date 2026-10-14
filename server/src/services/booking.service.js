@@ -11,10 +11,12 @@ const Quote = require('../models/Quote');
 const User = require('../models/User');
 const ProviderProfile = require('../models/ProviderProfile');
 const Availability = require('../models/Availability');
+const Job = require('../models/Job');
 const {
   BOOKING_STATUS,
   SERVICE_REQUEST_STATUS,
   QUOTE_STATUS,
+  JOB_STATUS,
   USER_STATUS,
   PROVIDER_VERIFICATION_STATUS,
   VALID_BOOKING_TRANSITIONS,
@@ -33,6 +35,18 @@ const DAY_NAMES = [
   DAYS_OF_WEEK.FRIDAY,
   DAYS_OF_WEEK.SATURDAY,
 ];
+
+/**
+ * Checks whether the active MongoDB connection supports multi-document transactions
+ */
+const isReplicaSet = () => {
+  try {
+    const type = mongoose.connection.client?.topology?.description?.type;
+    return type === 'ReplicaSetWithPrimary' || type === 'Sharded';
+  } catch {
+    return false;
+  }
+};
 
 /**
  * Validates that requested appointment schedule completely fits inside provider's active shift
@@ -75,29 +89,36 @@ const validateProviderAvailability = async (providerId, startDate, endDate) => {
     throw ApiError.badRequest('Provider is unavailable or has blocked appointments on the requested date');
   }
 
-  // Find active shifts for the provider on this day of week
-  const shifts = await Availability.find({
+  // If provider has configured active shifts, enforce them strictly
+  const totalConfiguredShifts = await Availability.countDocuments({
     provider: providerId,
-    dayOfWeek,
-    isAvailable: true,
     isBlocked: { $ne: true },
   });
 
-  if (shifts.length === 0) {
-    throw ApiError.badRequest(
-      `Provider does not have active working availability configured for ${dayOfWeek}`
-    );
-  }
+  if (totalConfiguredShifts > 0) {
+    const shifts = await Availability.find({
+      provider: providerId,
+      dayOfWeek,
+      isAvailable: true,
+      isBlocked: { $ne: true },
+    });
 
-  // The requested interval must fit completely within at least one active shift
-  const fitsWithinShift = shifts.some(
-    (shift) => shift.startTime <= reqStart && shift.endTime >= reqEnd
-  );
+    if (shifts.length === 0) {
+      throw ApiError.badRequest(
+        `Provider does not have active working availability configured for ${dayOfWeek}`
+      );
+    }
 
-  if (!fitsWithinShift) {
-    throw ApiError.badRequest(
-      'Requested booking time is outside the provider\'s active working availability'
+    // The requested interval must fit completely within at least one active shift
+    const fitsWithinShift = shifts.some(
+      (shift) => shift.startTime <= reqStart && shift.endTime >= reqEnd
     );
+
+    if (!fitsWithinShift) {
+      throw ApiError.badRequest(
+        'Requested booking time is outside the provider\'s active working availability'
+      );
+    }
   }
 
   return true;
@@ -158,23 +179,8 @@ const createBookingFromQuote = async (
   customerUser,
   requestId,
   quoteId,
-  scheduleData
+  scheduleData = {}
 ) => {
-  const startDate = new Date(scheduleData.scheduledStart);
-  const endDate = new Date(scheduleData.scheduledEnd);
-
-  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-    throw ApiError.unprocessableEntity('Invalid schedule dates provided');
-  }
-
-  if (startDate.getTime() <= Date.now()) {
-    throw ApiError.unprocessableEntity('Booking scheduledStart must be in the future');
-  }
-
-  if (startDate >= endDate) {
-    throw ApiError.unprocessableEntity('scheduledEnd must be after scheduledStart');
-  }
-
   // 1. Verify ServiceRequest
   const serviceRequest = await ServiceRequest.findById(requestId);
   if (!serviceRequest) {
@@ -185,9 +191,24 @@ const createBookingFromQuote = async (
     throw ApiError.forbidden('Access denied: You do not own this service request');
   }
 
+  // Idempotency: If an active confirmed booking already exists for this request/customer, return it
+  const existingBooking = await Booking.findOne({
+    serviceRequest: serviceRequest._id,
+    customer: customerUser._id,
+    status: { $ne: BOOKING_STATUS.CANCELLED },
+  })
+    .populate('serviceRequest')
+    .populate('provider')
+    .populate('providerProfile')
+    .populate('quote');
+
+  if (existingBooking) {
+    const quote = (await Quote.findById(quoteId)) || existingBooking.quote;
+    return { booking: existingBooking, quote, serviceRequest };
+  }
+
   if (
     [
-      SERVICE_REQUEST_STATUS.BOOKED,
       SERVICE_REQUEST_STATUS.COMPLETED,
       SERVICE_REQUEST_STATUS.CANCELLED,
     ].includes(serviceRequest.status)
@@ -203,14 +224,59 @@ const createBookingFromQuote = async (
     throw ApiError.notFound('Quote not found for this service request');
   }
 
-  if (![QUOTE_STATUS.SUBMITTED, QUOTE_STATUS.VIEWED].includes(quote.status)) {
+  if (![QUOTE_STATUS.SUBMITTED, QUOTE_STATUS.VIEWED, QUOTE_STATUS.ACCEPTED].includes(quote.status)) {
     throw ApiError.badRequest(
       `Cannot accept quote: Quote is not in an active state (current status: "${quote.status}")`
     );
   }
 
-  if (quote.validUntil && new Date(quote.validUntil).getTime() <= Date.now()) {
+  if (
+    quote.validUntil &&
+    new Date(quote.validUntil).getTime() <= Date.now() &&
+    quote.status !== QUOTE_STATUS.ACCEPTED
+  ) {
     throw ApiError.badRequest('Quote has expired and can no longer be accepted');
+  }
+
+  // 3. Resolve Schedule Dates (explicit or derived fallback)
+  let startDate;
+  let endDate;
+
+  if (scheduleData && scheduleData.scheduledStart && scheduleData.scheduledEnd) {
+    startDate = new Date(scheduleData.scheduledStart);
+    endDate = new Date(scheduleData.scheduledEnd);
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      throw ApiError.unprocessableEntity('Invalid schedule dates provided');
+    }
+
+    if (startDate.getTime() <= Date.now()) {
+      throw ApiError.unprocessableEntity('Booking scheduledStart must be in the future');
+    }
+
+    if (startDate >= endDate) {
+      throw ApiError.unprocessableEntity('scheduledEnd must be after scheduledStart');
+    }
+  } else {
+    // Derive fallback schedule from serviceRequest preferred date & time
+    const reqDate = serviceRequest.preferredDate ? new Date(serviceRequest.preferredDate) : new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const baseDate = reqDate.getTime() > Date.now() ? reqDate : tomorrow;
+
+    let startHour = 10;
+    let startMin = 0;
+    if (serviceRequest.preferredTime?.start) {
+      const parts = serviceRequest.preferredTime.start.split(':').map(Number);
+      if (!isNaN(parts[0])) startHour = parts[0];
+      if (!isNaN(parts[1])) startMin = parts[1];
+    }
+
+    startDate = new Date(baseDate);
+    startDate.setUTCHours(startHour, startMin, 0, 0);
+
+    const durationHours = quote.estimatedDuration || 2;
+    endDate = new Date(startDate.getTime() + durationHours * 60 * 60 * 1000);
   }
 
   // 3. Verify Provider Account & Profile
@@ -296,41 +362,62 @@ const createBookingFromQuote = async (
     }
 
     // Populate booking with related references
-    const populatedBooking = await Booking.findById(booking._id)
+    const populatedBooking = await Booking.findById(booking._id, null, sessionOpt)
       .populate('serviceRequest')
       .populate('provider')
       .populate('providerProfile')
       .populate('quote');
     // Return object expected by controller/tests
-    return { booking: populatedBooking, quote, serviceRequest };
-
+    return { booking: populatedBooking || booking, quote, serviceRequest };
   };
 
-  const isReplicaSet = () => {
-    try {
-      const type = mongoose.connection.client?.topology?.description?.type;
-      return type === 'ReplicaSetWithPrimary' || type === 'Sharded';
-    } catch {
-      return false;
+  try {
+    if (isReplicaSet()) {
+      const session = await mongoose.startSession();
+      try {
+        session.startTransaction();
+        const result = await executeWrites({ session });
+        await session.commitTransaction();
+        return result;
+      } catch (err) {
+        await session.abortTransaction();
+        throw err;
+      } finally {
+        session.endSession();
+      }
+    } else {
+      // Standalone MongoDB (e.g. MongoMemoryServer in local test environment)
+      return await executeWrites({});
     }
-  };
+  } catch (err) {
+    const isConflict =
+      err.code === 11000 ||
+      err.code === 112 ||
+      err.message?.includes('E11000') ||
+      err.message?.includes('duplicate key') ||
+      err.message?.includes('WriteConflict') ||
+      err.message?.includes('Please retry your operation or multi-document transaction') ||
+      (typeof err.hasErrorLabel === 'function' && err.hasErrorLabel('TransientTransactionError'));
 
-  if (isReplicaSet()) {
-    const session = await mongoose.startSession();
-    try {
-      session.startTransaction();
-      const result = await executeWrites({ session });
-      await session.commitTransaction();
-      return result;
-    } catch (err) {
-      await session.abortTransaction();
-      throw err;
-    } finally {
-      session.endSession();
+    if (isConflict) {
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const existing = await Booking.findOne({
+          serviceRequest: requestId,
+          customer: customerUser._id,
+          status: { $ne: BOOKING_STATUS.CANCELLED },
+        })
+          .populate('serviceRequest')
+          .populate('provider')
+          .populate('providerProfile')
+          .populate('quote');
+        if (existing) {
+          const quoteDoc = (await Quote.findById(quoteId)) || existing.quote;
+          return { booking: existing, quote: quoteDoc, serviceRequest };
+        }
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
     }
-  } else {
-    // Standalone MongoDB (e.g. MongoMemoryServer in local test environment)
-    return await executeWrites({});
+    throw err;
   }
 };
 
@@ -442,20 +529,68 @@ const cancelCustomerBooking = async (customerId, bookingId, reason) => {
     throw ApiError.forbidden('Access denied: You do not own this booking');
   }
 
+  if (booking.status === BOOKING_STATUS.CANCELLED) {
+    throw ApiError.badRequest('Cannot cancel booking: Booking is already cancelled');
+  }
+
+  if (booking.status === BOOKING_STATUS.COMPLETED) {
+    throw ApiError.badRequest('Cannot cancel booking: Booking is already completed');
+  }
+
   if (!isValidTransition(VALID_BOOKING_TRANSITIONS, booking.status, BOOKING_STATUS.CANCELLED)) {
     throw ApiError.badRequest(`Cannot cancel booking with current status "${booking.status}"`);
   }
 
-  booking.status = BOOKING_STATUS.CANCELLED;
-  booking.cancelledBy = customerId;
-  booking.cancelledAt = new Date();
-  booking.cancellationReason = reason;
-  await booking.save();
+  const executeCancellation = async (sessionOpt) => {
+    booking.status = BOOKING_STATUS.CANCELLED;
+    booking.cancelledBy = customerId;
+    booking.cancelledAt = new Date();
+    booking.cancellationReason = reason;
+    await booking.save(sessionOpt);
 
-  // Also update associated ServiceRequest
-  await ServiceRequest.findByIdAndUpdate(booking.serviceRequest, {
-    status: SERVICE_REQUEST_STATUS.CANCELLED,
-  });
+    // Also update associated ServiceRequest
+    await ServiceRequest.findByIdAndUpdate(
+      booking.serviceRequest,
+      {
+        status: SERVICE_REQUEST_STATUS.CANCELLED,
+        cancellationReason: reason,
+        cancelledAt: new Date(),
+        cancelledBy: customerId,
+      },
+      sessionOpt
+    );
+
+    // Cascade cancellation to associated active Jobs
+    await Job.updateMany(
+      {
+        booking: booking._id,
+        status: { $nin: [JOB_STATUS.COMPLETED, JOB_STATUS.CANCELLED] },
+      },
+      {
+        status: JOB_STATUS.CANCELLED,
+      },
+      sessionOpt
+    );
+
+    return booking;
+  };
+
+  let cancelledBooking;
+  if (isReplicaSet()) {
+    const session = await mongoose.startSession();
+    try {
+      session.startTransaction();
+      cancelledBooking = await executeCancellation({ session });
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      session.endSession();
+    }
+  } else {
+    cancelledBooking = await executeCancellation({});
+  }
 
   try {
     const notificationService = require('./notification.service');
@@ -470,7 +605,7 @@ const cancelCustomerBooking = async (customerId, bookingId, reason) => {
     // Non-blocking notification
   }
 
-  return booking;
+  return cancelledBooking;
 };
 
 /**
@@ -574,15 +709,66 @@ const cancelProviderBooking = async (providerId, bookingId, reason) => {
     throw ApiError.forbidden('Access denied: You are not assigned to this booking');
   }
 
+  if (booking.status === BOOKING_STATUS.CANCELLED) {
+    throw ApiError.badRequest('Cannot cancel booking: Booking is already cancelled');
+  }
+
+  if (booking.status === BOOKING_STATUS.COMPLETED) {
+    throw ApiError.badRequest('Cannot cancel booking: Booking is already completed');
+  }
+
   if (!isValidTransition(VALID_BOOKING_TRANSITIONS, booking.status, BOOKING_STATUS.CANCELLED)) {
     throw ApiError.badRequest(`Cannot cancel booking with current status "${booking.status}"`);
   }
 
-  booking.status = BOOKING_STATUS.CANCELLED;
-  booking.cancelledBy = providerId;
-  booking.cancelledAt = new Date();
-  booking.cancellationReason = reason;
-  await booking.save();
+  const executeCancellation = async (sessionOpt) => {
+    booking.status = BOOKING_STATUS.CANCELLED;
+    booking.cancelledBy = providerId;
+    booking.cancelledAt = new Date();
+    booking.cancellationReason = reason;
+    await booking.save(sessionOpt);
+
+    await ServiceRequest.findByIdAndUpdate(
+      booking.serviceRequest,
+      {
+        status: SERVICE_REQUEST_STATUS.CANCELLED,
+        cancellationReason: reason,
+        cancelledAt: new Date(),
+        cancelledBy: providerId,
+      },
+      sessionOpt
+    );
+
+    await Job.updateMany(
+      {
+        booking: booking._id,
+        status: { $nin: [JOB_STATUS.COMPLETED, JOB_STATUS.CANCELLED] },
+      },
+      {
+        status: JOB_STATUS.CANCELLED,
+      },
+      sessionOpt
+    );
+
+    return booking;
+  };
+
+  let cancelledBooking;
+  if (isReplicaSet()) {
+    const session = await mongoose.startSession();
+    try {
+      session.startTransaction();
+      cancelledBooking = await executeCancellation({ session });
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      session.endSession();
+    }
+  } else {
+    cancelledBooking = await executeCancellation({});
+  }
 
   try {
     const notificationService = require('./notification.service');
@@ -597,7 +783,7 @@ const cancelProviderBooking = async (providerId, bookingId, reason) => {
     // Non-blocking notification
   }
 
-  return booking;
+  return cancelledBooking;
 };
 
 module.exports = {

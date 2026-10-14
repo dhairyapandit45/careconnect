@@ -6,7 +6,7 @@
 
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+const { MongoMemoryReplSet } = require('mongodb-memory-server');
 const app = require('../src/app');
 const User = require('../src/models/User');
 const ServiceCategory = require('../src/models/ServiceCategory');
@@ -15,12 +15,14 @@ const ServiceRequest = require('../src/models/ServiceRequest');
 const Availability = require('../src/models/Availability');
 const Quote = require('../src/models/Quote');
 const Booking = require('../src/models/Booking');
+const Job = require('../src/models/Job');
 const { ROLES } = require('../src/constants/roles');
 const {
   PROVIDER_VERIFICATION_STATUS,
   SERVICE_REQUEST_STATUS,
   QUOTE_STATUS,
   BOOKING_STATUS,
+  JOB_STATUS,
   USER_STATUS,
   DAYS_OF_WEEK,
 } = require('../src/constants/status');
@@ -68,9 +70,10 @@ const getNextDateForDay = (targetDayName, hours = 10, minutes = 0) => {
 };
 
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
+  mongoServer = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
   const uri = mongoServer.getUri();
   await mongoose.connect(uri);
+  await Booking.createIndexes();
 
   // 1. Admin
   const adminRes = await request(app).post('/api/v1/auth/register').send({
@@ -257,7 +260,7 @@ describe('Milestone 6: Booking & Scheduling Engine Test Suite', () => {
 
       // Create existing confirmed booking for Provider 1: 10:00 -> 12:00
       await Booking.create({
-        serviceRequest: baseServiceRequest._id,
+        serviceRequest: new mongoose.Types.ObjectId(),
         customer: customer2User._id,
         provider: provider1User._id,
         providerProfile: provider1Profile._id,
@@ -289,7 +292,7 @@ describe('Milestone 6: Booking & Scheduling Engine Test Suite', () => {
       const existEnd = getNextDateForDay('MONDAY', 12, 0);
 
       await Booking.create({
-        serviceRequest: baseServiceRequest._id,
+        serviceRequest: new mongoose.Types.ObjectId(),
         customer: customer2User._id,
         provider: provider1User._id,
         providerProfile: provider1Profile._id,
@@ -321,7 +324,7 @@ describe('Milestone 6: Booking & Scheduling Engine Test Suite', () => {
       const existEnd = getNextDateForDay('MONDAY', 13, 0);
 
       await Booking.create({
-        serviceRequest: baseServiceRequest._id,
+        serviceRequest: new mongoose.Types.ObjectId(),
         customer: customer2User._id,
         provider: provider1User._id,
         providerProfile: provider1Profile._id,
@@ -353,7 +356,7 @@ describe('Milestone 6: Booking & Scheduling Engine Test Suite', () => {
       const existEnd = getNextDateForDay('MONDAY', 14, 0);
 
       await Booking.create({
-        serviceRequest: baseServiceRequest._id,
+        serviceRequest: new mongoose.Types.ObjectId(),
         customer: customer2User._id,
         provider: provider1User._id,
         providerProfile: provider1Profile._id,
@@ -385,7 +388,7 @@ describe('Milestone 6: Booking & Scheduling Engine Test Suite', () => {
       const existEnd = getNextDateForDay('MONDAY', 12, 0);
 
       await Booking.create({
-        serviceRequest: baseServiceRequest._id,
+        serviceRequest: new mongoose.Types.ObjectId(),
         customer: customer2User._id,
         provider: provider1User._id,
         providerProfile: provider1Profile._id,
@@ -419,7 +422,7 @@ describe('Milestone 6: Booking & Scheduling Engine Test Suite', () => {
       const existEnd = getNextDateForDay('MONDAY', 12, 0);
 
       await Booking.create({
-        serviceRequest: baseServiceRequest._id,
+        serviceRequest: new mongoose.Types.ObjectId(),
         customer: customer2User._id,
         provider: provider1User._id,
         providerProfile: provider1Profile._id,
@@ -453,7 +456,7 @@ describe('Milestone 6: Booking & Scheduling Engine Test Suite', () => {
 
       // Existing booking in CANCELLED status: 10:00 -> 12:00
       await Booking.create({
-        serviceRequest: baseServiceRequest._id,
+        serviceRequest: new mongoose.Types.ObjectId(),
         customer: customer2User._id,
         provider: provider1User._id,
         providerProfile: provider1Profile._id,
@@ -484,7 +487,7 @@ describe('Milestone 6: Booking & Scheduling Engine Test Suite', () => {
       const monEnd = getNextDateForDay('MONDAY', 12, 0);
 
       await Booking.create({
-        serviceRequest: baseServiceRequest._id,
+        serviceRequest: new mongoose.Types.ObjectId(),
         customer: customer2User._id,
         provider: provider1User._id,
         providerProfile: provider1Profile._id,
@@ -514,7 +517,7 @@ describe('Milestone 6: Booking & Scheduling Engine Test Suite', () => {
 
       // Provider 2 has confirmed booking 10:00 -> 12:00
       await Booking.create({
-        serviceRequest: baseServiceRequest._id,
+        serviceRequest: new mongoose.Types.ObjectId(),
         customer: customer2User._id,
         provider: provider2User._id,
         providerProfile: provider2Profile._id,
@@ -993,6 +996,215 @@ describe('Milestone 6: Booking & Scheduling Engine Test Suite', () => {
 
       const pListRes = await request(app).get('/api/v1/providers/bookings');
       expect(pListRes.status).toBe(401);
+    });
+
+    it('32. should be idempotent: second quote acceptance returns existing booking with 200', async () => {
+      // createdBooking was confirmed in beforeEach for customer1User on baseServiceRequest and baseQuote
+      const res = await request(app)
+        .post(`/api/v1/service-requests/${baseServiceRequest._id}/quotes/${baseQuote._id}/accept`)
+        .set('Authorization', `Bearer ${customer1Token}`)
+        .send({
+          scheduledStart: getNextDateForDay('MONDAY', 10, 0).toISOString(),
+          scheduledEnd: getNextDateForDay('MONDAY', 12, 0).toISOString(),
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.booking._id.toString()).toBe(createdBooking._id.toString());
+    });
+
+    it('33. should accept quote without explicit schedule and create booking using fallback schedule', async () => {
+      // Create a fresh service request and quote
+      const futureDate = getNextDateForDay('MONDAY', 14, 0);
+      const reqRes = await request(app)
+        .post('/api/v1/service-requests')
+        .set('Authorization', `Bearer ${customer2Token}`)
+        .send({
+          categoryId: plumbingCategory._id,
+          title: 'Heater Thermostat Check',
+          description: 'Water heater thermostat is malfunctioning repeatedly.',
+          address: '999 Pine St',
+          city: 'San Francisco',
+          postalCode: '94103',
+          preferredDate: futureDate.toISOString().split('T')[0],
+          preferredTime: { start: '14:00', end: '16:00' },
+        });
+      const newReq = reqRes.body.data.request;
+
+      const qRes = await request(app)
+        .post(`/api/v1/service-requests/${newReq._id}/quotes`)
+        .set('Authorization', `Bearer ${provider1Token}`)
+        .send({
+          amount: 250,
+          currency: 'INR',
+          estimatedDuration: 2,
+          description: 'Diagnostic and replacement.',
+          validUntil: new Date(Date.now() + 7 * 86400000).toISOString(),
+        });
+      const newQuote = qRes.body.data.quote;
+
+      // Accept quote without body
+      const acceptRes = await request(app)
+        .patch(`/api/v1/service-requests/${newReq._id}/quotes/${newQuote._id}/accept`)
+        .set('Authorization', `Bearer ${customer2Token}`)
+        .send({});
+
+      expect(acceptRes.status).toBe(200);
+      expect(acceptRes.body.success).toBe(true);
+      expect(acceptRes.body.data.booking).toBeDefined();
+      expect(acceptRes.body.data.booking.status).toBe(BOOKING_STATUS.CONFIRMED);
+
+      // Verify the booking exists in customer2 bookings list
+      const listRes = await request(app)
+        .get('/api/v1/bookings')
+        .set('Authorization', `Bearer ${customer2Token}`);
+
+      const found = listRes.body.data.items.find(
+        (b) => b._id.toString() === acceptRes.body.data.booking._id.toString()
+      );
+      expect(found).toBeDefined();
+    });
+
+    it('34. should cascade cancellation to associated Job and update ServiceRequest to CANCELLED', async () => {
+      // Find the Job created for createdBooking
+      const jobBefore = await Job.findOne({ booking: createdBooking._id });
+      expect(jobBefore).toBeDefined();
+      expect(jobBefore.status).toBe(JOB_STATUS.ASSIGNED);
+
+      // Cancel the booking
+      const cancelRes = await request(app)
+        .post(`/api/v1/bookings/${createdBooking._id}/cancel`)
+        .set('Authorization', `Bearer ${customer1Token}`)
+        .send({ reason: 'Need to reschedule next month' });
+
+      expect(cancelRes.status).toBe(200);
+      expect(cancelRes.body.data.booking.status).toBe(BOOKING_STATUS.CANCELLED);
+
+      // Verify associated Job was cancelled
+      const jobAfter = await Job.findOne({ booking: createdBooking._id });
+      expect(jobAfter.status).toBe(JOB_STATUS.CANCELLED);
+
+      // Verify associated ServiceRequest was cancelled with audit fields
+      const reqAfter = await ServiceRequest.findById(createdBooking.serviceRequest._id);
+      expect(reqAfter.status).toBe(SERVICE_REQUEST_STATUS.CANCELLED);
+      expect(reqAfter.cancellationReason).toBe('Need to reschedule next month');
+      expect(reqAfter.cancelledBy.toString()).toBe(customer1User._id.toString());
+    });
+
+    it('35. should safely handle concurrent quote acceptance without creating duplicate bookings', async () => {
+      const futureDate = getNextDateForDay('TUESDAY', 10, 0);
+      const reqRes = await request(app)
+        .post('/api/v1/service-requests')
+        .set('Authorization', `Bearer ${customer2Token}`)
+        .send({
+          categoryId: plumbingCategory._id,
+          title: 'Concurrent Acceptance Test Request',
+          description: 'Testing simultaneous quote acceptance and duplicate prevention.',
+          address: '100 Concurrent Way',
+          city: 'San Francisco',
+          postalCode: '94103',
+          preferredDate: futureDate.toISOString().split('T')[0],
+          preferredTime: { start: '10:00', end: '12:00' },
+        });
+      const newReq = reqRes.body.data.request;
+
+      const qRes = await request(app)
+        .post(`/api/v1/service-requests/${newReq._id}/quotes`)
+        .set('Authorization', `Bearer ${provider1Token}`)
+        .send({
+          amount: 300,
+          currency: 'INR',
+          estimatedDuration: 2,
+          description: 'Concurrent acceptance quote test.',
+          validUntil: new Date(Date.now() + 7 * 86400000).toISOString(),
+        });
+      const newQuote = qRes.body.data.quote;
+
+      const monStart = getNextDateForDay('MONDAY', 14, 0);
+      const monEnd = getNextDateForDay('MONDAY', 16, 0);
+      const sched = {
+        scheduledStart: monStart.toISOString(),
+        scheduledEnd: monEnd.toISOString(),
+      };
+
+      // Fire two concurrent acceptance requests simultaneously
+      const [resA, resB] = await Promise.all([
+        request(app)
+          .post(`/api/v1/service-requests/${newReq._id}/quotes/${newQuote._id}/accept`)
+          .set('Authorization', `Bearer ${customer2Token}`)
+          .send(sched),
+        request(app)
+          .post(`/api/v1/service-requests/${newReq._id}/quotes/${newQuote._id}/accept`)
+          .set('Authorization', `Bearer ${customer2Token}`)
+          .send(sched),
+      ]);
+
+      expect(resA.status).toBe(200);
+      expect(resB.status).toBe(200);
+      expect(resA.body.success).toBe(true);
+      expect(resB.body.success).toBe(true);
+
+      // Verify both returned the exact same booking ID
+      expect(resA.body.data.booking._id.toString()).toBe(resB.body.data.booking._id.toString());
+
+      // Database-enforced invariant: Exactly 1 active booking exists in the database
+      const count = await Booking.countDocuments({
+        serviceRequest: newReq._id,
+        status: { $ne: BOOKING_STATUS.CANCELLED },
+      });
+      expect(count).toBe(1);
+    });
+
+    it('36. should roll back cancellation atomically if an error occurs mid-cancellation in transaction-capable environments', async () => {
+      // Find the Job created for createdBooking
+      const jobBefore = await Job.findOne({ booking: createdBooking._id });
+      expect(jobBefore).toBeDefined();
+      expect(jobBefore.status).toBe(JOB_STATUS.ASSIGNED);
+
+      // Spy on Job.updateMany to simulate an unhandled database write failure during cancellation
+      const jobSpy = jest.spyOn(Job, 'updateMany').mockImplementationOnce(() => {
+        throw new Error('Simulated database error during Job cancellation update');
+      });
+
+      // Attempt cancellation
+      const cancelRes = await request(app)
+        .post(`/api/v1/bookings/${createdBooking._id}/cancel`)
+        .set('Authorization', `Bearer ${customer1Token}`)
+        .send({ reason: 'Atomic rollback test reason' });
+
+      // The cancellation request should fail
+      expect(cancelRes.status).toBe(500);
+
+      // Verify atomic state: If running in transaction-capable environment (replica set),
+      // booking, request, and job remain completely untouched (rolled back).
+      const isReplica = mongoose.connection.client?.topology?.description?.type === 'ReplicaSetWithPrimary';
+      if (isReplica) {
+        const bookingAfter = await Booking.findById(createdBooking._id);
+        expect(bookingAfter.status).toBe(BOOKING_STATUS.CONFIRMED);
+
+        const reqAfter = await ServiceRequest.findById(createdBooking.serviceRequest._id);
+        expect(reqAfter.status).toBe(SERVICE_REQUEST_STATUS.BOOKED);
+
+        const jobAfter = await Job.findById(jobBefore._id);
+        expect(jobAfter.status).toBe(JOB_STATUS.ASSIGNED);
+      }
+
+      jobSpy.mockRestore();
+
+      // Verify that after resolving the transient failure, cancellation can be cleanly executed / recovered
+      const retryRes = await request(app)
+        .post(`/api/v1/bookings/${createdBooking._id}/cancel`)
+        .set('Authorization', `Bearer ${customer1Token}`)
+        .send({ reason: 'Atomic rollback recovery reason' });
+
+      expect(retryRes.status).toBe(200);
+      expect(retryRes.body.data.booking.status).toBe(BOOKING_STATUS.CANCELLED);
+
+      const finalizedJob = await Job.findById(jobBefore._id);
+      expect(finalizedJob.status).toBe(JOB_STATUS.CANCELLED);
+
+      const finalizedReq = await ServiceRequest.findById(createdBooking.serviceRequest._id);
+      expect(finalizedReq.status).toBe(SERVICE_REQUEST_STATUS.CANCELLED);
     });
   });
 });

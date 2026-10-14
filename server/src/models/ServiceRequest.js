@@ -100,6 +100,18 @@ const serviceRequestSchema = new mongoose.Schema(
       ref: 'User',
       index: true,
     },
+    cancellationReason: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    cancelledAt: {
+      type: Date,
+    },
+    cancelledBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
   {
     timestamps: true,

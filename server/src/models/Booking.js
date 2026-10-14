@@ -12,7 +12,6 @@ const bookingSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'ServiceRequest',
       required: true,
-      index: true,
     },
     customer: {
       type: mongoose.Schema.Types.ObjectId,
@@ -124,6 +123,25 @@ bookingSchema.index({ provider: 1, scheduledStart: 1, scheduledEnd: 1 });
 bookingSchema.index({ customer: 1, status: 1 });
 bookingSchema.index({ provider: 1, status: 1 });
 bookingSchema.index({ scheduledStart: 1, status: 1 });
+
+// Database-enforced invariant: Only one active (non-cancelled) booking can exist per serviceRequest
+bookingSchema.index(
+  { serviceRequest: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      status: {
+        $in: [
+          BOOKING_STATUS.PENDING,
+          BOOKING_STATUS.CONFIRMED,
+          BOOKING_STATUS.IN_PROGRESS,
+          BOOKING_STATUS.COMPLETED,
+          BOOKING_STATUS.DISPUTED,
+        ],
+      },
+    },
+  }
+);
 
 const Booking = mongoose.model('Booking', bookingSchema);
 

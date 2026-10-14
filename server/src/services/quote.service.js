@@ -317,52 +317,16 @@ const withdrawQuote = async (userId, quoteId) => {
 /**
  * Customer accepts a quote for their service request
  * Transitions accepted quote to ACCEPTED, other active quotes to REJECTED,
- * and request status to PROVIDER_SELECTED.
+/**
+ * Customer accepts a quote - creates and persists confirmed booking
+ * and updates service request status to BOOKED.
  * @param {Object} user - Authenticated customer
  * @param {string} requestId
  * @param {string} quoteId
  */
 const acceptQuote = async (user, requestId, quoteId) => {
-  const serviceRequest = await ServiceRequest.findById(requestId);
-  if (!serviceRequest) {
-    throw ApiError.notFound('Service request not found');
-  }
-
-  if (!serviceRequest.customer.equals(user._id)) {
-    throw ApiError.forbidden('Access denied: You do not own this service request');
-  }
-
-  const quote = await Quote.findById(quoteId);
-  if (!quote || !quote.serviceRequest.equals(requestId)) {
-    throw ApiError.notFound('Quote not found for this service request');
-  }
-
-  if (!isValidTransition(VALID_QUOTE_TRANSITIONS, quote.status, QUOTE_STATUS.ACCEPTED)) {
-    throw ApiError.badRequest(`Cannot accept quote with status "${quote.status}"`);
-  }
-
-  // Accept selected quote
-  quote.status = QUOTE_STATUS.ACCEPTED;
-  await quote.save();
-
-  // Reject all other active quotes for this request
-  await Quote.updateMany(
-    {
-      serviceRequest: requestId,
-      _id: { $ne: quoteId },
-      status: { $in: [QUOTE_STATUS.SUBMITTED, QUOTE_STATUS.VIEWED] },
-    },
-    { status: QUOTE_STATUS.REJECTED }
-  );
-
-  // Transition request to PROVIDER_SELECTED
-  serviceRequest.status = SERVICE_REQUEST_STATUS.PROVIDER_SELECTED;
-  await serviceRequest.save();
-
-  return {
-    quote,
-    serviceRequest,
-  };
+  const bookingService = require('./booking.service');
+  return bookingService.createBookingFromQuote(user, requestId, quoteId, {});
 };
 
 module.exports = {

@@ -18,6 +18,8 @@ import {
   Droplets,
   Hammer,
   ClipboardList,
+  AlertCircle,
+  XCircle,
 } from 'lucide-react';
 import serviceRequestService from '../../services/serviceRequest.service';
 import {
@@ -26,6 +28,7 @@ import {
   CardHeader,
   CardContent,
   Badge,
+  Modal,
   LoadingSpinner,
   EmptyState,
   ErrorState,
@@ -58,6 +61,13 @@ export const RequestDetailPage = () => {
   const [request, setRequest] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+
+  // Cancellation Modal State
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [cancellationReason, setCancellationReason] = useState('');
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState(null);
 
   const fetchRequest = useCallback(async () => {
     setIsLoading(true);
@@ -75,6 +85,45 @@ export const RequestDetailPage = () => {
   useEffect(() => {
     fetchRequest();
   }, [fetchRequest]);
+
+  const handleOpenCancelModal = () => {
+    setIsCancelModalOpen(true);
+    setCancellationReason('');
+    setCancelError(null);
+  };
+
+  const handleCloseCancelModal = () => {
+    setIsCancelModalOpen(false);
+    setCancellationReason('');
+    setCancelError(null);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!cancellationReason.trim() || cancellationReason.trim().length < 5) {
+      setCancelError('Please provide a cancellation reason of at least 5 characters.');
+      return;
+    }
+
+    setIsCancelling(true);
+    setCancelError(null);
+    try {
+      await serviceRequestService.cancelServiceRequest(id, {
+        reason: cancellationReason.trim(),
+      });
+      setSuccessMessage('Service request cancelled successfully.');
+      setIsCancelModalOpen(false);
+      setCancellationReason('');
+      await fetchRequest();
+    } catch (err) {
+      setCancelError(
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to cancel service request. Please try again.'
+      );
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -109,6 +158,9 @@ export const RequestDetailPage = () => {
   const category = request.category || {};
   const CategoryIcon = iconMap[category.icon] || Wrench;
   const statusVariant = statusBadgeVariants[request.status] || 'default';
+  const isCancellable = ['SUBMITTED', 'MATCHING', 'QUOTING', 'PROVIDER_SELECTED'].includes(request.status);
+  const isBooked = request.status === 'BOOKED';
+  const isCancelled = request.status === 'CANCELLED';
 
   return (
     <div className="space-y-6">
@@ -133,17 +185,65 @@ export const RequestDetailPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link to={`/customer/requests/${request._id}/quotes`}>
-              <Button size="sm" variant={request.quoteCount > 0 ? 'primary' : 'outline'}>
-                View Quotes ({request.quoteCount || 0})
+            {isBooked && (
+              <Link to={request.bookingId ? `/customer/bookings/${request.bookingId}` : '/customer/bookings'}>
+                <Button size="sm" variant="primary">
+                  View Booking
+                </Button>
+              </Link>
+            )}
+            {isCancellable && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-rose-300 text-rose-700 hover:bg-rose-50 hover:text-rose-800"
+                onClick={handleOpenCancelModal}
+              >
+                Cancel Request
               </Button>
-            </Link>
+            )}
+            {!isCancelled && (
+              <Link to={`/customer/requests/${request._id}/quotes`}>
+                <Button size="sm" variant={request.quoteCount > 0 ? 'primary' : 'outline'}>
+                  View Quotes ({request.quoteCount || 0})
+                </Button>
+              </Link>
+            )}
             <Link to="/customer/requests/new">
               <Button size="sm" variant="outline">Create Another Request</Button>
             </Link>
           </div>
         </div>
       </div>
+
+      {/* Cancellation Notice Banner */}
+      {isCancelled && (
+        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-start gap-3">
+          <XCircle className="h-5 w-5 text-rose-600 flex-shrink-0 mt-0.5" />
+          <div className="text-xs text-rose-900 leading-relaxed">
+            <strong>Service Request Cancelled:</strong> This service request has been cancelled
+            {request.cancelledAt ? ` on ${new Date(request.cancelledAt).toLocaleDateString()}` : ''}.
+            {request.cancellationReason && (
+              <span className="block mt-1 text-rose-700">
+                Reason: <em>&ldquo;{request.cancellationReason}&rdquo;</em>
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Success Notification Banner */}
+      {successMessage && (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between gap-3">
+          <div className="text-xs text-emerald-800 font-medium">{successMessage}</div>
+          <button
+            onClick={() => setSuccessMessage(null)}
+            className="text-xs text-emerald-600 hover:text-emerald-900 font-medium"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Details (Left 2 Columns) */}
@@ -310,6 +410,61 @@ export const RequestDetailPage = () => {
           </Card>
         </div>
       </div>
+
+      {/* Cancel Service Request Modal */}
+      <Modal
+        isOpen={isCancelModalOpen}
+        onClose={handleCloseCancelModal}
+        title="Cancel Service Request"
+      >
+        <div className="space-y-4">
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+            <span>
+              Are you sure you want to cancel this request? Any active provider proposals or quotes will be withdrawn.
+            </span>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1.5">
+              Reason for Cancellation <span className="text-rose-500">*</span>
+            </label>
+            <textarea
+              value={cancellationReason}
+              onChange={(e) => setCancellationReason(e.target.value)}
+              placeholder="Please explain why you need to cancel this request (at least 5 characters)..."
+              rows={3}
+              className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+            />
+          </div>
+
+          {cancelError && (
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{cancelError}</span>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCloseCancelModal}
+              disabled={isCancelling}
+            >
+              Keep Request
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={handleConfirmCancel}
+              disabled={isCancelling}
+            >
+              {isCancelling ? 'Cancelling...' : 'Confirm Cancellation'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

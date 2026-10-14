@@ -7,6 +7,7 @@ const {
   createServiceRequest,
   getServiceRequests,
   getServiceRequestById,
+  cancelServiceRequest,
 } = require('../../controllers/serviceRequest.controller');
 const {
   createQuote,
@@ -15,7 +16,10 @@ const {
 } = require('../../controllers/quote.controller');
 const { authenticate, authorize } = require('../../middleware/auth.middleware');
 const { validate } = require('../../middleware/validate.middleware');
-const { createServiceRequestSchema } = require('../../validators/serviceRequest.validator');
+const {
+  createServiceRequestSchema,
+  cancelServiceRequestSchema,
+} = require('../../validators/serviceRequest.validator');
 const { createQuoteSchema } = require('../../validators/quote.validator');
 const { acceptQuoteAndBookSchema } = require('../../validators/booking.validator');
 const { ROLES } = require('../../constants/roles');
@@ -38,6 +42,14 @@ router.get('/', getServiceRequests);
 
 // Get single request details
 router.get('/:id', getServiceRequestById);
+
+// Cancel service request
+router.post(
+  '/:id/cancel',
+  authorize(ROLES.CUSTOMER, ROLES.PLATFORM_ADMIN, ROLES.OPERATIONS_MANAGER),
+  validate(cancelServiceRequestSchema),
+  cancelServiceRequest
+);
 
 // Quote Management for this Service Request
 router.post(

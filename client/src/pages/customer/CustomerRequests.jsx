@@ -104,6 +104,7 @@ export const CustomerRequests = () => {
           { label: 'Booked', value: 'BOOKED' },
           { label: 'In Progress', value: 'IN_PROGRESS' },
           { label: 'Completed', value: 'COMPLETED' },
+          { label: 'Cancelled', value: 'CANCELLED' },
         ].map((tab) => (
           <button
             key={tab.value}
@@ -215,7 +216,14 @@ export const CustomerRequests = () => {
 
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1.5">
-                        {req.quoteCount > 0 && (
+                        {req.status === 'BOOKED' && (
+                          <Link to="/customer/bookings">
+                            <Button size="sm" variant="outline" className="border-sky-300 text-sky-700 hover:bg-sky-50">
+                              Booking
+                            </Button>
+                          </Link>
+                        )}
+                        {req.quoteCount > 0 && req.status !== 'CANCELLED' && (
                           <Link to={`/customer/requests/${req._id}/quotes`}>
                             <Button size="sm" variant="outline" className="border-emerald-300 text-emerald-700 hover:bg-emerald-50">
                               Quotes ({req.quoteCount})

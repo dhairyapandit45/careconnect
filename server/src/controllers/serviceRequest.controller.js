@@ -44,8 +44,26 @@ const getServiceRequestById = async (req, res, next) => {
   }
 };
 
+const cancelServiceRequest = async (req, res, next) => {
+  try {
+    const request = await serviceRequestService.cancelServiceRequest(
+      req.user,
+      req.params.id,
+      req.body.reason
+    );
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Service request cancelled successfully',
+      data: { request },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createServiceRequest,
   getServiceRequests,
   getServiceRequestById,
+  cancelServiceRequest,
 };

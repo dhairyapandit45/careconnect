@@ -3,12 +3,33 @@
  * Handles customer request creation, server-side ownership isolation, and operational querying.
  */
 
+const mongoose = require('mongoose');
 const ServiceRequest = require('../models/ServiceRequest');
 const ServiceCategory = require('../models/ServiceCategory');
 const Quote = require('../models/Quote');
+const Booking = require('../models/Booking');
 const { ApiError } = require('../utils/apiError');
 const { ROLES } = require('../constants/roles');
-const { SERVICE_REQUEST_STATUS } = require('../constants/status');
+const {
+  SERVICE_REQUEST_STATUS,
+  QUOTE_STATUS,
+  BOOKING_STATUS,
+  VALID_REQUEST_TRANSITIONS,
+  NOTIFICATION_TYPE,
+  isValidTransition,
+} = require('../constants/status');
+
+/**
+ * Checks whether the active MongoDB connection supports multi-document transactions
+ */
+const isReplicaSet = () => {
+  try {
+    const type = mongoose.connection.client?.topology?.description?.type;
+    return type === 'ReplicaSetWithPrimary' || type === 'Sharded';
+  } catch {
+    return false;
+  }
+};
 
 /**
  * Creates a new service request bound to authenticated customer
@@ -167,16 +188,134 @@ const getServiceRequestById = async (user, requestId) => {
   }
 
   const quoteCount = await Quote.countDocuments({ serviceRequest: requestId });
+  let bookingId = null;
+  if (
+    [
+      SERVICE_REQUEST_STATUS.BOOKED,
+      SERVICE_REQUEST_STATUS.IN_PROGRESS,
+      SERVICE_REQUEST_STATUS.COMPLETED,
+    ].includes(request.status)
+  ) {
+    const booking = await Booking.findOne({ serviceRequest: requestId }).select('_id');
+    if (booking) {
+      bookingId = booking._id;
+    }
+  }
+
   const reqObj = request.toObject ? request.toObject() : request;
 
   return {
     ...reqObj,
     quoteCount,
+    bookingId,
   };
+};
+
+/**
+ * Cancels a service request with ownership enforcement and state transition validation
+ * @param {Object} user - Authenticated user principal
+ * @param {string} requestId
+ * @param {string} reason
+ */
+const cancelServiceRequest = async (user, requestId, reason) => {
+  const serviceRequest = await ServiceRequest.findById(requestId);
+  if (!serviceRequest) {
+    throw ApiError.notFound('Service request not found');
+  }
+
+  // Ownership verification: Customers can only cancel their own request
+  if (user.role === ROLES.CUSTOMER && !serviceRequest.customer.equals(user._id)) {
+    throw ApiError.forbidden('Access denied: You do not have permission to cancel this service request');
+  }
+
+  // If already booked, cascade through booking cancellation
+  if (serviceRequest.status === SERVICE_REQUEST_STATUS.BOOKED) {
+    const booking = await Booking.findOne({
+      serviceRequest: serviceRequest._id,
+      status: { $in: [BOOKING_STATUS.CONFIRMED, BOOKING_STATUS.IN_PROGRESS] },
+    });
+    if (booking) {
+      const bookingService = require('./booking.service');
+      await bookingService.cancelCustomerBooking(serviceRequest.customer, booking._id, reason);
+      const updated = await ServiceRequest.findById(requestId)
+        .populate('category', 'name slug icon startingPrice pricingUnit description')
+        .populate('customer', 'name email phone');
+      return updated;
+    }
+  }
+
+  if (serviceRequest.status === SERVICE_REQUEST_STATUS.CANCELLED) {
+    throw ApiError.badRequest('Cannot cancel service request: Request is already cancelled');
+  }
+
+  if (serviceRequest.status === SERVICE_REQUEST_STATUS.COMPLETED) {
+    throw ApiError.badRequest('Cannot cancel service request: Request is already completed');
+  }
+
+  // Validate state transition
+  if (!isValidTransition(VALID_REQUEST_TRANSITIONS, serviceRequest.status, SERVICE_REQUEST_STATUS.CANCELLED)) {
+    throw ApiError.badRequest(`Cannot cancel service request with current status "${serviceRequest.status}"`);
+  }
+
+  // Pre-booking cancellation:
+  const executeCancelRequest = async (sessionOpt) => {
+    serviceRequest.status = SERVICE_REQUEST_STATUS.CANCELLED;
+    serviceRequest.cancellationReason = reason;
+    serviceRequest.cancelledAt = new Date();
+    serviceRequest.cancelledBy = user._id;
+    await serviceRequest.save(sessionOpt);
+
+    // Reject all active quotes for this request
+    await Quote.updateMany(
+      {
+        serviceRequest: serviceRequest._id,
+        status: { $in: [QUOTE_STATUS.SUBMITTED, QUOTE_STATUS.VIEWED] },
+      },
+      { status: QUOTE_STATUS.REJECTED },
+      sessionOpt
+    );
+  };
+
+  if (isReplicaSet()) {
+    const session = await mongoose.startSession();
+    try {
+      session.startTransaction();
+      await executeCancelRequest({ session });
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      session.endSession();
+    }
+  } else {
+    await executeCancelRequest({});
+  }
+
+  // Notify quoting providers
+  try {
+    const activeQuotes = await Quote.find({ serviceRequest: serviceRequest._id }).select('provider');
+    const notificationService = require('./notification.service');
+    for (const q of activeQuotes) {
+      await notificationService.createNotification({
+        recipient: q.provider,
+        type: NOTIFICATION_TYPE.SYSTEM,
+        title: 'Service Request Cancelled',
+        message: `Customer cancelled service request "${serviceRequest.title}".`,
+      });
+    }
+  } catch {
+    // Non-blocking notification
+  }
+
+  return ServiceRequest.findById(serviceRequest._id)
+    .populate('category', 'name slug icon startingPrice pricingUnit description')
+    .populate('customer', 'name email phone');
 };
 
 module.exports = {
   createServiceRequest,
   listServiceRequests,
   getServiceRequestById,
+  cancelServiceRequest,
 };

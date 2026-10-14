@@ -11,8 +11,10 @@ const app = require('../src/app');
 const User = require('../src/models/User');
 const ServiceCategory = require('../src/models/ServiceCategory');
 const ServiceRequest = require('../src/models/ServiceRequest');
+const Quote = require('../src/models/Quote');
+const ProviderProfile = require('../src/models/ProviderProfile');
 const { ROLES } = require('../src/constants/roles');
-const { SERVICE_REQUEST_STATUS } = require('../src/constants/status');
+const { SERVICE_REQUEST_STATUS, QUOTE_STATUS } = require('../src/constants/status');
 
 let mongoServer;
 let customer1Token;
@@ -20,6 +22,7 @@ let customer1User;
 let customer2Token;
 let customer2User;
 let providerToken;
+let providerUser;
 let adminToken;
 let operationsToken;
 let activeCategory;
@@ -58,6 +61,7 @@ beforeAll(async () => {
     role: ROLES.SERVICE_PROVIDER,
   });
   providerToken = pRes.body.data.token;
+  providerUser = pRes.body.data.user;
 
   // Register Platform Admin
   const aRes = await request(app).post('/api/v1/auth/register').send({
@@ -86,6 +90,7 @@ afterAll(async () => {
 beforeEach(async () => {
   await ServiceCategory.deleteMany({});
   await ServiceRequest.deleteMany({});
+  await Quote.deleteMany({});
 
   activeCategory = await ServiceCategory.create({
     name: 'Plumbing Services',
@@ -299,5 +304,120 @@ describe('Milestone 3: Customer Service Request Workflow & Security', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.data.pagination.limit).toBe(50);
+  });
+
+  it('11. should allow customer to cancel their own SUBMITTED request with valid reason and reject pending quotes', async () => {
+    // Create customer 1 request
+    const createRes = await request(app)
+      .post('/api/v1/service-requests')
+      .set('Authorization', `Bearer ${customer1Token}`)
+      .send({ ...validPayload, categoryId: activeCategory._id.toString() });
+
+    const reqId = createRes.body.data.request._id;
+
+    const profile = await ProviderProfile.findOne({ user: providerUser._id });
+
+    // Create a quote from provider
+    const quote = await Quote.create({
+      serviceRequest: reqId,
+      provider: providerUser._id,
+      providerProfile: profile._id,
+      amount: 500,
+      currency: 'INR',
+      estimatedDuration: 2,
+      description: 'Kitchen sink pipe repair',
+      validUntil: new Date(Date.now() + 7 * 86400000),
+      status: QUOTE_STATUS.SUBMITTED,
+    });
+
+    // Cancel request
+    const cancelRes = await request(app)
+      .post(`/api/v1/service-requests/${reqId}/cancel`)
+      .set('Authorization', `Bearer ${customer1Token}`)
+      .send({ reason: 'Found alternative solution locally' });
+
+    expect(cancelRes.status).toBe(200);
+    expect(cancelRes.body.success).toBe(true);
+    expect(cancelRes.body.data.request.status).toBe(SERVICE_REQUEST_STATUS.CANCELLED);
+    expect(cancelRes.body.data.request.cancellationReason).toBe('Found alternative solution locally');
+
+    // Verify quote was transitioned to REJECTED
+    const updatedQuote = await Quote.findById(quote._id);
+    expect(updatedQuote.status).toBe(QUOTE_STATUS.REJECTED);
+  });
+
+  it('12. should reject cancellation with reason < 5 characters with 422', async () => {
+    const createRes = await request(app)
+      .post('/api/v1/service-requests')
+      .set('Authorization', `Bearer ${customer1Token}`)
+      .send({ ...validPayload, categoryId: activeCategory._id.toString() });
+
+    const reqId = createRes.body.data.request._id;
+
+    const cancelRes = await request(app)
+      .post(`/api/v1/service-requests/${reqId}/cancel`)
+      .set('Authorization', `Bearer ${customer1Token}`)
+      .send({ reason: 'No' });
+
+    expect(cancelRes.status).toBe(422);
+    expect(cancelRes.body.success).toBe(false);
+  });
+
+  it('13. should prevent customer 2 from cancelling customer 1 request with 403 Forbidden', async () => {
+    const createRes = await request(app)
+      .post('/api/v1/service-requests')
+      .set('Authorization', `Bearer ${customer1Token}`)
+      .send({ ...validPayload, categoryId: activeCategory._id.toString() });
+
+    const reqId = createRes.body.data.request._id;
+
+    const cancelRes = await request(app)
+      .post(`/api/v1/service-requests/${reqId}/cancel`)
+      .set('Authorization', `Bearer ${customer2Token}`)
+      .send({ reason: 'Attempting to cancel someone else request' });
+
+    expect(cancelRes.status).toBe(403);
+    expect(cancelRes.body.success).toBe(false);
+  });
+
+  it('14. should reject cancelling an already CANCELLED request with 400 Bad Request', async () => {
+    const createRes = await request(app)
+      .post('/api/v1/service-requests')
+      .set('Authorization', `Bearer ${customer1Token}`)
+      .send({ ...validPayload, categoryId: activeCategory._id.toString() });
+
+    const reqId = createRes.body.data.request._id;
+
+    // Cancel first time
+    await request(app)
+      .post(`/api/v1/service-requests/${reqId}/cancel`)
+      .set('Authorization', `Bearer ${customer1Token}`)
+      .send({ reason: 'Valid cancellation reason' });
+
+    // Cancel second time
+    const secondCancel = await request(app)
+      .post(`/api/v1/service-requests/${reqId}/cancel`)
+      .set('Authorization', `Bearer ${customer1Token}`)
+      .send({ reason: 'Second cancellation attempt' });
+
+    expect(secondCancel.status).toBe(400);
+    expect(secondCancel.body.success).toBe(false);
+  });
+
+  it('15. should allow operational staff (OPERATIONS_MANAGER / PLATFORM_ADMIN) to cancel customer request', async () => {
+    const createRes = await request(app)
+      .post('/api/v1/service-requests')
+      .set('Authorization', `Bearer ${customer1Token}`)
+      .send({ ...validPayload, categoryId: activeCategory._id.toString() });
+
+    const reqId = createRes.body.data.request._id;
+
+    const cancelRes = await request(app)
+      .post(`/api/v1/service-requests/${reqId}/cancel`)
+      .set('Authorization', `Bearer ${operationsToken}`)
+      .send({ reason: 'Operational cancellation by ops manager' });
+
+    expect(cancelRes.status).toBe(200);
+    expect(cancelRes.body.data.request.status).toBe(SERVICE_REQUEST_STATUS.CANCELLED);
   });
 });

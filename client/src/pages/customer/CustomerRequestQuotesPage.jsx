@@ -79,6 +79,9 @@ export const CustomerRequestQuotesPage = () => {
 
       const reqData = reqRes.data?.request || null;
       setRequest(reqData);
+      if (reqData?.bookingId) {
+        setConfirmedBookingId(reqData.bookingId);
+      }
       setQuotes(quotesRes.data?.items || []);
 
       // If request has a category, query intelligent provider matches
@@ -161,17 +164,21 @@ export const CustomerRequestQuotesPage = () => {
           scheduledEnd,
         });
       } catch (err) {
-        if (err.response?.status === 409 || err.response?.status === 400 || err.response?.status === 422) {
+        if (
+          err.response?.status === 409 ||
+          err.response?.status === 400 ||
+          err.response?.status === 403
+        ) {
           throw err;
         }
-        if (quoteService?.acceptQuote) {
+        if (quoteService && typeof quoteService.acceptQuote === 'function') {
           res = await quoteService.acceptQuote(id, selectedQuoteForAccept._id);
         } else {
           throw err;
         }
       }
 
-      const booking = res.data?.booking;
+      const booking = res?.data?.booking;
       if (booking) {
         setConfirmedBookingId(booking._id);
       }
@@ -288,7 +295,7 @@ export const CustomerRequestQuotesPage = () => {
               <strong>Booking Confirmed:</strong> You have accepted a quote for this request and scheduled the appointment. Your request status is now <strong>BOOKED</strong>.
             </div>
           </div>
-          <Link to="/customer/bookings">
+          <Link to={confirmedBookingId || request?.bookingId ? `/customer/bookings/${confirmedBookingId || request.bookingId}` : '/customer/bookings'}>
             <Button size="sm" variant="outline">
               My Bookings
             </Button>

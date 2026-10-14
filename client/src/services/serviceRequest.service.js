@@ -29,6 +29,15 @@ export const serviceRequestService = {
   async getServiceRequestById(id) {
     return apiClient.get(`/service-requests/${id}`);
   },
+
+  /**
+   * Customer or Staff cancels a service request with a reason
+   * @param {string} id
+   * @param {Object} data - { reason }
+   */
+  async cancelServiceRequest(id, data) {
+    return apiClient.post(`/service-requests/${id}/cancel`, data);
+  },
 };
 
 export default serviceRequestService;

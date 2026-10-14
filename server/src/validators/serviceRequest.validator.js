@@ -74,6 +74,15 @@ const createServiceRequestSchema = z.object({
     .default([]),
 });
 
+const cancelServiceRequestSchema = z.object({
+  reason: z
+    .string({ required_error: 'Cancellation reason is required' })
+    .trim()
+    .min(5, 'Cancellation reason must be at least 5 characters long')
+    .max(500, 'Cancellation reason cannot exceed 500 characters'),
+});
+
 module.exports = {
   createServiceRequestSchema,
+  cancelServiceRequestSchema,
 };
