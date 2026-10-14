@@ -16,7 +16,7 @@ import {
   AlertTriangle,
   HelpCircle,
   Receipt,
-  DollarSign,
+  IndianRupee,
   Filter,
   RotateCcw,
   Sliders,
@@ -24,6 +24,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { adminService } from '../../services/admin.service';
+import { formatCurrency } from '../../utils/currency';
 import { useAuth } from '../../context/AuthContext';
 import {
   Card,
@@ -86,15 +87,6 @@ export const OperationsDashboard = () => {
     setEndDate('');
     setDateError('');
     fetchStats({});
-  };
-
-  const formatCurrency = (amount) => {
-    if (amount === undefined || amount === null) return '$0.00';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(amount);
   };
 
   return (
@@ -387,7 +379,7 @@ export const OperationsDashboard = () => {
                   <span className="inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Gross Processed</span>
                 </div>
                 <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600">
-                  <DollarSign className="h-5 w-5" />
+                  <IndianRupee className="h-5 w-5" />
                 </div>
               </CardContent>
             </Card>

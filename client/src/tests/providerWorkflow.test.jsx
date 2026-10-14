@@ -188,7 +188,7 @@ describe('Milestone 4: Provider Onboarding, Profile & Admin Verification Fronten
       expect(screen.getByText('Mario Master Plumbing')).toBeInTheDocument();
       expect(screen.getByText(/verification pending/i)).toBeInTheDocument();
       expect(screen.getByText('12 Years')).toBeInTheDocument();
-      expect(screen.getByText('$85/hr')).toBeInTheDocument();
+      expect(screen.getByText('₹85/hr')).toBeInTheDocument();
       expect(screen.getByText(/available for jobs/i)).toBeInTheDocument();
     });
 

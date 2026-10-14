@@ -30,6 +30,7 @@ import {
   EmptyState,
   ErrorState,
 } from '../../components/ui';
+import { formatPricingUnit } from '../../utils/currency';
 
 const iconMap = {
   Wrench,
@@ -50,22 +51,6 @@ const statusBadgeVariants = {
   COMPLETED: 'success',
   CANCELLED: 'danger',
   DISPUTED: 'danger',
-};
-
-const formatPricingUnit = (unit, price) => {
-  if (price === undefined || price === null) return 'N/A';
-  switch (unit) {
-    case 'FIXED':
-      return `$${price} (Fixed price)`;
-    case 'HOURLY':
-      return `$${price} / hour`;
-    case 'STARTING_FROM':
-      return `Starting at $${price}`;
-    case 'QUOTE_REQUIRED':
-      return 'Custom quote required';
-    default:
-      return `$${price}`;
-  }
 };
 
 export const RequestDetailPage = () => {

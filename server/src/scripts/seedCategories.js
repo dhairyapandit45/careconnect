@@ -75,7 +75,7 @@ const seedCategories = async () => {
         await ServiceCategory.findByIdAndUpdate(existing._id, cat);
       } else {
         await ServiceCategory.create(cat);
-        logger.info(`Created category "${cat.name}" with starting price $${cat.startingPrice}.`);
+        logger.info(`Created category "${cat.name}" with starting price ₹${cat.startingPrice}.`);
       }
     }
 

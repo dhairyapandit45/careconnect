@@ -345,7 +345,7 @@ export const AdminProvidersPage = () => {
                       </TableCell>
                       <TableCell>
                         <span className="text-xs text-slate-700 font-semibold">
-                          ${p.pricing?.hourlyRate || p.hourlyRate || 0}/hr
+                          ₹{p.pricing?.hourlyRate || p.hourlyRate || 0}/hr
                         </span>
                       </TableCell>
                       <TableCell>

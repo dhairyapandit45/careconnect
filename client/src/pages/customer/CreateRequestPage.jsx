@@ -425,7 +425,7 @@ export const CreateRequestPage = () => {
                         <IconComponent className="h-5 w-5" />
                       </div>
                       <Badge variant={isSelected ? 'primary' : 'default'} size="sm">
-                        ${cat.startingPrice} {cat.pricingUnit === 'HOURLY' ? '/hr' : 'base'}
+                        ₹{cat.startingPrice} {cat.pricingUnit === 'HOURLY' ? '/hr' : 'base'}
                       </Badge>
                     </div>
 

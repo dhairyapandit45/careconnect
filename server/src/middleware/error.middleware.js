@@ -44,8 +44,8 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'CastError') {
     statusCode = 400;
     errorCode = ERROR_CODES.BAD_REQUEST;
-    message = `Invalid format for identifier: ${err.value}`;
-    details = [{ field: err.path, message: `Invalid identifier format: ${err.value}` }];
+    message = 'Invalid format for identifier';
+    details = [{ field: err.path, message: 'Invalid identifier format' }];
   }
 
   // Handle JWT Errors
@@ -68,7 +68,7 @@ const errorHandler = (err, req, res, next) => {
     message = 'Malformed JSON request body';
   }
 
-  // Log error
+  // Log error with safe diagnostic context for operations/admin monitoring
   if (statusCode >= 500) {
     logger.error(`[${req.method}] ${req.originalUrl} - ${message}`, {
       stack: err.stack,
@@ -80,9 +80,19 @@ const errorHandler = (err, req, res, next) => {
     logger.warn(`[${req.method}] ${req.originalUrl} - ${statusCode} - ${message}`);
   }
 
+  // Sanitize production error messages to prevent exposing database drivers or sensitive secrets
+  let publicMessage = message;
+  if (env.NODE_ENV === 'production') {
+    if (statusCode >= 500 && !(err instanceof ApiError)) {
+      publicMessage = 'Internal server error';
+    } else if (/mongodb(\+srv)?:\/\/|password|secret|key|token/i.test(message)) {
+      publicMessage = 'An unexpected error occurred';
+    }
+  }
+
   const responsePayload = {
     success: false,
-    message,
+    message: publicMessage,
     error: {
       code: errorCode,
       details,

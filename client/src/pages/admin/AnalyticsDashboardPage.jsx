@@ -16,7 +16,7 @@ import { useLocation } from 'react-router-dom';
 import {
   TrendingUp,
   Calendar,
-  DollarSign,
+  IndianRupee,
   AlertTriangle,
   HelpCircle,
   Users,
@@ -27,6 +27,7 @@ import {
   Activity,
 } from 'lucide-react';
 import { analyticsService } from '../../services/analytics.service';
+import { formatCurrency as formatCurrencyUtil } from '../../utils/currency';
 import {
   Card,
   CardHeader,
@@ -134,12 +135,7 @@ export const AnalyticsDashboardPage = () => {
   };
 
   const formatCurrency = (val) => {
-    const num = Number(val) || 0;
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(num);
+    return formatCurrencyUtil(val, { maximumFractionDigits: 0 });
   };
 
   const { bookings, revenue, providers, categories, disputes, support } = analyticsData;
@@ -286,7 +282,7 @@ export const AnalyticsDashboardPage = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Paid Revenue</span>
                   <div className="rounded-lg bg-emerald-50 p-2 text-emerald-600">
-                    <DollarSign className="h-5 w-5" />
+                    <IndianRupee className="h-5 w-5" />
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
@@ -430,7 +426,7 @@ export const AnalyticsDashboardPage = () => {
               <CardHeader className="border-b border-slate-100 pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <DollarSign className="h-5 w-5 text-emerald-600" />
+                    <IndianRupee className="h-5 w-5 text-emerald-600" />
                     <h2 className="text-base font-semibold text-slate-900">Revenue & Invoicing Timeline</h2>
                   </div>
                   <span className="text-xs text-slate-500">

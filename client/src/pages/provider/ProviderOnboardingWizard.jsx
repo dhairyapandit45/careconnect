@@ -961,7 +961,7 @@ export const ProviderOnboardingWizard = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
                 type="number"
-                label="Minimum Visit / Call-out Charge ($/₹)"
+                label="Minimum Visit / Call-out Charge (₹)"
                 min={0}
                 value={formData.pricing.minimumCharge}
                 onChange={(e) =>
@@ -977,7 +977,7 @@ export const ProviderOnboardingWizard = () => {
               />
               <Input
                 type="number"
-                label="Standard Hourly Rate ($/₹)"
+                label="Standard Hourly Rate (₹)"
                 min={0}
                 value={formData.pricing.hourlyRate}
                 onChange={(e) =>
@@ -1119,8 +1119,8 @@ export const ProviderOnboardingWizard = () => {
               <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
                 <span className="text-xs font-bold text-slate-500 uppercase">Pricing Configuration</span>
                 <p className="text-sm font-semibold text-slate-900 mt-1">Model: {formData.pricing.model}</p>
-                <p className="text-xs text-slate-600 mt-1">Minimum Visit Charge: ${formData.pricing.minimumCharge}</p>
-                <p className="text-xs text-slate-600">Hourly Labor Rate: ${formData.pricing.hourlyRate}/hr</p>
+                <p className="text-xs text-slate-600 mt-1">Minimum Visit Charge: ₹{formData.pricing.minimumCharge}</p>
+                <p className="text-xs text-slate-600">Hourly Labor Rate: ₹{formData.pricing.hourlyRate}/hr</p>
               </div>
             </div>
 

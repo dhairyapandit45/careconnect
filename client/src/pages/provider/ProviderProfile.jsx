@@ -458,7 +458,7 @@ export const ProviderProfile = () => {
               </div>
               <Input
                 type="number"
-                label="Minimum Charge ($/₹)"
+                label="Minimum Charge (₹)"
                 value={editForm.pricing.minimumCharge}
                 onChange={(e) =>
                   setEditForm({
@@ -469,7 +469,7 @@ export const ProviderProfile = () => {
               />
               <Input
                 type="number"
-                label="Hourly Rate ($/₹)"
+                label="Hourly Rate (₹)"
                 value={editForm.pricing.hourlyRate}
                 onChange={(e) =>
                   setEditForm({
@@ -649,11 +649,11 @@ export const ProviderProfile = () => {
                 </div>
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                   <span className="text-xs text-slate-500">Hourly Rate</span>
-                  <span className="text-sm font-bold text-slate-900">${profile.pricing?.hourlyRate || profile.hourlyRate || 0}/hr</span>
+                  <span className="text-sm font-bold text-slate-900">₹{profile.pricing?.hourlyRate || profile.hourlyRate || 0}/hr</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-slate-500">Minimum Visit Fee</span>
-                  <span className="text-sm font-bold text-slate-900">${profile.pricing?.minimumCharge || 0}</span>
+                  <span className="text-sm font-bold text-slate-900">₹{profile.pricing?.minimumCharge || 0}</span>
                 </div>
               </CardContent>
             </Card>

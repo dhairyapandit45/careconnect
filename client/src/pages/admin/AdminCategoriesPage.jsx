@@ -48,9 +48,9 @@ const ICON_OPTIONS = [
 ];
 
 const PRICING_UNIT_OPTIONS = [
-  { value: 'STARTING_FROM', label: 'Starting From ($ / base)' },
-  { value: 'HOURLY', label: 'Hourly Rate ($ / hr)' },
-  { value: 'FIXED', label: 'Fixed Price ($)' },
+  { value: 'STARTING_FROM', label: 'Starting From (₹ / base)' },
+  { value: 'HOURLY', label: 'Hourly Rate (₹ / hr)' },
+  { value: 'FIXED', label: 'Fixed Price (₹)' },
   { value: 'QUOTE_REQUIRED', label: 'Quote Required' },
 ];
 
@@ -368,7 +368,7 @@ export const AdminCategoriesPage = () => {
 
                     <TableCell>
                       <div className="text-sm font-semibold text-slate-900">
-                        ${cat.startingPrice !== undefined ? cat.startingPrice : 0}
+                        ₹{cat.startingPrice !== undefined ? cat.startingPrice.toLocaleString('en-IN') : 0}
                       </div>
                       <div className="text-xs text-slate-400">{cat.pricingUnit}</div>
                     </TableCell>
@@ -500,7 +500,7 @@ export const AdminCategoriesPage = () => {
           </div>
 
           <Input
-            label="Starting Price ($)"
+            label="Starting Price (₹)"
             type="number"
             min="0"
             step="1"

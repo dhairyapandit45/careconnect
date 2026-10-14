@@ -83,6 +83,13 @@ const bookingSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        delete ret.__v;
+        return ret;
+      },
+    },
   }
 );
 

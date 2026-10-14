@@ -121,7 +121,7 @@ describe('Milestone 9B — Admin & Operations Dashboard UI Test Suite', () => {
     expect(screen.getByText('Paid Invoices')).toBeInTheDocument();
     expect(screen.getByText('65')).toBeInTheDocument(); // paidInvoices
     expect(screen.getByText('Total Revenue')).toBeInTheDocument();
-    expect(screen.getByText('$12,500.00')).toBeInTheDocument(); // totalRevenue
+    expect(screen.getByText('₹12,500.00')).toBeInTheDocument(); // totalRevenue
   });
 
   // 2. Operations dashboard renders KPI cards with live data
@@ -150,7 +150,7 @@ describe('Milestone 9B — Admin & Operations Dashboard UI Test Suite', () => {
     expect(screen.getByText('40')).toBeInTheDocument();
     expect(screen.getByText('Active Jobs')).toBeInTheDocument();
     expect(screen.getByText('12')).toBeInTheDocument();
-    expect(screen.getByText('$12,500.00')).toBeInTheDocument();
+    expect(screen.getByText('₹12,500.00')).toBeInTheDocument();
 
     // Verify it requested stats with isOps = true
     expect(adminService.getStats).toHaveBeenCalledWith({}, true);

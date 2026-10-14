@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Briefcase,
-  DollarSign,
+  IndianRupee,
   Clock,
   Star,
   ShieldCheck,
@@ -210,7 +210,7 @@ export const ProviderDashboard = () => {
           <Card className="md:col-span-2">
             <CardHeader
               title={profile.businessName || 'Business Profile'}
-              subtitle={`${profile.experienceYears} Years Experience • Base Rate: $${profile.pricing?.hourlyRate || profile.hourlyRate || 0}/hr`}
+              subtitle={`${profile.experienceYears} Years Experience • Base Rate: ₹${profile.pricing?.hourlyRate || profile.hourlyRate || 0}/hr`}
             />
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2">
@@ -290,10 +290,10 @@ export const ProviderDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-slate-500 uppercase">Earnings (M-T-D)</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">$2,450</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">₹2,450</p>
               </div>
               <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-600">
-                <DollarSign className="h-5 w-5" />
+                <IndianRupee className="h-5 w-5" />
               </div>
             </div>
           </CardContent>

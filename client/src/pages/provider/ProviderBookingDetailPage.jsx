@@ -30,6 +30,7 @@ import {
   LoadingSpinner,
   ErrorState,
 } from '../../components/ui';
+import { getBookingReference } from '../../utils/currency';
 
 const statusBadgeVariants = {
   CONFIRMED: 'success',
@@ -160,7 +161,7 @@ export const ProviderBookingDetailPage = () => {
             </Badge>
           </div>
           <p className="text-xs text-slate-500">
-            Booking ID: <span className="font-mono text-slate-700">{booking._id}</span>
+            Booking Reference: <span className="font-mono text-slate-700">{getBookingReference(booking)}</span>
           </p>
         </div>
 
