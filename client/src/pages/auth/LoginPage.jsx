@@ -49,13 +49,7 @@ export const LoginPage = () => {
     }
   };
 
-  const handleDemoFill = (roleEmail) => {
-    setFormData({
-      email: roleEmail,
-      password: 'Password123!',
-    });
-    setFormError('');
-  };
+
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -111,48 +105,7 @@ export const LoginPage = () => {
               </Button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-slate-100">
-              <p className="text-xs font-semibold uppercase text-slate-400 mb-2">
-                Quick Demo Accounts (Local Dev)
-              </p>
-              <div className="grid grid-cols-2 gap-1.5 text-xs">
-                <button
-                  type="button"
-                  onClick={() => handleDemoFill('customer@careconnect.local')}
-                  className="px-2 py-1 text-left text-slate-600 hover:bg-slate-100 rounded"
-                >
-                  👤 Customer
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDemoFill('provider@careconnect.local')}
-                  className="px-2 py-1 text-left text-slate-600 hover:bg-slate-100 rounded"
-                >
-                  🔧 Provider
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDemoFill('support@careconnect.local')}
-                  className="px-2 py-1 text-left text-slate-600 hover:bg-slate-100 rounded"
-                >
-                  🎧 Support
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDemoFill('operations@careconnect.local')}
-                  className="px-2 py-1 text-left text-slate-600 hover:bg-slate-100 rounded"
-                >
-                  📊 Operations
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDemoFill('admin@careconnect.local')}
-                  className="px-2 py-1 text-left text-slate-600 hover:bg-slate-100 rounded col-span-2"
-                >
-                  🛡️ Platform Admin
-                </button>
-              </div>
-            </div>
+
 
             <p className="mt-6 text-center text-xs text-slate-500">
               Don&apos;t have an account?{' '}

@@ -279,4 +279,152 @@ describe('Milestone 2: Authentication, Security & RBAC Hardening Test Suite', ()
       .set('Authorization', `Bearer ${loginRes.body.data.token}`);
     expect(meRes.body.data.user.passwordHash).toBeUndefined();
   });
+
+  // 15. Public signup cannot create PLATFORM_ADMIN via crafted request
+  it('15. should reject public registration attempting to register as PLATFORM_ADMIN with 403 Forbidden', async () => {
+    const res = await request(app)
+      .post('/api/v1/auth/register')
+      .send({
+        name: 'Malicious Public User',
+        email: 'attacker@publicdomain.com',
+        password: 'SecurePassword123!',
+        role: ROLES.PLATFORM_ADMIN,
+      });
+
+    expect(res.status).toBe(403);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error.code).toBe('FORBIDDEN');
+    expect(res.body.message).toMatch(/Privileged roles .+ cannot be created via public registration/i);
+  });
+
+  // 16. Public signup cannot create OPERATIONS_MANAGER via crafted request
+  it('16. should reject public registration attempting to register as OPERATIONS_MANAGER with 403 Forbidden', async () => {
+    const res = await request(app)
+      .post('/api/v1/auth/register')
+      .send({
+        name: 'Malicious Ops User',
+        email: 'attacker-ops@publicdomain.com',
+        password: 'SecurePassword123!',
+        role: ROLES.OPERATIONS_MANAGER,
+      });
+
+    expect(res.status).toBe(403);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error.code).toBe('FORBIDDEN');
+    expect(res.body.message).toMatch(/Privileged roles .+ cannot be created via public registration/i);
+  });
+
+  // 17. Public signup cannot create SUPPORT_AGENT via crafted request
+  it('17. should reject public registration attempting to register as SUPPORT_AGENT with 403 Forbidden', async () => {
+    const res = await request(app)
+      .post('/api/v1/auth/register')
+      .send({
+        name: 'Malicious Support User',
+        email: 'attacker-sup@publicdomain.com',
+        password: 'SecurePassword123!',
+        role: ROLES.SUPPORT_AGENT,
+      });
+
+    expect(res.status).toBe(403);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error.code).toBe('FORBIDDEN');
+    expect(res.body.message).toMatch(/Privileged roles .+ cannot be created via public registration/i);
+  });
+
+  // 18. Normal public Service Provider signup succeeds
+  it('18. should successfully register a service provider through public signup and initialize provider profile', async () => {
+    const res = await request(app)
+      .post('/api/v1/auth/register')
+      .send({
+        name: 'Verified Electrician',
+        email: 'electrician@publicdomain.com',
+        password: 'SecurePassword123!',
+        role: ROLES.SERVICE_PROVIDER,
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.user.role).toBe(ROLES.SERVICE_PROVIDER);
+  });
+
+  // 19. Reject privileged role registration attempting to use JWT_SECRET as x-admin-key
+  it('19. should reject privileged role registration attempting to use JWT_SECRET as x-admin-key with 403 Forbidden', async () => {
+    const res = await request(app)
+      .post('/api/v1/auth/register')
+      .set('x-admin-key', env.JWT_SECRET)
+      .send({
+        name: 'Attacker Using JWT Secret',
+        email: 'attacker.jwt@externalorg.com',
+        password: 'SecurePassword123!',
+        role: ROLES.OPERATIONS_MANAGER,
+      });
+
+    expect(res.status).toBe(403);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error.code).toBe('FORBIDDEN');
+    expect(res.body.message).toMatch(/Privileged roles .+ cannot be created via public registration/i);
+  });
+
+  // 20. Administrative provisioning via dedicated ADMIN_PROVISIONING_KEY header succeeds
+  it('20. should allow privileged role registration when authorized with dedicated ADMIN_PROVISIONING_KEY header', async () => {
+    const originalKey = env.ADMIN_PROVISIONING_KEY;
+    const testKey = 'test_provisioning_key_safe_secret_abc123';
+    env.ADMIN_PROVISIONING_KEY = testKey;
+
+    try {
+      const res = await request(app)
+        .post('/api/v1/auth/register')
+        .set('x-admin-key', testKey)
+        .send({
+          name: 'Provisioned Ops Specialist',
+          email: 'specialist@externalorg.com',
+          password: 'SecurePassword123!',
+          role: ROLES.OPERATIONS_MANAGER,
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.user.role).toBe(ROLES.OPERATIONS_MANAGER);
+    } finally {
+      env.ADMIN_PROVISIONING_KEY = originalKey;
+    }
+  });
+
+  // 21. Administrative provisioning via Platform Admin Bearer token succeeds
+  it('21. should allow privileged role registration when caller is authenticated as PLATFORM_ADMIN', async () => {
+    // Register admin user using test fixture
+    const adminRes = await request(app).post('/api/v1/auth/register').send(validAdmin);
+    const adminToken = adminRes.body.data.token;
+
+    // Platform admin provisions a support agent
+    const res = await request(app)
+      .post('/api/v1/auth/register')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Staff Support Hire',
+        email: 'staff.support@newcompany.com',
+        password: 'SecurePassword123!',
+        role: ROLES.SUPPORT_AGENT,
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.user.role).toBe(ROLES.SUPPORT_AGENT);
+  });
+
+  // 22. Normal public Customer signup succeeds without administrative credentials
+  it('22. should successfully register a customer through public signup without administrative credentials', async () => {
+    const res = await request(app)
+      .post('/api/v1/auth/register')
+      .send({
+        name: 'Regular Customer',
+        email: 'ordinary.customer@publicdomain.com',
+        password: 'SecurePassword123!',
+        role: ROLES.CUSTOMER,
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.user.role).toBe(ROLES.CUSTOMER);
+  });
 });

@@ -31,6 +31,7 @@ const envSchema = z
     AUTH_RATE_LIMIT_MAX: z.coerce.number().optional(),
     OPENAI_API_KEY: z.string().optional().default(''),
     GEMINI_API_KEY: z.string().optional().default(''),
+    ADMIN_PROVISIONING_KEY: z.string().optional().default(''),
   })
   .transform((data) => {
     const isDemo = data.DEMO_MODE === true;

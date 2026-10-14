@@ -166,4 +166,62 @@ describe('Frontend Authentication, Forms & Route Protection', () => {
     expect(screen.getByText(/checking credentials/i)).toBeInTheDocument();
     expect(screen.queryByText('Dashboard Content')).not.toBeInTheDocument();
   });
+
+  // 7. Quick demo accounts section must not exist on login page
+  it('7. should NOT render the quick demo accounts section on the login page', () => {
+    const mockAuth = {
+      login: vi.fn(),
+      error: null,
+      clearError: vi.fn(),
+      isAuthenticated: false,
+      isLoading: false,
+    };
+
+    render(
+      <MemoryRouter>
+        <AuthContext.Provider value={mockAuth}>
+          <LoginPage />
+        </AuthContext.Provider>
+      </MemoryRouter>
+    );
+
+    // Verify quick demo accounts heading, text, and shortcut buttons are completely absent
+    expect(screen.queryByText(/quick demo accounts/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/customer@careconnect\.local/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/provider@careconnect\.local/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/support@careconnect\.local/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/operations@careconnect\.local/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/admin@careconnect\.local/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /platform admin/i })).not.toBeInTheDocument();
+  });
+
+  // 8. Public registration offers only Customer and Service Provider roles
+  it('8. should only render Customer and Service Provider options in the public registration role dropdown', () => {
+    const mockAuth = {
+      register: vi.fn(),
+      error: null,
+      clearError: vi.fn(),
+      isAuthenticated: false,
+      isLoading: false,
+    };
+
+    render(
+      <MemoryRouter>
+        <AuthContext.Provider value={mockAuth}>
+          <RegisterPage />
+        </AuthContext.Provider>
+      </MemoryRouter>
+    );
+
+    const roleSelect = screen.getByLabelText(/account role/i);
+    expect(roleSelect).toBeInTheDocument();
+
+    const options = Array.from(roleSelect.querySelectorAll('option')).map((opt) => opt.value);
+    expect(options).toEqual([ROLES.CUSTOMER, ROLES.SERVICE_PROVIDER]);
+
+    // Ensure privileged roles are completely absent from the dropdown
+    expect(options).not.toContain(ROLES.SUPPORT_AGENT);
+    expect(options).not.toContain(ROLES.OPERATIONS_MANAGER);
+    expect(options).not.toContain(ROLES.PLATFORM_ADMIN);
+  });
 });

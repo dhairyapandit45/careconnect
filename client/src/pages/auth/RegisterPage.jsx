@@ -59,9 +59,6 @@ export const RegisterPage = () => {
   const roleOptions = [
     { value: ROLES.CUSTOMER, label: `Customer (${ROLE_LABELS[ROLES.CUSTOMER]})` },
     { value: ROLES.SERVICE_PROVIDER, label: `Service Provider (${ROLE_LABELS[ROLES.SERVICE_PROVIDER]})` },
-    { value: ROLES.SUPPORT_AGENT, label: `Support Agent (${ROLE_LABELS[ROLES.SUPPORT_AGENT]})` },
-    { value: ROLES.OPERATIONS_MANAGER, label: `Operations Manager (${ROLE_LABELS[ROLES.OPERATIONS_MANAGER]})` },
-    { value: ROLES.PLATFORM_ADMIN, label: `Platform Admin (${ROLE_LABELS[ROLES.PLATFORM_ADMIN]})` },
   ];
 
   return (
