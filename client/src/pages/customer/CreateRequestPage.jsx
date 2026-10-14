@@ -8,7 +8,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
   Wrench,
   Sparkles,
@@ -53,6 +53,7 @@ const getTomorrowDate = () => {
 
 export const CreateRequestPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   // Wizard state
   const [step, setStep] = useState(1);
@@ -94,7 +95,20 @@ export const CreateRequestPage = () => {
         const activeCats = res.data?.categories || [];
         setCategories(activeCats);
         if (activeCats.length > 0) {
-          setFormData((prev) => (prev.categoryId ? prev : { ...prev, categoryId: activeCats[0]._id }));
+          const categoryQuery = searchParams.get('category') || searchParams.get('categoryId');
+          let initialCatId = activeCats[0]._id;
+          if (categoryQuery) {
+            const matched = activeCats.find(
+              (c) =>
+                c._id === categoryQuery ||
+                c.slug === categoryQuery ||
+                c.name.toLowerCase() === categoryQuery.toLowerCase()
+            );
+            if (matched) {
+              initialCatId = matched._id;
+            }
+          }
+          setFormData((prev) => (prev.categoryId ? prev : { ...prev, categoryId: initialCatId }));
         }
       } catch (err) {
         setSubmitError(err.message || 'Failed to load service categories');
@@ -103,7 +117,7 @@ export const CreateRequestPage = () => {
       }
     };
     fetchCats();
-  }, []);
+  }, [searchParams]);
 
   const selectedCategory = categories.find((c) => c._id === formData.categoryId);
 

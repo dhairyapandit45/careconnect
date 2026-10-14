@@ -4,8 +4,7 @@
 
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { ROLES, ROLE_DASHBOARD_ROUTES } from '../constants/roles';
+import { ROLES } from '../constants/roles';
 
 // Layout
 import { DashboardLayout } from '../components/layout';
@@ -51,32 +50,17 @@ import { DisputesOperationsPage } from '../pages/admin/DisputesOperationsPage';
 import { SupportTicketsOperationsPage } from '../pages/admin/SupportTicketsOperationsPage';
 import { AnalyticsDashboardPage } from '../pages/admin/AnalyticsDashboardPage';
 
+// Public Landing Page
+import { LandingPage } from '../pages/LandingPage';
+
 // 404 Page
 import { NotFoundPage } from '../pages/NotFoundPage';
-
-/**
- * Root index redirector based on authentication state
- */
-const RootRedirect = () => {
-  const { user, isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return null;
-  }
-
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  const destination = ROLE_DASHBOARD_ROUTES[user.role] || '/login';
-  return <Navigate to={destination} replace />;
-};
 
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* Root redirect */}
-      <Route path="/" element={<RootRedirect />} />
+      {/* Root public landing page */}
+      <Route path="/" element={<LandingPage />} />
 
       {/* Public Auth Routes */}
       <Route path="/login" element={<LoginPage />} />
